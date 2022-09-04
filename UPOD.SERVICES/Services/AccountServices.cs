@@ -52,8 +52,9 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<AccountRespone>> SearchAccounts(PaginationRequest model, String value)
         {
-            var accounts = await _context.Accounts.Where(p => p.Username.Contains(value) && p.IsDelete.ToString().Equals("false") || p.Role.RoleName.Contains(value)
-            && p.IsDelete.ToString().Equals("false") || p.CreateDate.ToString().Contains(value)
+            var accounts = await _context.Accounts.Where(p => (p.Username.Contains(value) 
+            || p.Role.RoleName.Contains(value)
+            || p.CreateDate.ToString().Contains(value))
             && p.IsDelete.ToString().Equals("false")).Select(p => new AccountRespone
             {
                 Id = p.Id,
