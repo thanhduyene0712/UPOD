@@ -8,7 +8,7 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class AgencyDisableRequest
     {
-        public bool? IsDelete { get; set; }
+        public bool? is_delete { get; set; }
        
     }
 }

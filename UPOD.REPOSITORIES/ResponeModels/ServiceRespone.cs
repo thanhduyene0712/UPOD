@@ -8,12 +8,12 @@ namespace UPOD.REPOSITORIES.ResponeModels
 {
     public class ServiceRespone
     {
-        public Guid Id { get; set; }
-        public Guid DepId { get; set; }
-        public string ServiceName { get; set; }
-        public string? Desciption { get; set; }
-        public bool? IsDelete { get; set; }
-        public DateTime? CreateDate { get; set; }
-        public DateTime? UpdateDate { get; set; }
+        public Guid id { get; set; }
+        public Guid dep_id { get; set; }
+        public string service_name { get; set; }
+        public string? desciption { get; set; }
+        public bool? is_delete { get; set; }
+        public DateTime? create_date { get; set; }
+        public DateTime? update_date { get; set; }
     }
 }

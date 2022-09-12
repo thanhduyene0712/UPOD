@@ -37,19 +37,19 @@ namespace UPOD.SERVICES.Services
         {
             var agencies = await _context.Agencies.Select(a => new AgencyRespone
             {
-                Id = a.Id,
-                AgencyName = a.AgencyName,
-                Username = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Username).FirstOrDefault(),
-                Address = a.Address,
-                CompanyName = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
-                ManagerName = a.ManagerName,
-                Telephone = a.Telephone,
-                IsDelete = a.IsDelete,
-                CreateDate = a.CreateDate,
-                UpdateDate = a.UpdateDate,
+                id = a.Id,
+                agency_name = a.AgencyName,
+                username = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Username).FirstOrDefault(),
+                address = a.Address,
+                company_name = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
+                manager_name = a.ManagerName,
+                telephone = a.Telephone,
+                is_delete = a.IsDelete,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
 
 
-            }).OrderBy(x => x.CreateDate).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AgencyRespone>(agencies)
             {
                 Total = agencies.Count,
@@ -61,17 +61,17 @@ namespace UPOD.SERVICES.Services
             var agencies = await _context.Agencies.Where(a => a.Company.CompanyName.Contains(value) || a.Account.Username.Contains(value)
             || a.ManagerName.Contains(value) || a.AgencyName.Contains(value) || a.Address.Contains(value) || a.Telephone.Contains(value)).Select(a => new AgencyRespone
             {
-                Id = a.Id,
-                AgencyName = a.AgencyName,
-                Username = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Username).FirstOrDefault(),
-                Address = a.Address,
-                CompanyName = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
-                ManagerName = a.ManagerName,
-                Telephone = a.Telephone,
-                IsDelete = a.IsDelete,
-                CreateDate = a.CreateDate,
-                UpdateDate = a.UpdateDate,
-            }).OrderBy(x => x.CreateDate).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                id = a.Id,
+                agency_name = a.AgencyName,
+                username = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Username).FirstOrDefault(),
+                address = a.Address,
+                company_name = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
+                manager_name = a.ManagerName,
+                telephone = a.Telephone,
+                is_delete = a.IsDelete,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
+            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AgencyRespone>(agencies)
             {
                 Total = agencies.Count,
@@ -83,12 +83,12 @@ namespace UPOD.SERVICES.Services
             var agency = new Agency
             {
                 Id = Guid.NewGuid(),
-                AgencyName = model.AgencyName,
-                AccountId = _context.Accounts.Where(x => x.Username.Equals(model.Username)).Select(x => x.Id).FirstOrDefault(),
-                Address = model.Address,
-                CompanyId = _context.Companies.Where(x => x.CompanyName.Equals(model.CompanyName)).Select(x => x.Id).FirstOrDefault(),
-                ManagerName = model.ManagerName,
-                Telephone = model.Telephone,
+                AgencyName = model.agency_name,
+                AccountId = _context.Accounts.Where(x => x.Username.Equals(model.username)).Select(x => x.Id).FirstOrDefault(),
+                Address = model.address,
+                CompanyId = _context.Companies.Where(x => x.CompanyName.Equals(model.company_name)).Select(x => x.Id).FirstOrDefault(),
+                ManagerName = model.manager_name,
+                Telephone = model.telephone,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
                 UpdateDate = null,
@@ -111,16 +111,16 @@ namespace UPOD.SERVICES.Services
                 await _context.SaveChangesAsync();
                 list.Add(new AgencyRespone
                 {
-                    Id = agency.Id,
-                    AgencyName = agency.AgencyName,
-                    Username = await _context.Accounts.Where(x => x.Id.Equals(agency.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
-                    Address = agency.Address,
-                    CompanyName = await _context.Companies.Where(x => x.Id.Equals(agency.CompanyId)).Select(x => x.CompanyName).FirstOrDefaultAsync(),
-                    ManagerName = agency.ManagerName,
-                    Telephone = agency.Telephone,
-                    IsDelete = agency.IsDelete,
-                    CreateDate = agency.CreateDate,
-                    UpdateDate = agency.UpdateDate,
+                    id = agency.Id,
+                    agency_name = agency.AgencyName,
+                    username = await _context.Accounts.Where(x => x.Id.Equals(agency.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
+                    address = agency.Address,
+                    company_name = await _context.Companies.Where(x => x.Id.Equals(agency.CompanyId)).Select(x => x.CompanyName).FirstOrDefaultAsync(),
+                    manager_name = agency.ManagerName,
+                    telephone = agency.Telephone,
+                    is_delete = agency.IsDelete,
+                    create_date = agency.CreateDate,
+                    update_date = agency.UpdateDate,
                 });
             }
             return new ResponseModel<AgencyRespone>(list)
@@ -136,12 +136,12 @@ namespace UPOD.SERVICES.Services
             var agency = await _context.Agencies.Where(x => x.Id.Equals(id)).Select(x => new Agency
             {
                 Id = id,
-                AgencyName = model.AgencyName,
-                AccountId = _context.Accounts.Where(x => x.Username.Equals(model.Username)).Select(x => x.Id).FirstOrDefault(),
-                Address = model.Address,
-                CompanyId = _context.Companies.Where(x => x.CompanyName.Equals(model.CompanyName)).Select(x => x.Id).FirstOrDefault(),
-                ManagerName = model.ManagerName,
-                Telephone = model.Telephone,
+                AgencyName = model.agency_name,
+                AccountId = _context.Accounts.Where(x => x.Username.Equals(model.username)).Select(x => x.Id).FirstOrDefault(),
+                Address = model.address,
+                CompanyId = _context.Companies.Where(x => x.CompanyName.Equals(model.company_name)).Select(x => x.Id).FirstOrDefault(),
+                ManagerName = model.manager_name,
+                Telephone = model.telephone,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now,
@@ -151,16 +151,16 @@ namespace UPOD.SERVICES.Services
             var list = new List<AgencyRespone>();
             list.Add(new AgencyRespone
             {
-                Id = agency.Id,
-                AgencyName = agency.AgencyName,
-                Username = await _context.Accounts.Where(x => x.Id.Equals(agency.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
-                Address = agency.Address,
-                CompanyName = await _context.Companies.Where(x => x.Id.Equals(agency.CompanyId)).Select(x => x.CompanyName).FirstOrDefaultAsync(),
-                ManagerName = agency.ManagerName,
-                Telephone = agency.Telephone,
-                IsDelete = agency.IsDelete,
-                CreateDate = agency.CreateDate,
-                UpdateDate = agency.UpdateDate,
+                id = agency.Id,
+                agency_name = agency.AgencyName,
+                username = await _context.Accounts.Where(x => x.Id.Equals(agency.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
+                address = agency.Address,
+                company_name = await _context.Companies.Where(x => x.Id.Equals(agency.CompanyId)).Select(x => x.CompanyName).FirstOrDefaultAsync(),
+                manager_name = agency.ManagerName,
+                telephone = agency.Telephone,
+                is_delete = agency.IsDelete,
+                create_date = agency.CreateDate,
+                update_date = agency.UpdateDate,
             });
             return new ResponseModel<AgencyRespone>(list)
             {
@@ -181,7 +181,7 @@ namespace UPOD.SERVICES.Services
                 CompanyId = _context.Companies.Where(x => x.CompanyName.Equals(x.CompanyName)).Select(x => x.Id).FirstOrDefault(),
                 ManagerName = x.ManagerName,
                 Telephone = x.Telephone,
-                IsDelete = model.IsDelete,
+                IsDelete = model.is_delete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now,
             }).FirstOrDefaultAsync();
@@ -190,16 +190,16 @@ namespace UPOD.SERVICES.Services
             var list = new List<AgencyRespone>();
             list.Add(new AgencyRespone
             {
-                Id = agency.Id,
-                AgencyName = agency.AgencyName,
-                Username = await _context.Accounts.Where(x => x.Id.Equals(agency.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
-                Address = agency.Address,
-                CompanyName = await _context.Companies.Where(x => x.Id.Equals(agency.CompanyId)).Select(x => x.CompanyName).FirstOrDefaultAsync(),
-                ManagerName = agency.ManagerName,
-                Telephone = agency.Telephone,
-                IsDelete = agency.IsDelete,
-                CreateDate = agency.CreateDate,
-                UpdateDate = agency.UpdateDate,
+                id = agency.Id,
+                agency_name = agency.AgencyName,
+                username = await _context.Accounts.Where(x => x.Id.Equals(agency.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
+                address = agency.Address,
+                company_name = await _context.Companies.Where(x => x.Id.Equals(agency.CompanyId)).Select(x => x.CompanyName).FirstOrDefaultAsync(),
+                manager_name = agency.ManagerName,
+                telephone = agency.Telephone,
+                is_delete = agency.IsDelete,
+                create_date = agency.CreateDate,
+                update_date = agency.UpdateDate,
             });
             return new ResponseModel<AgencyRespone>(list)
             {

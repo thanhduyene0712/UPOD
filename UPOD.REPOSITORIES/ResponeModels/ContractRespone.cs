@@ -8,20 +8,20 @@ namespace UPOD.REPOSITORIES.ResponeModels
 {
     public class ContractRespone
     {
-        public Guid Id { get; set; }
-        public Guid CompanyId { get; set; }
-        public string ContractName { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public bool? IsDelete { get; set; }
-        public DateTime? CreateDate { get; set; }
-        public DateTime? UpdateDate { get; set; }
-        public double? ContractPrice { get; set; }
-        public DateTime? TimeCommit { get; set; }
-        public int? Priority { get; set; }
-        public string PunishmentForCustomer { get; set; }
-        public string PunishmentForIt { get; set; }
-        public string Desciption { get; set; }
-        public Guid ServiceId { get; set; }
+        public Guid id { get; set; }
+        public Guid company_id { get; set; }
+        public string contract_name { get; set; }
+        public DateTime? start_date { get; set; }
+        public DateTime? end_date { get; set; }
+        public bool? is_delete { get; set; }
+        public DateTime? create_date { get; set; }
+        public DateTime? update_date { get; set; }
+        public double? contract_price { get; set; }
+        public DateTime? time_commit { get; set; }
+        public int? priority { get; set; }
+        public string punishment_for_customer { get; set; }
+        public string punishment_for_it { get; set; }
+        public string desciption { get; set; }
+        public List<Guid> service_id { get; set; }
     }
 }

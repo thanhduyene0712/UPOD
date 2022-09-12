@@ -36,14 +36,14 @@ namespace UPOD.SERVICES.Services
         {
             var accounts = await _context.Accounts.Select(p => new AccountRespone
             {
-                Id = p.Id,
-                RoleId = p.RoleId,
-                Username = p.Username,
-                IsDelete = p.IsDelete,
-                CreateDate = p.CreateDate,
-                UpdateDate = p.UpdateDate,
+                id = p.Id,
+                role_id = p.RoleId,
+                username = p.Username,
+                is_delete = p.IsDelete,
+                create_date = p.CreateDate,
+                update_date = p.UpdateDate,
 
-            }).OrderBy(x => x.CreateDate).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderBy(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AccountRespone>(accounts)
             {
                 Total = accounts.Count,
@@ -57,13 +57,13 @@ namespace UPOD.SERVICES.Services
             || p.CreateDate.ToString().Contains(value))
             && p.IsDelete.ToString().Equals("false")).Select(p => new AccountRespone
             {
-                Id = p.Id,
-                RoleId = p.RoleId,
-                Username = p.Username,
-                IsDelete = p.IsDelete,
-                CreateDate = p.CreateDate,
-                UpdateDate = p.UpdateDate,
-            }).OrderBy(x => x.CreateDate).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                id = p.Id,
+                role_id = p.RoleId,
+                username = p.Username,
+                is_delete = p.IsDelete,
+                create_date = p.CreateDate,
+                update_date = p.UpdateDate,
+            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AccountRespone>(accounts)
             {
                 Total = accounts.Count,
@@ -75,9 +75,9 @@ namespace UPOD.SERVICES.Services
             var account = new Account
             {
                 Id = Guid.NewGuid(),
-                RoleId = await _context.Roles.Where(x => x.RoleName.Equals(model.RoleName)).Select(x => x.Id).FirstOrDefaultAsync(),
-                Username = model.Username,
-                Password = model.Password,
+                RoleId = await _context.Roles.Where(x => x.RoleName.Equals(model.role_name)).Select(x => x.Id).FirstOrDefaultAsync(),
+                Username = model.user_name,
+                Password = model.password,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
                 UpdateDate = null,
@@ -100,10 +100,10 @@ namespace UPOD.SERVICES.Services
                 await _context.SaveChangesAsync();
                 list.Add(new AccRegisterRespone
                 {
-                    Id = account.Id,
-                    RoleName = await _context.Roles.Where(x => x.Id.Equals(account.RoleId)).Select(x => x.RoleName).FirstOrDefaultAsync(),
-                    Username = account.Username,
-                    CreateDate = account.CreateDate,
+                    id = account.Id,
+                    role_name = await _context.Roles.Where(x => x.Id.Equals(account.RoleId)).Select(x => x.RoleName).FirstOrDefaultAsync(),
+                    user_name = account.Username,
+                    create_date = account.CreateDate,
                 });
             }
             return new ResponseModel<AccRegisterRespone>(list)
@@ -119,10 +119,10 @@ namespace UPOD.SERVICES.Services
             var account = await _context.Accounts.Where(x => x.Id.Equals(id)).Select(x => new Account
             {
                 Id = id,
-                RoleId = _context.Roles.Where(x => x.RoleName.Equals(model.RoleName)).Select(x => x.Id).FirstOrDefault(),
+                RoleId = _context.Roles.Where(x => x.RoleName.Equals(model.role_name)).Select(x => x.Id).FirstOrDefault(),
                 Username = x.Username,
-                Password = model.Password,
-                IsDelete = model.IsDelete,
+                Password = model.password,
+                IsDelete = model.is_delete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now,
             }).FirstOrDefaultAsync();
@@ -131,12 +131,12 @@ namespace UPOD.SERVICES.Services
             var list = new List<AccountRespone>();
             list.Add(new AccountRespone
             {
-                Id = account.Id,
-                RoleId = account.RoleId,
-                Username = account.Username,
-                IsDelete = account.IsDelete,
-                CreateDate = account.CreateDate,
-                UpdateDate = account.UpdateDate,
+                id = account.Id,
+                role_id = account.RoleId,
+                username = account.Username,
+                is_delete = account.IsDelete,
+                create_date = account.CreateDate,
+                update_date = account.UpdateDate,
             });
             return new ResponseModel<AccountRespone>(list)
             {

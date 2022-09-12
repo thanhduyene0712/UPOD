@@ -8,9 +8,9 @@ namespace UPOD.REPOSITORIES.ResponeModels
 {
     public class AccRegisterRespone
     {
-        public Guid Id { get; set; }
-        public string RoleName { get; set; }
-        public string Username { get; set; }
-        public DateTime? CreateDate { get; set; }
+        public Guid id { get; set; }
+        public string role_name { get; set; }
+        public string user_name { get; set; }
+        public DateTime? create_date { get; set; }
     }
 }

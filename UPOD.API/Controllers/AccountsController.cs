@@ -24,26 +24,26 @@ namespace UPOD.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
+        [Route("getAll")]
         public async Task<ResponseModel<AccountRespone>> GetAllAccounts([FromQuery] PaginationRequest model)
         {
             return await _accountSv.GetAll(model);
         }
 
         [HttpGet]
-        [Route("Search")]
+        [Route("search")]
         public async Task<ResponseModel<AccountRespone>> SearchAccounts([FromQuery] PaginationRequest model, String value)
         {
             return await _accountSv.SearchAccounts(model, value);
         }
         [HttpPost]
-        [Route("Create")]
-        public async Task<ResponseModel<AccRegisterRespone>> CreateAccount(/*[FromQuery]*/ AccRegisterRequest model)
+        [Route("create")]
+        public async Task<ResponseModel<AccRegisterRespone>> CreateAccount(AccRegisterRequest model)
         {
             return await _accountSv.CreateAccount(model);
         }
         [HttpPut]
-        [Route("Update")]
+        [Route("update")]
         public async Task<ResponseModel<AccountRespone>> UpdateAccount(Guid id, [FromQuery] AccountRequest model)
         {
             return await _accountSv.UpdateAccount(id, model);

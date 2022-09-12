@@ -8,8 +8,8 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class AccountRequest
     {
-        public string RoleName { get; set; }
-        public string Password { get; set; }
-        public bool? IsDelete { get; set; }
+        public string role_name { get; set; }
+        public string password { get; set; }
+        public bool? is_delete { get; set; }
     }
 }

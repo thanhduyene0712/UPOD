@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Reso.Core.Extension;
@@ -10,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 //builder.Services.AddDbContext<Database_UPODContext>(opt =>
 //    opt.UseInMemoryDatabase("DefaultConnection"));
@@ -24,6 +28,7 @@ builder.Services.ConfigureDI();
 builder.Services.ConfigureServiceWorkers();
 builder.Services.ConfigDataProtection();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,6 +40,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
 
 app.UseAuthorization();
 

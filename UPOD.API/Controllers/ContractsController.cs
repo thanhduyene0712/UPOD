@@ -38,7 +38,7 @@ namespace UPOD.API.Controllers
         //}
         [HttpPost]
         [Route("Create")]
-        public async Task<ResponseModel<ContractRespone>> CreateContract([FromQuery] ContractRequest model)
+        public async Task<ResponseModel<ContractRespone>> CreateContract(/*[FromQuery]*/ ContractRequest model)
         {
             return await _contractServiceSv.CreateContract(model);
         }

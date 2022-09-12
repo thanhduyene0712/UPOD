@@ -8,9 +8,9 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class ContractServiceRequest
     {
-        public Guid ContactId { get; set; }
-        public Guid ServiceId { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public Guid contact_id { get; set; }
+        public Guid service_id { get; set; }
+        public DateTime? start_date { get; set; }
+        public DateTime? end_date { get; set; }
     }
 }

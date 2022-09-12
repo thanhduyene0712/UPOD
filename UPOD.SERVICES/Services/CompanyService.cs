@@ -37,18 +37,18 @@ namespace UPOD.SERVICES.Services
         {
             var companies = await _context.Companies.Select(a => new CompanyRespone
             {
-                Id = a.Id,
-                CompanyName = a.CompanyName,
-                Description = a.Description,
-                PercentForTechnicanExp = a.PercentForTechnicanExp,
-                PercentForTechnicanRate = a.PercentForTechnicanRate,
-                PercentForTechnicanFamiliarWithAgency = a.PercentForTechnicanFamiliarWithAgency,
-                IsDelete = a.IsDelete,
-                CreateDate = a.CreateDate,
-                UpdateDate = a.UpdateDate,
+                id = a.Id,
+                company_name = a.CompanyName,
+                description = a.Description,
+                percent_for_technican_exp = a.PercentForTechnicanExp,
+                percent_for_technican_rate = a.PercentForTechnicanRate,
+                percent_for_technican_familiar_with_agency = a.PercentForTechnicanFamiliarWithAgency,
+                is_delete = a.IsDelete,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
 
 
-            }).OrderBy(x => x.CreateDate).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<CompanyRespone>(companies)
             {
                 Total = companies.Count,
@@ -82,11 +82,11 @@ namespace UPOD.SERVICES.Services
             var company = new Company
             {
                 Id = Guid.NewGuid(),
-                CompanyName = model.CompanyName,
-                Description = model.Description,
-                PercentForTechnicanExp = model.PercentForTechnicanExp,
-                PercentForTechnicanRate = model.PercentForTechnicanRate,
-                PercentForTechnicanFamiliarWithAgency = model.PercentForTechnicanFamiliarWithAgency,
+                CompanyName = model.company_name,
+                Description = model.description,
+                PercentForTechnicanExp = model.percent_for_technican_exp,
+                PercentForTechnicanRate = model.percent_for_technican_rate,
+                PercentForTechnicanFamiliarWithAgency = model.percent_for_technican_familiar_with_agency,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
                 UpdateDate = null,
@@ -109,15 +109,15 @@ namespace UPOD.SERVICES.Services
                 await _context.SaveChangesAsync();
                 list.Add(new CompanyRespone
                 {
-                    Id = company.Id,
-                    CompanyName = company.CompanyName,
-                    Description = company.Description,
-                    PercentForTechnicanExp = company.PercentForTechnicanExp,
-                    PercentForTechnicanRate = company.PercentForTechnicanRate,
-                    PercentForTechnicanFamiliarWithAgency = company.PercentForTechnicanFamiliarWithAgency,
-                    IsDelete = company.IsDelete,
-                    CreateDate = company.CreateDate,
-                    UpdateDate = company.UpdateDate,
+                    id = company.Id,
+                    company_name = company.CompanyName,
+                    description = company.Description,
+                    percent_for_technican_exp = company.PercentForTechnicanExp,
+                    percent_for_technican_rate = company.PercentForTechnicanRate,
+                    percent_for_technican_familiar_with_agency = company.PercentForTechnicanFamiliarWithAgency,
+                    is_delete = company.IsDelete,
+                    create_date = company.CreateDate,
+                    update_date = company.UpdateDate,
                 });
             }
             return new ResponseModel<CompanyRespone>(list)

@@ -48,24 +48,24 @@ namespace UPOD.SERVICES.Services
         {
             var contracts = await _context.Contracts.Select(a => new ContractRespone
             {
-                Id = a.Id,
-                CompanyId = a.CompanyId,
-                ContractName = a.ContractName,
-                ContractPrice = a.ContractPrice,
-                StartDate = a.StartDate,
-                EndDate = a.EndDate,
-                IsDelete = a.IsDelete,
-                CreateDate = a.CreateDate,
-                UpdateDate = a.UpdateDate,
-                TimeCommit = a.TimeCommit,
-                Priority = a.Priority,
-                PunishmentForCustomer = a.PunishmentForCustomer,
-                PunishmentForIt = a.PunishmentForIt,
-                Desciption = a.PunishmentForIt,
-                ServiceId = _context.ContractServices.Where(x => x.ContactId.Equals(a.Id)).Select(x => x.ServiceId).FirstOrDefault(),
+                id = a.Id,
+                company_id = a.CompanyId,
+                contract_name = a.ContractName,
+                contract_price = a.ContractPrice,
+                start_date = a.StartDate,
+                end_date = a.EndDate,
+                is_delete = a.IsDelete,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
+                time_commit = a.TimeCommit,
+                priority = a.Priority,
+                punishment_for_customer = a.PunishmentForCustomer,
+                punishment_for_it = a.PunishmentForIt,
+                desciption = a.PunishmentForIt,
+                service_id = _context.ContractServices.Where(x => x.ContactId.Equals(a.Id)).Select(x => x.ServiceId).ToList(),
 
 
-            }).OrderBy(x => x.CreateDate).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<ContractRespone>(contracts)
             {
                 Total = contracts.Count,
@@ -100,32 +100,35 @@ namespace UPOD.SERVICES.Services
             var contract = new Contract
             {
                 Id = Guid.NewGuid(),
-                CompanyId = model.CompanyId,
-                ContractName = model.ContractName,
-                StartDate = model.StartDate,
-                EndDate = model.EndDate,
-                TimeCommit = model.TimeCommit,
+                CompanyId = model.company_id,
+                ContractName = model.contract_name,
+                StartDate = model.start_date,
+                EndDate = model.end_date,
+                TimeCommit = model.time_commit,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
                 UpdateDate = null,
-                ContractPrice = model.ContractPrice,
-                Priority = model.Priority,
-                PunishmentForCustomer = model.PunishmentForCustomer,
-                PunishmentForIt = model.PunishmentForIt,
-                Desciption = model.Desciption,
+                ContractPrice = model.contract_price,
+                Priority = model.priority,
+                PunishmentForCustomer = model.punishment_for_customer,
+                PunishmentForIt = model.punishment_for_it,
+                Desciption = model.desciption,
 
             };
+            foreach(var item in model.service_id) { 
             var contract_service = new ContractService
             {
                 Id = Guid.NewGuid(),
                 ContactId = contract.Id,
-                ServiceId = model.ServiceId,
+                ServiceId = item,
                 StartDate = contract.StartDate,
                 EndDate = contract.EndDate,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
                 UpdateDate = null,
             };
+               _context.ContractServices.Add(contract_service);
+            }
             var list = new List<ContractRespone>();
             var message = "blank";
             var status = 500;
@@ -140,25 +143,24 @@ namespace UPOD.SERVICES.Services
                 message = "Successfully";
                 status = 201;
                 await _context.Contracts.AddAsync(contract);
-                await _context.ContractServices.AddAsync(contract_service);
                 await _context.SaveChangesAsync();
                 list.Add(new ContractRespone
                 {
-                    Id = contract.Id,
-                    CompanyId = contract.CompanyId,
-                    ContractName = contract.ContractName,
-                    StartDate = contract.StartDate,
-                    EndDate = contract.EndDate,
-                    TimeCommit = contract.TimeCommit,
-                    IsDelete = contract.IsDelete,
-                    CreateDate = contract.CreateDate,
-                    UpdateDate = contract.UpdateDate,
-                    ContractPrice = contract.ContractPrice,
-                    Priority = contract.Priority,
-                    PunishmentForCustomer = contract.PunishmentForCustomer,
-                    PunishmentForIt = contract.PunishmentForIt,
-                    Desciption = contract.Desciption,
-                    ServiceId = _context.ContractServices.Where(x => x.ContactId.Equals(contract.Id)).Select(x => x.ServiceId).FirstOrDefault(),
+                    id = contract.Id,
+                    company_id = contract.CompanyId,
+                    contract_name = contract.ContractName,
+                    start_date = contract.StartDate,
+                    end_date = contract.EndDate,
+                    time_commit = contract.TimeCommit,
+                    is_delete = contract.IsDelete,
+                    create_date = contract.CreateDate,
+                    update_date = contract.UpdateDate,
+                    contract_price = contract.ContractPrice,
+                    priority = contract.Priority,
+                    punishment_for_customer = contract.PunishmentForCustomer,
+                    punishment_for_it = contract.PunishmentForIt,
+                    desciption = contract.Desciption,
+                    service_id = _context.ContractServices.Where(x => x.ContactId.Equals(contract.Id)).Select(x => x.ServiceId).ToList(),
                 });
             }
 

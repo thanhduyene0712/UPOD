@@ -37,16 +37,16 @@ namespace UPOD.SERVICES.Services
         {
             var services = await _context.Services.Select(a => new ServiceRespone
             {
-                Id = a.Id,
-                DepId = a.DepId,
-                ServiceName = a.ServiceName,
-                Desciption = a.Desciption,
-                IsDelete = a.IsDelete,
-                CreateDate = a.CreateDate,
-                UpdateDate = a.UpdateDate,
+                id = a.Id,
+                dep_id = a.DepId,
+                service_name = a.ServiceName,
+                desciption = a.Desciption,
+                is_delete = a.IsDelete,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
 
 
-            }).OrderBy(x => x.CreateDate).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<ServiceRespone>(services)
             {
                 Total = services.Count,
@@ -80,9 +80,9 @@ namespace UPOD.SERVICES.Services
             var Service = new Service
             {
                 Id = Guid.NewGuid(),
-                DepId = model.DepId,
-                ServiceName = model.ServiceName,
-                Desciption = model.Desciption,
+                DepId = model.dep_id,
+                ServiceName = model.service_name,
+                Desciption = model.desciption,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
                 UpdateDate = null,
@@ -105,13 +105,13 @@ namespace UPOD.SERVICES.Services
                 await _context.SaveChangesAsync();
                 list.Add(new ServiceRespone
                 {
-                    Id = Service.Id,
-                    DepId = Service.DepId,
-                    ServiceName = Service.ServiceName,
-                    Desciption = Service.Desciption,
-                    IsDelete = Service.IsDelete,
-                    CreateDate = Service.CreateDate,
-                    UpdateDate = Service.UpdateDate,
+                    id = Service.Id,
+                    dep_id = Service.DepId,
+                    service_name = Service.ServiceName,
+                    desciption = Service.Desciption,
+                    is_delete = Service.IsDelete,
+                    create_date = Service.CreateDate,
+                    update_date = Service.UpdateDate,
                 });
             }
             return new ResponseModel<ServiceRespone>(list)

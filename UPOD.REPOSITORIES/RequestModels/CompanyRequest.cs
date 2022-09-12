@@ -8,10 +8,10 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class CompanyRequest
     {
-        public string CompanyName { get; set; }
-        public string Description { get; set; }
-        public double? PercentForTechnicanExp { get; set; }
-        public double? PercentForTechnicanRate { get; set; }
-        public double? PercentForTechnicanFamiliarWithAgency { get; set; }
+        public string company_name { get; set; }
+        public string description { get; set; }
+        public double? percent_for_technican_exp { get; set; }
+        public double? percent_for_technican_rate { get; set; }
+        public double? percent_for_technican_familiar_with_agency { get; set; }
     }
 }
