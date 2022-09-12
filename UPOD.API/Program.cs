@@ -14,10 +14,7 @@ builder.Services.AddControllers();
 //builder.Services.AddDbContext<Database_UPODContext>(opt =>
 //    opt.UseInMemoryDatabase("DefaultConnection"));
 builder.Services.AddDbContext<Database_UPODContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-//builder.Services.AddSwaggerGen(c =>
-//{
-//    c.SwaggerDoc("v1", new() { Title = "TodoApi", Version = "v1" });
-//});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureFilter<ErrorHandlingFilter>();

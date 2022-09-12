@@ -38,7 +38,7 @@ namespace UPOD.API.Controllers
         }
         [HttpPost]
         [Route("Create")]
-        public async Task<ResponseModel<AccRegisterRespone>> CreateAccount([FromQuery] AccRegisterRequest model)
+        public async Task<ResponseModel<AccRegisterRespone>> CreateAccount(/*[FromQuery]*/ AccRegisterRequest model)
         {
             return await _accountSv.CreateAccount(model);
         }
