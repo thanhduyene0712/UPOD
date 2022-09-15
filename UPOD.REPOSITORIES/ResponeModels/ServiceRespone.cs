@@ -9,7 +9,7 @@ namespace UPOD.REPOSITORIES.ResponeModels
     public class ServiceRespone
     {
         public Guid id { get; set; }
-        public Guid dep_id { get; set; }
+        public Guid area_id { get; set; }
         public string service_name { get; set; }
         public string? desciption { get; set; }
         public bool? is_delete { get; set; }

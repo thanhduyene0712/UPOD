@@ -1,3 +1,4 @@
+
 /////////////////////////////////////////////////////////////////
 //
 //              AUTO-GENERATED
@@ -8,11 +9,11 @@ namespace UPOD.REPOSITORIES.Services
     using Reso.Core.BaseConnect;
     using UPOD.REPOSITORIES.Models;
     using UPOD.REPOSITORIES.Repositories;
-    public partial interface IDepartmentSv:IBaseService<Department>
+    public partial interface IAreaSv:IBaseService<Area>
     {
     }
-    public partial class DepartmentSv:BaseService<Department>,IDepartmentSv
+    public partial class AreaSv:BaseService<Area>,IAreaSv
     {
-        public DepartmentSv(IUnitOfWork unitOfWork,IDepartmentRepository repository):base(unitOfWork,repository){}
+        public AreaSv(IUnitOfWork unitOfWork,IAreaRepository repository):base(unitOfWork,repository){}
     }
 }

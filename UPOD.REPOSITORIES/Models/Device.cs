@@ -11,7 +11,7 @@ namespace UPOD.REPOSITORIES.Models
         }
 
         public Guid Id { get; set; }
-        public Guid AgencyId { get; set; }
+        public Guid ConpanyId { get; set; }
         public Guid DeviceTypeId { get; set; }
         public string DeviceName { get; set; } = null!;
         public string DeviceCode { get; set; } = null!;
@@ -27,7 +27,7 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 
-        public virtual Agency Agency { get; set; } = null!;
+        public virtual Company Conpany { get; set; } = null!;
         public virtual DeviceType DeviceType { get; set; } = null!;
         public virtual ICollection<Ticket> Tickets { get; set; }
     }

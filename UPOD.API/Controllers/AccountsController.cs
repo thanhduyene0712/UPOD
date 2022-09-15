@@ -6,7 +6,6 @@ using Reso.Core.Utilities;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
-using UPOD.REPOSITORIES.Services;
 using UPOD.SERVICES.Services;
 using IAccountService = UPOD.SERVICES.Services.IAccountService;
 

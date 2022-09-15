@@ -8,13 +8,12 @@ namespace UPOD.REPOSITORIES.Models
         public Request()
         {
             RequestHistories = new HashSet<RequestHistory>();
-            RequestTasks = new HashSet<RequestTask>();
             Tickets = new HashSet<Ticket>();
         }
 
         public Guid Id { get; set; }
-        public Guid AgencyId { get; set; }
-        public Guid ServiceItemId { get; set; }
+        public Guid CompanyId { get; set; }
+        public Guid ServiceId { get; set; }
         public string? RequestDesciption { get; set; }
         public Guid RequestCategoryId { get; set; }
         public int? RequestStatus { get; set; }
@@ -23,6 +22,7 @@ namespace UPOD.REPOSITORIES.Models
         public string? Phone { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
+        public Guid? AgencyId { get; set; }
         public Guid CurrentTechnicanId { get; set; }
         public double? Rating { get; set; }
         public string? Feedback { get; set; }
@@ -33,15 +33,13 @@ namespace UPOD.REPOSITORIES.Models
         public string? ExceptionSource { get; set; }
         public string? Solution { get; set; }
         public string? Img { get; set; }
-        public Guid? CreateBy { get; set; }
         public string? Token { get; set; }
 
-        public virtual Agency Agency { get; set; } = null!;
+        public virtual Agency? Agency { get; set; }
+        public virtual Company Company { get; set; } = null!;
         public virtual Technican CurrentTechnican { get; set; } = null!;
-        public virtual RequestCategory RequestCategory { get; set; } = null!;
-        public virtual ServiceItem ServiceItem { get; set; } = null!;
+        public virtual Service Service { get; set; } = null!;
         public virtual ICollection<RequestHistory> RequestHistories { get; set; }
-        public virtual ICollection<RequestTask> RequestTasks { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

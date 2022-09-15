@@ -7,7 +7,7 @@ namespace UPOD.REPOSITORIES.Models
     {
         public Account()
         {
-            Agencies = new HashSet<Agency>();
+            Companies = new HashSet<Company>();
             Technicans = new HashSet<Technican>();
         }
 
@@ -20,7 +20,7 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? UpdateDate { get; set; }
 
         public virtual Role Role { get; set; } = null!;
-        public virtual ICollection<Agency> Agencies { get; set; }
+        public virtual ICollection<Company> Companies { get; set; }
         public virtual ICollection<Technican> Technicans { get; set; }
     }
 }

@@ -10,10 +10,8 @@ namespace UPOP.SERVICES.App_Start
         {
             services.InitializerDI();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IAgencyService, AgencyService>();
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IServiceService, ServiceService>();
-            //services.AddScoped<IContractService, ContractService>();
             services.AddScoped<IContractServiceService, ContractServiceService>();
 
         }

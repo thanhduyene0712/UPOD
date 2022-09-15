@@ -1,3 +1,4 @@
+
 /////////////////////////////////////////////////////////////////
 //
 //              AUTO-GENERATED
@@ -9,12 +10,12 @@ using Reso.Core.BaseConnect;
 using UPOD.REPOSITORIES.Models;
 namespace UPOD.REPOSITORIES.Repositories
 {
-    public partial interface IRequestTaskRepository :IBaseRepository<RequestTask>
+    public partial interface IAreaRepository :IBaseRepository<Area>
     {
     }
-    public partial class RequestTaskRepository :BaseRepository<RequestTask>, IRequestTaskRepository
+    public partial class AreaRepository :BaseRepository<Area>, IAreaRepository
     {
-         public RequestTaskRepository(DbContext dbContext) : base(dbContext)
+         public AreaRepository(DbContext dbContext) : base(dbContext)
          {
          }
     }
