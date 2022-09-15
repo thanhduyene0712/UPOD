@@ -19,7 +19,7 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        public async Task<ResponseModel<ServiceRespone>> GetAllService([FromQuery] PaginationRequest model)
+        public async Task<ResponseModel<ServiceResponse>> GetAllService([FromQuery] PaginationRequest model)
         {
             return await _serviceSv.GetAll(model);
         }
@@ -32,7 +32,7 @@ namespace UPOD.API.Controllers
         //}
         [HttpPost]
         [Route("Create")]
-        public async Task<ResponseModel<ServiceRespone>> CreateService([FromQuery] ServiceRequest model)
+        public async Task<ResponseModel<ServiceResponse>> CreateService([FromQuery] ServiceRequest model)
         {
             return await _serviceSv.CreateService(model);
         }

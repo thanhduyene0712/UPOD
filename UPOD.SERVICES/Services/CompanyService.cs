@@ -17,10 +17,10 @@ namespace UPOD.SERVICES.Services
 {
     public interface ICompanyService
     {
-        Task<ResponseModel<CompanyRespone>> GetAll(PaginationRequest model);
+        Task<ResponseModel<CompanyResponse>> GetAll(PaginationRequest model);
         //Task<ResponseModel<CompanyRespone>> SearchAgencies(PaginationRequest model, String value);
         //Task<ResponseModel<CompanyRespone>> UpdateCompany(Guid id, CompanyRequest model);
-        Task<ResponseModel<CompanyRespone>> CreateCompany(CompanyRequest model);
+        Task<ResponseModel<CompanyResponse>> CreateCompany(CompanyRequest model);
         //Task<ResponseModel<CompanyRespone>> DisableCompany(Guid id, CompanyDisableRequest model);
 
 
@@ -33,9 +33,9 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<CompanyRespone>> GetAll(PaginationRequest model)
+        public async Task<ResponseModel<CompanyResponse>> GetAll(PaginationRequest model)
         {
-            var companies = await _context.Companies.Select(a => new CompanyRespone
+            var companies = await _context.Companies.Select(a => new CompanyResponse
             {
                 id = a.Id,
                 company_name = a.CompanyName,
@@ -49,7 +49,7 @@ namespace UPOD.SERVICES.Services
 
 
             }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<CompanyRespone>(companies)
+            return new ResponseModel<CompanyResponse>(companies)
             {
                 Total = companies.Count,
                 Type = "Companies"
@@ -77,7 +77,7 @@ namespace UPOD.SERVICES.Services
         //        Type = "Agencies"
         //    };
         //}
-        public async Task<ResponseModel<CompanyRespone>> CreateCompany(CompanyRequest model)
+        public async Task<ResponseModel<CompanyResponse>> CreateCompany(CompanyRequest model)
         {
             var company = new Company
             {
@@ -92,7 +92,7 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = null,
 
             };
-            var list = new List<CompanyRespone>();
+            var list = new List<CompanyResponse>();
             var message = "blank";
             var status = 500;
             var company_name = await _context.Companies.Where(x => x.CompanyName.Equals(company.CompanyName)).FirstOrDefaultAsync();
@@ -107,7 +107,7 @@ namespace UPOD.SERVICES.Services
                 status = 201;
                 await _context.Companies.AddAsync(company);
                 await _context.SaveChangesAsync();
-                list.Add(new CompanyRespone
+                list.Add(new CompanyResponse
                 {
                     id = company.Id,
                     company_name = company.CompanyName,
@@ -120,7 +120,7 @@ namespace UPOD.SERVICES.Services
                     update_date = company.UpdateDate,
                 });
             }
-            return new ResponseModel<CompanyRespone>(list)
+            return new ResponseModel<CompanyResponse>(list)
             {
                 Message = message,
                 Status = status,

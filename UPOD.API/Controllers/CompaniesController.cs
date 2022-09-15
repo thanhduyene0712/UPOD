@@ -24,7 +24,7 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        public async Task<ResponseModel<CompanyRespone>> GetAllCompanies([FromQuery] PaginationRequest model)
+        public async Task<ResponseModel<CompanyResponse>> GetAllCompanies([FromQuery] PaginationRequest model)
         {
             return await _companySv.GetAll(model);
         }
@@ -37,7 +37,7 @@ namespace UPOD.API.Controllers
         //}
         [HttpPost]
         [Route("Create")]
-        public async Task<ResponseModel<CompanyRespone>> CreateCompany([FromQuery] CompanyRequest model)
+        public async Task<ResponseModel<CompanyResponse>> CreateCompany([FromQuery] CompanyRequest model)
         {
             return await _companySv.CreateCompany(model);
         }

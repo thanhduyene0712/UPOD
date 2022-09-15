@@ -17,10 +17,10 @@ namespace UPOD.SERVICES.Services
 {
     public interface IServiceService
     {
-        Task<ResponseModel<ServiceRespone>> GetAll(PaginationRequest model);
+        Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model);
         //Task<ResponseModel<ServiceRespone>> SearchAgencies(PaginationRequest model, String value);
         //Task<ResponseModel<ServiceRespone>> UpdateService(Guid id, ServiceRequest model);
-        Task<ResponseModel<ServiceRespone>> CreateService(ServiceRequest model);
+        Task<ResponseModel<ServiceResponse>> CreateService(ServiceRequest model);
         //Task<ResponseModel<ServiceRespone>> DisableService(Guid id, ServiceDisableRequest model);
 
 
@@ -33,9 +33,9 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<ServiceRespone>> GetAll(PaginationRequest model)
+        public async Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model)
         {
-            var services = await _context.Services.Select(a => new ServiceRespone
+            var services = await _context.Services.Select(a => new ServiceResponse
             {
                 id = a.Id,
                 area_id = a.AreaId,
@@ -47,7 +47,7 @@ namespace UPOD.SERVICES.Services
 
 
             }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<ServiceRespone>(services)
+            return new ResponseModel<ServiceResponse>(services)
             {
                 Total = services.Count,
                 Type = "Services"
@@ -75,7 +75,7 @@ namespace UPOD.SERVICES.Services
         //        Type = "Agencies"
         //    };
         //}
-        public async Task<ResponseModel<ServiceRespone>> CreateService(ServiceRequest model)
+        public async Task<ResponseModel<ServiceResponse>> CreateService(ServiceRequest model)
         {
             var Service = new Service
             {
@@ -88,7 +88,7 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = null,
 
             };
-            var list = new List<ServiceRespone>();
+            var list = new List<ServiceResponse>();
             var message = "blank";
             var status = 500;
             var Service_name = await _context.Services.Where(x => x.ServiceName.Equals(Service.ServiceName)).FirstOrDefaultAsync();
@@ -103,7 +103,7 @@ namespace UPOD.SERVICES.Services
                 status = 201;
                 await _context.Services.AddAsync(Service);
                 await _context.SaveChangesAsync();
-                list.Add(new ServiceRespone
+                list.Add(new ServiceResponse
                 {
                     id = Service.Id,
                     area_id = Service.AreaId,
@@ -114,7 +114,7 @@ namespace UPOD.SERVICES.Services
                     update_date = Service.UpdateDate,
                 });
             }
-            return new ResponseModel<ServiceRespone>(list)
+            return new ResponseModel<ServiceResponse>(list)
             {
                 Message = message,
                 Status = status,

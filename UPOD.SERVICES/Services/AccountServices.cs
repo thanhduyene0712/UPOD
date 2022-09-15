@@ -16,10 +16,10 @@ namespace UPOD.SERVICES.Services
 {
     public interface IAccountService
     {
-        Task<ResponseModel<AccountRespone>> GetAll(PaginationRequest model);
-        Task<ResponseModel<AccountRespone>> SearchAccounts(PaginationRequest model, String value);
-        Task<ResponseModel<AccountRespone>> UpdateAccount(Guid id, AccountRequest model);
-        Task<ResponseModel<AccRegisterRespone>> CreateAccount(AccRegisterRequest model);
+        Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model);
+        Task<ResponseModel<AccountResponse>> SearchAccounts(PaginationRequest model, String value);
+        Task<ResponseModel<AccountResponse>> UpdateAccount(Guid id, AccountRequest model);
+        Task<ResponseModel<AccRegisterResponse>> CreateAccount(AccRegisterRequest model);
 
 
 
@@ -32,9 +32,9 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<AccountRespone>> GetAll(PaginationRequest model)
+        public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model)
         {
-            var accounts = await _context.Accounts.Select(p => new AccountRespone
+            var accounts = await _context.Accounts.Select(p => new AccountResponse
             {
                 id = p.Id,
                 role_id = p.RoleId,
@@ -44,18 +44,18 @@ namespace UPOD.SERVICES.Services
                 update_date = p.UpdateDate,
 
             }).OrderBy(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<AccountRespone>(accounts)
+            return new ResponseModel<AccountResponse>(accounts)
             {
                 Total = accounts.Count,
                 Type = "Accounts"
             };
         }
-        public async Task<ResponseModel<AccountRespone>> SearchAccounts(PaginationRequest model, String value)
+        public async Task<ResponseModel<AccountResponse>> SearchAccounts(PaginationRequest model, String value)
         {
             var accounts = await _context.Accounts.Where(p => (p.Username.Contains(value) 
             || p.Role.RoleName.Contains(value)
             || p.CreateDate.ToString().Contains(value))
-            && p.IsDelete.ToString().Equals("false")).Select(p => new AccountRespone
+            && p.IsDelete.ToString().Equals("false")).Select(p => new AccountResponse
             {
                 id = p.Id,
                 role_id = p.RoleId,
@@ -64,13 +64,13 @@ namespace UPOD.SERVICES.Services
                 create_date = p.CreateDate,
                 update_date = p.UpdateDate,
             }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<AccountRespone>(accounts)
+            return new ResponseModel<AccountResponse>(accounts)
             {
                 Total = accounts.Count,
                 Type = "Accounts"
             };
         }
-        public async Task<ResponseModel<AccRegisterRespone>> CreateAccount(AccRegisterRequest model)
+        public async Task<ResponseModel<AccRegisterResponse>> CreateAccount(AccRegisterRequest model)
         {
             var account = new Account
             {
@@ -83,7 +83,7 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = null,
 
             };
-            var list = new List<AccRegisterRespone>();
+            var list = new List<AccRegisterResponse>();
             var message = "blank";
             var status = 500;
             var username = await _context.Accounts.Where(x => x.Username.Equals(account.Username)).FirstOrDefaultAsync();
@@ -98,7 +98,7 @@ namespace UPOD.SERVICES.Services
                 status = 201;
                 await _context.Accounts.AddAsync(account);
                 await _context.SaveChangesAsync();
-                list.Add(new AccRegisterRespone
+                list.Add(new AccRegisterResponse
                 {
                     id = account.Id,
                     role_name = await _context.Roles.Where(x => x.Id.Equals(account.RoleId)).Select(x => x.RoleName).FirstOrDefaultAsync(),
@@ -106,7 +106,7 @@ namespace UPOD.SERVICES.Services
                     create_date = account.CreateDate,
                 });
             }
-            return new ResponseModel<AccRegisterRespone>(list)
+            return new ResponseModel<AccRegisterResponse>(list)
             {
                 Message = message,
                 Status = status,
@@ -114,7 +114,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Account"
             };
         }
-        public async Task<ResponseModel<AccountRespone>> UpdateAccount(Guid id, AccountRequest model)
+        public async Task<ResponseModel<AccountResponse>> UpdateAccount(Guid id, AccountRequest model)
         {
             var account = await _context.Accounts.Where(x => x.Id.Equals(id)).Select(x => new Account
             {
@@ -128,8 +128,8 @@ namespace UPOD.SERVICES.Services
             }).FirstOrDefaultAsync();
             _context.Accounts.Update(account);
             await _context.SaveChangesAsync();
-            var list = new List<AccountRespone>();
-            list.Add(new AccountRespone
+            var list = new List<AccountResponse>();
+            list.Add(new AccountResponse
             {
                 id = account.Id,
                 role_id = account.RoleId,
@@ -138,7 +138,7 @@ namespace UPOD.SERVICES.Services
                 create_date = account.CreateDate,
                 update_date = account.UpdateDate,
             });
-            return new ResponseModel<AccountRespone>(list)
+            return new ResponseModel<AccountResponse>(list)
             {
                 Status = 201,
                 Total = list.Count,

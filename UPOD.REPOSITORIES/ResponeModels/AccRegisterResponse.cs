@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UPOD.REPOSITORIES.ResponeModels
 {
-    public class AccRegisterRespone
+    public class AccRegisterResponse
     {
         public Guid id { get; set; }
         public string role_name { get; set; }

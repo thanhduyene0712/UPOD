@@ -23,20 +23,26 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("GetAll")]
-        public async Task<ResponseModel<ContractRespone>> GetAllContracs([FromQuery] PaginationRequest model)
+        public async Task<ResponseModel<ContractResponse>> GetAllContracs([FromQuery] PaginationRequest model)
         {
             return await _contractServiceSv.GetAll(model);
         }
 
-        //[HttpGet]
-        //[Route("Search")]
-        //public async Task<ResponseModel<ContractRespone>> SearchAgencies([FromQuery] PaginationRequest model, String value)
-        //{
-        //    return await _ContractSv.SearchAgencies(model, value);
-        //}
+        [HttpGet]
+        [Route("GetListContract")]
+        public async Task<ResponseModel<ContractListResponse>> GetListContract([FromQuery] PaginationRequest model)
+        {
+            return await _contractServiceSv.GetListContract(model);
+        }
+        [HttpGet]
+        [Route("GetDetailContract")]
+        public async Task<ResponseModel<ContractDetailResponse>> GetDetailContract([FromQuery] Guid Id)
+        {
+            return await _contractServiceSv.GetDetailContract(Id);
+        }
         [HttpPost]
         [Route("Create")]
-        public async Task<ResponseModel<ContractRespone>> CreateContract(/*[FromQuery]*/ ContractRequest model)
+        public async Task<ResponseModel<ContractResponse>> CreateContract(/*[FromQuery]*/ ContractRequest model)
         {
             return await _contractServiceSv.CreateContract(model);
         }
