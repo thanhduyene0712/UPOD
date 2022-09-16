@@ -14,12 +14,12 @@ namespace UPOD.REPOSITORIES.Models
 
         public Guid Id { get; set; }
         public Guid AreaId { get; set; }
-        public string TechnicanName { get; set; } = null!;
+        public string TechnicanName { get; set; }
         public Guid AccountId { get; set; }
         public string? Telephone { get; set; }
         public string? Email { get; set; }
         public int? Gender { get; set; }
-        public string Address { get; set; } = null!;
+        public string Address { get; set; }
         public double? RatingAvg { get; set; }
         public bool? IsBusy { get; set; }
         public bool? IsOnline { get; set; }

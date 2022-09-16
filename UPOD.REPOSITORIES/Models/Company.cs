@@ -14,8 +14,8 @@ namespace UPOD.REPOSITORIES.Models
         }
 
         public Guid Id { get; set; }
-        public string CompanyName { get; set; } = null!;
-        public string Description { get; set; } = null!;
+        public string CompanyName { get; set; }
+        public string Description { get; set; }
         public double? PercentForTechnicanExp { get; set; }
         public double? PercentForTechnicanRate { get; set; }
         public double? PercentForTechnicanFamiliarWithAgency { get; set; }

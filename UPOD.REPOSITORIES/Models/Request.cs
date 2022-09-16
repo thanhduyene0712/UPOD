@@ -17,7 +17,7 @@ namespace UPOD.REPOSITORIES.Models
         public string? RequestDesciption { get; set; }
         public Guid RequestCategoryId { get; set; }
         public int? RequestStatus { get; set; }
-        public string RequestName { get; set; } = null!;
+        public string RequestName { get; set; }
         public int? Estimation { get; set; }
         public string? Phone { get; set; }
         public DateTime? StartTime { get; set; }

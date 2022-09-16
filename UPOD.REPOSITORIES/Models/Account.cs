@@ -13,8 +13,8 @@ namespace UPOD.REPOSITORIES.Models
 
         public Guid Id { get; set; }
         public Guid RoleId { get; set; }
-        public string Username { get; set; } = null!;
-        public string Password { get; set; } = null!;
+        public string Username { get; set; }
+        public string Password { get; set; }
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }

@@ -12,7 +12,7 @@ namespace UPOD.REPOSITORIES.Models
 
         public Guid Id { get; set; }
         public Guid ServiceId { get; set; }
-        public string DeviceTypeName { get; set; } = null!;
+        public string DeviceTypeName { get; set; }
         public string? Desciption { get; set; }
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }

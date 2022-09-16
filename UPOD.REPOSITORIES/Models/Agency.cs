@@ -12,7 +12,7 @@ namespace UPOD.REPOSITORIES.Models
 
         public Guid Id { get; set; }
         public Guid CompanyId { get; set; }
-        public string AgencyName { get; set; } = null!;
+        public string AgencyName { get; set; }
         public string? Address { get; set; }
         public string? Telephone { get; set; }
         public bool? IsDelete { get; set; }

@@ -13,14 +13,14 @@ namespace UPOD.REPOSITORIES.Models
         public Guid Id { get; set; }
         public Guid ConpanyId { get; set; }
         public Guid DeviceTypeId { get; set; }
-        public string DeviceName { get; set; } = null!;
-        public string DeviceCode { get; set; } = null!;
+        public string DeviceName { get; set; }
+        public string DeviceCode { get; set; }
         public DateTime? GuarantyStartDate { get; set; }
         public DateTime? GuarantyEndDate { get; set; }
         public string? Ip { get; set; }
         public int? Port { get; set; }
-        public string DeviceAccount { get; set; } = null!;
-        public string DevicePassword { get; set; } = null!;
+        public string DeviceAccount { get; set; }
+        public string DevicePassword { get; set; }
         public DateTime? SettingDate { get; set; }
         public string? Other { get; set; }
         public bool? IsDelete { get; set; }
