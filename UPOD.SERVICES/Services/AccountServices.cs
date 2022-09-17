@@ -43,7 +43,7 @@ namespace UPOD.SERVICES.Services
                 create_date = p.CreateDate,
                 update_date = p.UpdateDate,
 
-            }).OrderBy(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AccountResponse>(accounts)
             {
                 Total = accounts.Count,
@@ -116,7 +116,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<AccountResponse>> UpdateAccount(Guid id, AccountRequest model)
         {
-            var account = await _context.Accounts.Where(x => x.Id.Equals(id)).Select(x => new Account
+            var account = await _context.Accounts.Where(a => a.Id.Equals(id)).Select(x => new Account
             {
                 Id = id,
                 RoleId = _context.Roles.Where(x => x.RoleName.Equals(model.role_name)).Select(x => x.Id).FirstOrDefault(),

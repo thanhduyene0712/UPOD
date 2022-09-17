@@ -1,0 +1,181 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Reso.Core.Extension;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Text;
+using System.Threading.Tasks;
+using UPOD.REPOSITORIES.Models;
+using UPOD.REPOSITORIES.RequestModels;
+using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.SERVICES.Enum;
+
+namespace UPOD.SERVICES.Services
+{
+    public interface IRequestService
+    {
+        Task<ResponseModel<RequestResponse>> GetListRequest(PaginationRequest model);
+        Task<ResponseModel<RequestDetailResponse>> GetDetailRequest(Guid id);
+        Task<ResponseModel<RequestCreateResponse>> CreateRequest(RequestRequest model);
+        Task<ResponseModel<RequestCreateResponse>> UpdateRequest(Guid id, RequestUpdateRequest model);
+    }
+    public class RequestService : IRequestService
+    {
+
+        private readonly Database_UPODContext _context;
+        public RequestService(Database_UPODContext context)
+        {
+            _context = context;
+        }
+        public async Task<ResponseModel<RequestResponse>> GetListRequest(PaginationRequest model)
+        {
+            var request = await _context.Requests.Select(a => new RequestResponse
+            {   
+                request_name = a.RequestName,
+                company_name = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
+                agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                estimation = a.Estimation,
+                request_status = a.RequestStatus,
+                service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+
+            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            return new ResponseModel<RequestResponse>(request)
+            {
+                Total = request.Count,
+                Type = "Requests"
+            };
+        }
+        public async Task<ResponseModel<RequestDetailResponse>> GetDetailRequest(Guid id)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id)).Select(a => new RequestDetailResponse
+            {
+                company_name = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
+                agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                address_service = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                description_serivce = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(x => x.Desciption).FirstOrDefault(),
+                request_name = a.RequestName,
+                estimation = a.Estimation,
+                description_request = a.RequestDesciption,
+                priority = a.Priority,
+                phone = a.Phone,
+                request_status = a.RequestStatus,
+            }).ToListAsync();
+            return new ResponseModel<RequestDetailResponse>(request)
+            {
+                Total = request.Count,
+                Type = "Request"
+            };
+        }
+        public async Task<ResponseModel<RequestCreateResponse>> CreateRequest(RequestRequest model)
+        {
+            var request = new Request
+            {
+                Id = Guid.NewGuid(),
+                RequestName = model.request_name,
+                CompanyId = model.company_id,
+                ServiceId = model.service_id,
+                AgencyId = model.agency_id,
+                RequestDesciption = model.request_description,
+                RequestStatus = (int)ProcessStatus.Pending,
+                Estimation = model.estimation,
+                Phone = _context.Agencies.Where(x => x.Id.Equals(model.agency_id)).Select(x => x.Telephone).FirstOrDefault(),
+                Priority = model.priority,
+                CreateDate = DateTime.Now,
+                UpdateDate = DateTime.Now,
+                Token = null,
+                Img = null,
+                ExceptionSource = null,
+                IsDelete = false,
+                Feedback = null,
+                Rating = null,
+                CurrentTechnicanId = null,
+                StartTime = null,
+                EndTime = null,
+                Solution = null,
+            };
+            var list = new List<RequestCreateResponse>();
+            var message = "blank";
+            var status = 500;
+            var id = await _context.Requests.Where(x => x.Id.Equals(request.Id)).FirstOrDefaultAsync();
+            if (id != null)
+            {
+                status = 400;
+                message = "Id is already exists!";
+            }
+            else
+            {
+                message = "Successfully";
+                status = 201;
+                await _context.Requests.AddAsync(request);
+                await _context.SaveChangesAsync();
+                list.Add(new RequestCreateResponse
+                {
+                    request_name = request.RequestName,
+                    request_description = request.RequestDesciption,
+                    estimation = request.Estimation,
+                    phone = request.Phone,
+                    priority = request.Priority,
+                    agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                });
+            }
+            return new ResponseModel<RequestCreateResponse>(list)
+            {
+                Message = message,
+                Status = status,
+                Total = list.Count,
+                Type = "Request"
+            };
+        }
+        public async Task<ResponseModel<RequestCreateResponse>> UpdateRequest(Guid id, RequestUpdateRequest model)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id)).Select(x => new Request
+            {
+                Id = id,
+                RequestName = model.request_name,
+                CompanyId = model.company_id,
+                ServiceId = model.service_id,
+                AgencyId = model.agency_id,
+                RequestDesciption = model.request_description,
+                RequestStatus = (int)ProcessStatus.Pending,
+                Estimation = model.estimation,
+                Phone = model.phone,
+                Priority = model.priority,
+                CreateDate = DateTime.Now,
+                UpdateDate = DateTime.Now,
+                Token = null,
+                Img = null,
+                ExceptionSource = null,
+                IsDelete = false,
+                Feedback = null,
+                Rating = null,
+                CurrentTechnicanId = null,
+                StartTime = null,
+                EndTime = null,
+                Solution = null,
+            }).FirstOrDefaultAsync();
+            _context.Requests.Update(request);
+            await _context.SaveChangesAsync();
+            var list = new List<RequestCreateResponse>();
+            list.Add(new RequestCreateResponse
+            {
+                request_name = request.RequestName,
+                request_description = request.RequestDesciption,
+                estimation = request.Estimation,
+                phone = request.Phone,
+                priority = request.Priority,
+                agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+            });
+            return new ResponseModel<RequestCreateResponse>(list)
+            {
+                Status = 201,
+                Total = list.Count,
+                Type = "Request"
+            };
+        }
+
+    }
+}

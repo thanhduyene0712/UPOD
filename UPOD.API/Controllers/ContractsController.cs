@@ -11,7 +11,7 @@ using IContractServiceService = UPOD.SERVICES.Services.IContractServiceService;
 namespace UPOD.API.Controllers
 {
     [ApiController]
-    [Route("api/Contracts")]
+    [Route("api/contracts")]
     public partial class ContractsController : ControllerBase
     {
 
@@ -22,26 +22,26 @@ namespace UPOD.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
+        [Route("get_all")]
         public async Task<ResponseModel<ContractResponse>> GetAllContracs([FromQuery] PaginationRequest model)
         {
             return await _contractServiceSv.GetAll(model);
         }
 
         [HttpGet]
-        [Route("GetListContract")]
+        [Route("get_list_contract")]
         public async Task<ResponseModel<ContractListResponse>> GetListContract([FromQuery] PaginationRequest model)
         {
             return await _contractServiceSv.GetListContract(model);
         }
         [HttpGet]
-        [Route("GetDetailContract")]
+        [Route("get_detail_contract/id")]
         public async Task<ResponseModel<ContractDetailResponse>> GetDetailContract([FromQuery] Guid Id)
         {
             return await _contractServiceSv.GetDetailContract(Id);
         }
         [HttpPost]
-        [Route("Create")]
+        [Route("create")]
         public async Task<ResponseModel<ContractResponse>> CreateContract(/*[FromQuery]*/ ContractRequest model)
         {
             return await _contractServiceSv.CreateContract(model);

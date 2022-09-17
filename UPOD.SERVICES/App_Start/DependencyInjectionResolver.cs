@@ -13,6 +13,8 @@ namespace UPOP.SERVICES.App_Start
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IServiceService, ServiceService>();
             services.AddScoped<IContractServiceService, ContractServiceService>();
+            services.AddScoped<IRequestService, RequestService>();
+
 
         }
     }

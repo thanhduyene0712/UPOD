@@ -15,7 +15,7 @@ namespace UPOD.REPOSITORIES.Models
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         public virtual Technican PreTechnican { get; set; } = null!;
         public virtual Request Request { get; set; } = null!;

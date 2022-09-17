@@ -12,7 +12,7 @@ using ICompanyService = UPOD.SERVICES.Services.ICompanyService;
 namespace UPOD.API.Controllers
 {
     [ApiController]
-    [Route("api/Companies")]
+    [Route("api/companies")]
     public partial class CompaniesController : ControllerBase
     {
 
@@ -23,7 +23,7 @@ namespace UPOD.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
+        [Route("get_all")]
         public async Task<ResponseModel<CompanyResponse>> GetAllCompanies([FromQuery] PaginationRequest model)
         {
             return await _companySv.GetAll(model);

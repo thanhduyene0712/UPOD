@@ -7,7 +7,7 @@ using IServiceService = UPOD.SERVICES.Services.IServiceService;
 namespace UPOD.API.Controllers
 {
     [ApiController]
-    [Route("api/Services")]
+    [Route("api/services")]
     public partial class ServicesController : ControllerBase
     {
 
@@ -18,7 +18,7 @@ namespace UPOD.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
+        [Route("get_all")]
         public async Task<ResponseModel<ServiceResponse>> GetAllService([FromQuery] PaginationRequest model)
         {
             return await _serviceSv.GetAll(model);
@@ -31,7 +31,7 @@ namespace UPOD.API.Controllers
         //    return await _ServiceSv.SearchAgencies(model, value);
         //}
         [HttpPost]
-        [Route("Create")]
+        [Route("create")]
         public async Task<ResponseModel<ServiceResponse>> CreateService([FromQuery] ServiceRequest model)
         {
             return await _serviceSv.CreateService(model);
