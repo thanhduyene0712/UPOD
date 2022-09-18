@@ -35,7 +35,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<CompanyResponse>> GetAll(PaginationRequest model)
         {
-            var companies = await _context.Companies.Select(a => new CompanyResponse
+            var companies = await _context.Companies.Where(a => a.IsDelete == false).Select(a => new CompanyResponse
             {
                 id = a.Id,
                 company_name = a.CompanyName,

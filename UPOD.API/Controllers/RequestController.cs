@@ -49,7 +49,12 @@ namespace UPOD.API.Controllers
         {
             return await _RequestSv.UpdateRequest(id, model);
         }
-
+        [HttpPut]
+        [Route("disable/id")]
+        public async Task<ResponseModel<RequestDisableResponse>> DisableRequest([FromQuery] Guid id)
+        {
+            return await _RequestSv.DisableRequest(id);
+        }
 
     }
 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.Services;
 using UPOD.SERVICES.Enum;
 
 namespace UPOD.SERVICES.Services
@@ -19,6 +20,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<RequestDetailResponse>> GetDetailRequest(Guid id);
         Task<ResponseModel<RequestCreateResponse>> CreateRequest(RequestRequest model);
         Task<ResponseModel<RequestCreateResponse>> UpdateRequest(Guid id, RequestUpdateRequest model);
+        Task<ResponseModel<RequestDisableResponse>> DisableRequest(Guid id);
     }
     public class RequestService : IRequestService
     {
@@ -30,8 +32,9 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<RequestResponse>> GetListRequest(PaginationRequest model)
         {
-            var request = await _context.Requests.Select(a => new RequestResponse
+            var request = await _context.Requests.Where(a => a.IsDelete == false).Select(a => new RequestResponse
             {   
+                id = a.Id,
                 request_name = a.RequestName,
                 company_name = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
                 agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
@@ -48,8 +51,9 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<RequestDetailResponse>> GetDetailRequest(Guid id)
         {
-            var request = await _context.Requests.Where(a => a.Id.Equals(id)).Select(a => new RequestDetailResponse
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete==false).Select(a => new RequestDetailResponse
             {
+                id = id, 
                 company_name = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
                 agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                 address_service = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
@@ -143,18 +147,18 @@ namespace UPOD.SERVICES.Services
                 Estimation = model.estimation,
                 Phone = model.phone,
                 Priority = model.priority,
-                CreateDate = DateTime.Now,
+                CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now,
-                Token = null,
-                Img = null,
-                ExceptionSource = null,
-                IsDelete = false,
-                Feedback = null,
-                Rating = null,
-                CurrentTechnicanId = null,
-                StartTime = null,
-                EndTime = null,
-                Solution = null,
+                Token = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Token).FirstOrDefault(),
+                Img = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Img).FirstOrDefault(),
+                ExceptionSource = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.ExceptionSource).FirstOrDefault(),
+                IsDelete = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.IsDelete).FirstOrDefault(),
+                Feedback = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Feedback).FirstOrDefault(),
+                Rating = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Rating).FirstOrDefault(),
+                CurrentTechnicanId = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.CurrentTechnicanId).FirstOrDefault(),
+                StartTime = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.StartTime).FirstOrDefault(),
+                EndTime = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.EndTime).FirstOrDefault(),
+                Solution = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Solution).FirstOrDefault(),
             }).FirstOrDefaultAsync();
             _context.Requests.Update(request);
             await _context.SaveChangesAsync();
@@ -170,6 +174,48 @@ namespace UPOD.SERVICES.Services
                 service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
             });
             return new ResponseModel<RequestCreateResponse>(list)
+            {
+                Status = 201,
+                Total = list.Count,
+                Type = "Request"
+            };
+        }
+        public async Task<ResponseModel<RequestDisableResponse>> DisableRequest(Guid id)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id)).Select(x => new Request
+            {
+                Id = id,
+                CompanyId = x.CompanyId,
+                ServiceId = x.ServiceId,
+                RequestDesciption = x.RequestDesciption,
+                RequestStatus = x.RequestStatus,
+                RequestName = x.RequestName,
+                Estimation = x.Estimation,
+                Phone = x.Phone,
+                StartTime = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.StartTime).FirstOrDefault(),
+                EndTime = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.EndTime).FirstOrDefault(),
+                CreateDate = x.CreateDate,
+                UpdateDate = DateTime.Now,
+                AgencyId = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.AgencyId).FirstOrDefault(),
+                CurrentTechnicanId = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.CurrentTechnicanId).FirstOrDefault(),
+                Rating = x.Rating,
+                Feedback = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Feedback).FirstOrDefault(),
+                IsDelete = true,
+                Priority = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Priority).FirstOrDefault(),
+                ExceptionSource = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.ExceptionSource).FirstOrDefault(),
+                Solution = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Solution).FirstOrDefault(),
+                Img = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Img).FirstOrDefault(),
+                Token = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Token).FirstOrDefault(),
+            }).FirstOrDefaultAsync();
+            _context.Requests.Update(request);
+            await _context.SaveChangesAsync();
+            var list = new List<RequestDisableResponse>();
+            list.Add(new RequestDisableResponse
+            {
+                id = request.Id,
+                isDelete = request.IsDelete,
+            });
+            return new ResponseModel<RequestDisableResponse>(list)
             {
                 Status = 201,
                 Total = list.Count,

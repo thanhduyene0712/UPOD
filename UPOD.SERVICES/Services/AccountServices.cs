@@ -34,7 +34,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model)
         {
-            var accounts = await _context.Accounts.Select(p => new AccountResponse
+            var accounts = await _context.Accounts.Where(a => a.IsDelete == false).Select(p => new AccountResponse
             {
                 id = p.Id,
                 role_id = p.RoleId,
@@ -52,7 +52,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<AccountResponse>> SearchAccounts(PaginationRequest model, String value)
         {
-            var accounts = await _context.Accounts.Where(p => (p.Username.Contains(value) 
+            var accounts = await _context.Accounts.Where(p => (p.Username.Contains(value)
             || p.Role.RoleName.Contains(value)
             || p.CreateDate.ToString().Contains(value))
             && p.IsDelete.ToString().Equals("false")).Select(p => new AccountResponse

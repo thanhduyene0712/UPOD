@@ -45,7 +45,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<ContractResponse>> GetAll(PaginationRequest model)
         {
-            var contracts = await _context.Contracts.Select(a => new ContractResponse
+            var contracts = await _context.Contracts.Where(a => a.IsDelete == false).Select(a => new ContractResponse
             {
                 id = a.Id,
                 company_id = a.CompanyId,
@@ -73,7 +73,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<ContractListResponse>> GetListContract(PaginationRequest model)
         {
-            var contracts = await _context.Contracts.Select(a => new ContractListResponse
+            var contracts = await _context.Contracts.Where(a => a.IsDelete == false).Select(a => new ContractListResponse
             {
                 company_name = a.Company.CompanyName,
                 contract_name = a.ContractName,
@@ -91,7 +91,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<ContractDetailResponse>> GetDetailContract(Guid id)
         {
-            var contract = await _context.Contracts.Where(a => a.Id.Equals(id)).Select(a => new ContractDetailResponse
+            var contract = await _context.Contracts.Where(a => a.Id.Equals(id) || a.IsDelete == false).Select(a => new ContractDetailResponse
             {
                 contract_name = a.ContractName,
                 company_name = a.Company.CompanyName,

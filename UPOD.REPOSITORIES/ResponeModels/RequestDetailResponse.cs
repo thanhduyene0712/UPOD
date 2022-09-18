@@ -8,6 +8,7 @@ namespace UPOD.REPOSITORIES.ResponeModels
 {
     public class RequestDetailResponse
     {
+        public Guid id { get; set; }
         public string agency_name { get; set; }
         public string address_service { get; set; }
         public string service_name { get; set; }
