@@ -11,8 +11,8 @@ namespace UPOD.REPOSITORIES.Models
         }
 
         public Guid Id { get; set; }
-        public Guid CompanyId { get; set; }
-        public string ContractName { get; set; }
+        public Guid? CompanyId { get; set; }
+        public string? ContractName { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool? IsDelete { get; set; }
@@ -21,11 +21,11 @@ namespace UPOD.REPOSITORIES.Models
         public double? ContractPrice { get; set; }
         public DateTime? TimeCommit { get; set; }
         public int? Priority { get; set; }
-        public string PunishmentForCustomer { get; set; }
-        public string PunishmentForIt { get; set; }
-        public string Desciption { get; set; }
+        public string PunishmentForCustomer { get; set; } = null!;
+        public string PunishmentForIt { get; set; } = null!;
+        public string Desciption { get; set; } = null!;
 
-        public virtual Company Company { get; set; } = null!;
+        public virtual Company? Company { get; set; }
         public virtual ICollection<ContractService> ContractServices { get; set; }
     }
 }

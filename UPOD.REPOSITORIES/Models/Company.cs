@@ -14,13 +14,13 @@ namespace UPOD.REPOSITORIES.Models
         }
 
         public Guid Id { get; set; }
-        public string CompanyName { get; set; }
-        public string Description { get; set; }
+        public string? CompanyName { get; set; }
+        public string? Description { get; set; }
         public double? PercentForTechnicanExp { get; set; }
         public double? PercentForTechnicanRate { get; set; }
         public double? PercentForTechnicanFamiliarWithAgency { get; set; }
         public bool? IsDelete { get; set; }
-        public Guid AccountId { get; set; }
+        public Guid? AccountId { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 

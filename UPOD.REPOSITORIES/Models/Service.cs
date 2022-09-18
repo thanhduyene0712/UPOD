@@ -15,14 +15,12 @@ namespace UPOD.REPOSITORIES.Models
         }
 
         public Guid Id { get; set; }
-        public Guid AreaId { get; set; }
-        public string ServiceName { get; set; }
-        public string Desciption { get; set; }
+        public string? ServiceName { get; set; }
+        public string? Desciption { get; set; }
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 
-        public virtual Area Area { get; set; } = null!;
         public virtual ICollection<ContractService> ContractServices { get; set; }
         public virtual ICollection<DeviceType> DeviceTypes { get; set; }
         public virtual ICollection<Guideline> Guidelines { get; set; }

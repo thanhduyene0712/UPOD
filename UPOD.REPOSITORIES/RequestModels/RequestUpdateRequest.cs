@@ -9,7 +9,6 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class RequestUpdateRequest
     {
-        public Guid company_id { get; set; }
         public Guid agency_id { get; set; }
         public Guid service_id { get; set; }
         public string request_description { get; set; }

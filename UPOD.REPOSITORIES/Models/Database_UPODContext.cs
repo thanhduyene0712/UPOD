@@ -38,7 +38,7 @@ namespace UPOD.REPOSITORIES.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=localhost,1433;Initial Catalog=Database_UPOD;User ID=sa;Password=THANHDUYEN07121999;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=DESKTOP-ONTGILH\\SQLEXPRESS,1433;Initial Catalog=Database_UPOD;User ID=sa;Password=THANHDUYEN07121999;Trusted_Connection=True;");
             }
         }
 
@@ -63,7 +63,6 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("AccountRole");
             });
 
@@ -85,10 +84,14 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Area)
+                    .WithMany(p => p.Agencies)
+                    .HasForeignKey(d => d.AreaId)
+                    .HasConstraintName("FK_Agency_Area");
+
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.Agencies)
                     .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("AgencyAccount");
             });
 
@@ -156,7 +159,6 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.Contracts)
                     .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("ContractCompany");
             });
 
@@ -177,13 +179,11 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Contact)
                     .WithMany(p => p.ContractServices)
                     .HasForeignKey(d => d.ContactId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("ContractServiceITSupporterContract");
 
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.ContractServices)
                     .HasForeignKey(d => d.ServiceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("ContractServiceITSupporterServiceItSupport");
             });
 
@@ -226,13 +226,11 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Conpany)
                     .WithMany(p => p.Devices)
                     .HasForeignKey(d => d.ConpanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Device_Company");
 
                 entity.HasOne(d => d.DeviceType)
                     .WithMany(p => p.Devices)
                     .HasForeignKey(d => d.DeviceTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("DeviceDeviceType");
             });
 
@@ -251,7 +249,6 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.DeviceTypes)
                     .HasForeignKey(d => d.ServiceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("DeviceTypeServiceITSupport");
             });
 
@@ -272,7 +269,6 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.Guidelines)
                     .HasForeignKey(d => d.ServiceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Guideline_Service");
             });
 
@@ -317,19 +313,16 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.Requests)
                     .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Request_Company");
 
                 entity.HasOne(d => d.CurrentTechnican)
                     .WithMany(p => p.Requests)
                     .HasForeignKey(d => d.CurrentTechnicanId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Request_ITSupporter");
 
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.Requests)
                     .HasForeignKey(d => d.ServiceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Request_Service");
             });
 
@@ -356,13 +349,11 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.PreTechnican)
                     .WithMany(p => p.RequestHistories)
                     .HasForeignKey(d => d.PreTechnicanId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("RequestHistoryITSupporter");
 
                 entity.HasOne(d => d.Request)
                     .WithMany(p => p.RequestHistories)
                     .HasForeignKey(d => d.RequestId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("RequestHistoryRequest");
             });
 
@@ -392,12 +383,6 @@ namespace UPOD.REPOSITORIES.Models
                 entity.Property(e => e.ServiceName).HasMaxLength(250);
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Area)
-                    .WithMany(p => p.Services)
-                    .HasForeignKey(d => d.AreaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("ServiceITSupportDepartment");
             });
 
             modelBuilder.Entity<Skill>(entity =>
@@ -413,13 +398,11 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.Skills)
                     .HasForeignKey(d => d.ServiceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("SkillServiceITSupport");
 
                 entity.HasOne(d => d.Technican)
                     .WithMany(p => p.Skills)
                     .HasForeignKey(d => d.TechnicanId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("SkillITSupporter");
             });
 
@@ -450,13 +433,11 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Technicans)
                     .HasForeignKey(d => d.AccountId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("ITSupporterAccount");
 
                 entity.HasOne(d => d.Area)
                     .WithMany(p => p.Technicans)
                     .HasForeignKey(d => d.AreaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("ITSupporterDepartment");
             });
 
@@ -475,13 +456,11 @@ namespace UPOD.REPOSITORIES.Models
                 entity.HasOne(d => d.Device)
                     .WithMany(p => p.Tickets)
                     .HasForeignKey(d => d.DeviceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("TicketDevice");
 
                 entity.HasOne(d => d.Request)
                     .WithMany(p => p.Tickets)
                     .HasForeignKey(d => d.RequestId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("TicketRequest");
             });
 

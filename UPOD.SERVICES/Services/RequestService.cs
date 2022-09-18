@@ -21,6 +21,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<RequestCreateResponse>> CreateRequest(RequestRequest model);
         Task<ResponseModel<RequestCreateResponse>> UpdateRequest(Guid id, RequestUpdateRequest model);
         Task<ResponseModel<RequestDisableResponse>> DisableRequest(Guid id);
+        Task<ResponseModel<TechnicanResponse>> GetTechnicanRequest(PaginationRequest model, Guid id);
     }
     public class RequestService : IRequestService
     {
@@ -33,7 +34,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ResponseModel<RequestResponse>> GetListRequest(PaginationRequest model)
         {
             var request = await _context.Requests.Where(a => a.IsDelete == false).Select(a => new RequestResponse
-            {   
+            {
                 id = a.Id,
                 request_name = a.RequestName,
                 company_name = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
@@ -49,11 +50,40 @@ namespace UPOD.SERVICES.Services
                 Type = "Requests"
             };
         }
+
+        public async Task<ResponseModel<TechnicanResponse>> GetTechnicanRequest(PaginationRequest model, Guid id)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            var agency = await _context.Agencies.Where(a => a.Id.Equals(request.AgencyId)).FirstOrDefaultAsync();
+            var area = await _context.Areas.Where(a => a.Id.Equals(agency.AreaId)).FirstOrDefaultAsync();
+            var technican = await _context.Technicans.Where(a => a.IsDelete == false && a.AreaId.Equals(area.Id)).Select(a => new TechnicanResponse
+            {
+                id = a.Id,
+                area_id = a.AreaId,
+                technican_name = a.TechnicanName,
+                account_id = a.AccountId,
+                telephone = a.Telephone,
+                email = a.Email,
+                gender = a.Gender,
+                address = a.Address,
+                ratingAvg = a.RatingAvg,
+                is_busy = a.IsBusy,
+                is_delete = a.IsDelete,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
+
+            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            return new ResponseModel<TechnicanResponse>(technican)
+            {
+                Total = technican.Count,
+                Type = "Technicians"
+            };
+        }
         public async Task<ResponseModel<RequestDetailResponse>> GetDetailRequest(Guid id)
         {
-            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete==false).Select(a => new RequestDetailResponse
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestDetailResponse
             {
-                id = id, 
+                id = id,
                 company_name = _context.Companies.Where(x => x.Id.Equals(a.CompanyId)).Select(x => x.CompanyName).FirstOrDefault(),
                 agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                 address_service = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
@@ -78,7 +108,7 @@ namespace UPOD.SERVICES.Services
             {
                 Id = Guid.NewGuid(),
                 RequestName = model.request_name,
-                CompanyId = model.company_id,
+                CompanyId = _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CompanyId).FirstOrDefault(),
                 ServiceId = model.service_id,
                 AgencyId = model.agency_id,
                 RequestDesciption = model.request_description,
@@ -92,8 +122,8 @@ namespace UPOD.SERVICES.Services
                 Img = null,
                 ExceptionSource = null,
                 IsDelete = false,
-                Feedback = null,
-                Rating = null,
+                Feedback = "",
+                Rating = 0,
                 CurrentTechnicanId = null,
                 StartTime = null,
                 EndTime = null,
@@ -139,7 +169,7 @@ namespace UPOD.SERVICES.Services
             {
                 Id = id,
                 RequestName = model.request_name,
-                CompanyId = model.company_id,
+                CompanyId = _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CompanyId).FirstOrDefault(),
                 ServiceId = model.service_id,
                 AgencyId = model.agency_id,
                 RequestDesciption = model.request_description,

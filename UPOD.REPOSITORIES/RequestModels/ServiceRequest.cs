@@ -8,7 +8,6 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class ServiceRequest
     {
-        public Guid area_id { get; set; }
         public string service_name { get; set; }
         public string? desciption { get; set; }
     }

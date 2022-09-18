@@ -11,24 +11,24 @@ namespace UPOD.REPOSITORIES.Models
         }
 
         public Guid Id { get; set; }
-        public Guid ConpanyId { get; set; }
-        public Guid DeviceTypeId { get; set; }
-        public string DeviceName { get; set; }
-        public string DeviceCode { get; set; }
+        public Guid? ConpanyId { get; set; }
+        public Guid? DeviceTypeId { get; set; }
+        public string? DeviceName { get; set; }
+        public string? DeviceCode { get; set; }
         public DateTime? GuarantyStartDate { get; set; }
         public DateTime? GuarantyEndDate { get; set; }
-        public string Ip { get; set; }
+        public string? Ip { get; set; }
         public int? Port { get; set; }
-        public string DeviceAccount { get; set; }
-        public string DevicePassword { get; set; }
+        public string? DeviceAccount { get; set; }
+        public string? DevicePassword { get; set; }
         public DateTime? SettingDate { get; set; }
-        public string Other { get; set; }
+        public string? Other { get; set; }
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 
-        public virtual Company Conpany { get; set; } = null!;
-        public virtual DeviceType DeviceType { get; set; } = null!;
+        public virtual Company? Conpany { get; set; }
+        public virtual DeviceType? DeviceType { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

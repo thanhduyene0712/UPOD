@@ -35,6 +35,13 @@ namespace UPOD.API.Controllers
         {
             return await _RequestSv.GetDetailRequest(id);
         }
+        [HttpGet]
+        [Route("get/technician")]
+        public async Task<ResponseModel<TechnicanResponse>> GetTechnicanRequest([FromQuery] PaginationRequest model,[FromQuery] Guid id)
+        {
+            return await _RequestSv.GetTechnicanRequest(model, id);
+        }
+
 
         [HttpPost]
         [Route("create")]

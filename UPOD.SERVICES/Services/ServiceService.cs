@@ -38,7 +38,6 @@ namespace UPOD.SERVICES.Services
             var services = await _context.Services.Select(a => new ServiceResponse
             {
                 id = a.Id,
-                area_id = a.AreaId,
                 service_name = a.ServiceName,
                 desciption = a.Desciption,
                 is_delete = a.IsDelete,
@@ -80,7 +79,6 @@ namespace UPOD.SERVICES.Services
             var Service = new Service
             {
                 Id = Guid.NewGuid(),
-                AreaId = model.area_id,
                 ServiceName = model.service_name,
                 Desciption = model.desciption,
                 IsDelete = false,
@@ -106,7 +104,6 @@ namespace UPOD.SERVICES.Services
                 list.Add(new ServiceResponse
                 {
                     id = Service.Id,
-                    area_id = Service.AreaId,
                     service_name = Service.ServiceName,
                     desciption = Service.Desciption,
                     is_delete = Service.IsDelete,
