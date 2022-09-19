@@ -8,7 +8,7 @@ namespace UPOD.REPOSITORIES.ResponeModels
 {
     public class TechnicanResponse
     {
-        public Guid id { get; set; }
+        public Guid? id { get; set; }
         public Guid? area_id { get; set; }
         public string? technican_name { get; set; }
         public Guid? account_id { get; set; }

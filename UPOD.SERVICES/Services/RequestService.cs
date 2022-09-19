@@ -1,15 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Reso.Core.Extension;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Text;
-using System.Threading.Tasks;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
-using UPOD.REPOSITORIES.Services;
 using UPOD.SERVICES.Enum;
 
 namespace UPOD.SERVICES.Services
@@ -56,26 +49,30 @@ namespace UPOD.SERVICES.Services
             var request = await _context.Requests.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             var agency = await _context.Agencies.Where(a => a.Id.Equals(request.AgencyId)).FirstOrDefaultAsync();
             var area = await _context.Areas.Where(a => a.Id.Equals(agency.AreaId)).FirstOrDefaultAsync();
-            var technican = await _context.Technicans.Where(a => a.IsDelete == false && a.AreaId.Equals(area.Id)).Select(a => new TechnicanResponse
+            var service = await _context.Services.Where(a => a.Id.Equals(request.ServiceId)).FirstOrDefaultAsync();
+            var technicans = await _context.Skills.Where(a => a.ServiceId.Equals(service.Id)
+            && a.Technican.AreaId.Equals(area.Id)
+            && a.Technican.IsBusy == false
+            && a.Technican.IsDelete == false).Select(a => new TechnicanResponse
             {
-                id = a.Id,
-                area_id = a.AreaId,
-                technican_name = a.TechnicanName,
-                account_id = a.AccountId,
-                telephone = a.Telephone,
-                email = a.Email,
-                gender = a.Gender,
-                address = a.Address,
-                ratingAvg = a.RatingAvg,
-                is_busy = a.IsBusy,
-                is_delete = a.IsDelete,
-                create_date = a.CreateDate,
-                update_date = a.UpdateDate,
+                id = a.TechnicanId,
+                area_id = a.Technican.AreaId,
+                technican_name = a.Technican.TechnicanName,
+                account_id = a.Technican.AccountId,
+                telephone = a.Technican.Telephone,
+                email = a.Technican.Email,
+                gender = a.Technican.Gender,
+                address = a.Technican.Address,
+                ratingAvg = a.Technican.RatingAvg,
+                is_busy = a.Technican.IsBusy,
+                is_delete = a.Technican.IsDelete,
+                create_date = a.Technican.CreateDate,
+                update_date = a.Technican.UpdateDate,
 
             }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<TechnicanResponse>(technican)
+            return new ResponseModel<TechnicanResponse>(technicans)
             {
-                Total = technican.Count,
+                Total = technicans.Count,
                 Type = "Technicians"
             };
         }
@@ -212,31 +209,9 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<RequestDisableResponse>> DisableRequest(Guid id)
         {
-            var request = await _context.Requests.Where(a => a.Id.Equals(id)).Select(x => new Request
-            {
-                Id = id,
-                CompanyId = x.CompanyId,
-                ServiceId = x.ServiceId,
-                RequestDesciption = x.RequestDesciption,
-                RequestStatus = x.RequestStatus,
-                RequestName = x.RequestName,
-                Estimation = x.Estimation,
-                Phone = x.Phone,
-                StartTime = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.StartTime).FirstOrDefault(),
-                EndTime = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.EndTime).FirstOrDefault(),
-                CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now,
-                AgencyId = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.AgencyId).FirstOrDefault(),
-                CurrentTechnicanId = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.CurrentTechnicanId).FirstOrDefault(),
-                Rating = x.Rating,
-                Feedback = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Feedback).FirstOrDefault(),
-                IsDelete = true,
-                Priority = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Priority).FirstOrDefault(),
-                ExceptionSource = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.ExceptionSource).FirstOrDefault(),
-                Solution = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Solution).FirstOrDefault(),
-                Img = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Img).FirstOrDefault(),
-                Token = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Token).FirstOrDefault(),
-            }).FirstOrDefaultAsync();
+            var request = await _context.Requests.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            request.IsDelete = true;
+
             _context.Requests.Update(request);
             await _context.SaveChangesAsync();
             var list = new List<RequestDisableResponse>();

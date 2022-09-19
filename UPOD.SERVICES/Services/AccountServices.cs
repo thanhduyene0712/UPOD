@@ -1,14 +1,5 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using Reso.Core.BaseConnect;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using UPOD.REPOSITORIES.Models;
-using UPOD.REPOSITORIES.Repositories;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
 
