@@ -21,6 +21,7 @@ namespace UPOD.REPOSITORIES.Models
         public virtual DbSet<Area> Areas { get; set; } = null!;
         public virtual DbSet<Company> Companies { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
+        public virtual DbSet<AgencyDevice> AgencyDevices { get; set; } = null!;
         public virtual DbSet<ContractService> ContractServices { get; set; } = null!;
         public virtual DbSet<Device> Devices { get; set; } = null!;
         public virtual DbSet<DeviceType> DeviceTypes { get; set; } = null!;
@@ -405,7 +406,20 @@ namespace UPOD.REPOSITORIES.Models
                     .HasForeignKey(d => d.TechnicanId)
                     .HasConstraintName("SkillITSupporter");
             });
+            modelBuilder.Entity<AgencyDevice>(entity =>
+            {
+                entity.ToTable("AgencyDevice");
+                entity.HasKey(e => new { e.AgencyId, e.DeviceId });
+                entity.HasOne(d => d.Device)
+                    .WithMany(p => p.AgencyDevices)
+                    .HasForeignKey(d => d.DeviceId)
+                    .HasConstraintName("AgencyDeciveDevice");
 
+                entity.HasOne(d => d.Agency)
+                    .WithMany(p => p.AgencyDevices)
+                    .HasForeignKey(d => d.AgencyId)
+                    .HasConstraintName("AgencyDeciveAgency");
+            });
             modelBuilder.Entity<Technican>(entity =>
             {
                 entity.ToTable("Technican");

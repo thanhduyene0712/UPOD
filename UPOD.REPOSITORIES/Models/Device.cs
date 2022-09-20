@@ -8,6 +8,7 @@ namespace UPOD.REPOSITORIES.Models
         public Device()
         {
             Tickets = new HashSet<Ticket>();
+            AgencyDevices = new HashSet<AgencyDevice>();
         }
 
         public Guid Id { get; set; }
@@ -29,6 +30,7 @@ namespace UPOD.REPOSITORIES.Models
 
         public virtual Company? Conpany { get; set; }
         public virtual DeviceType? DeviceType { get; set; }
+        public virtual ICollection<AgencyDevice> AgencyDevices { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

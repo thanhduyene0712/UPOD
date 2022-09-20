@@ -8,6 +8,7 @@ namespace UPOD.REPOSITORIES.Models
         public Agency()
         {
             Requests = new HashSet<Request>();
+            AgencyDevices = new HashSet<AgencyDevice>();
         }
 
         public Guid Id { get; set; }
@@ -24,5 +25,7 @@ namespace UPOD.REPOSITORIES.Models
         public virtual Area? Area { get; set; }
         public virtual Company? Company { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
+        public virtual ICollection<AgencyDevice> AgencyDevices { get; set; }
+
     }
 }
