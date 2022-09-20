@@ -15,6 +15,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<RequestCreateResponse>> UpdateRequest(Guid id, RequestUpdateRequest model);
         Task<ResponseModel<RequestDisableResponse>> DisableRequest(Guid id);
         Task<ResponseModel<TechnicanResponse>> GetTechnicanRequest(PaginationRequest model, Guid id);
+        //Task<ResponseModel<AgencyDeviceResponse>> GetListAgencyDevice(PaginationRequest model);
     }
     public class RequestService : IRequestService
     {
@@ -43,6 +44,19 @@ namespace UPOD.SERVICES.Services
                 Type = "Requests"
             };
         }
+        //public async Task<ResponseModel<AgencyDeviceResponse>> GetListAgencyDevice(PaginationRequest model)
+        //{
+        //    var request = await _context.AgencyDevices.Select(a => new AgencyDeviceResponse
+        //    {
+        //       AgencyId = a.AgencyId
+
+        //    }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+        //    return new ResponseModel<AgencyDeviceResponse>(request)
+        //    {
+        //        Total = request.Count,
+        //        Type = "Requests"
+        //    };
+        //}
 
         public async Task<ResponseModel<TechnicanResponse>> GetTechnicanRequest(PaginationRequest model, Guid id)
         {

@@ -28,6 +28,12 @@ namespace UPOD.API.Controllers
         {
             return await _RequestSv.GetListRequest(model);
         }
+        //[HttpGet]
+        //[Route("get/list_agency_device")]
+        //public async Task<ResponseModel<AgencyDeviceResponse>> GetListAgencyDevice([FromQuery] PaginationRequest model)
+        //{
+        //    return await _RequestSv.GetListAgencyDevice(model);
+        //}
 
         [HttpGet]
         [Route("get/detail_request/id")]
