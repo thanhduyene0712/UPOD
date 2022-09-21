@@ -14,6 +14,7 @@ namespace UPOP.SERVICES.App_Start
             services.AddScoped<IServiceService, ServiceService>();
             services.AddScoped<IContractServiceService, ContractServiceService>();
             services.AddScoped<IRequestService, RequestService>();
+            services.AddScoped<IDeviceService, DeviceService>();
 
 
         }
