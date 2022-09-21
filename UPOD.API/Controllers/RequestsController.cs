@@ -16,57 +16,51 @@ namespace UPOD.API.Controllers
     public partial class RequestsController : ControllerBase
     {
 
-        private readonly IRequestService _RequestSv;
-        public RequestsController(IRequestService RequestSv)
+        private readonly IRequestService _request_sv;
+        public RequestsController(IRequestService request_sv)
         {
-            _RequestSv = RequestSv;
+            _request_sv = request_sv;
         }
 
         [HttpGet]
-        [Route("get/list_request")]
+        [Route("get_list_requests")]
         public async Task<ResponseModel<RequestResponse>> GetListRequest([FromQuery] PaginationRequest model)
         {
-            return await _RequestSv.GetListRequest(model);
+            return await _request_sv.GetListRequest(model);
         }
-        //[HttpGet]
-        //[Route("get/list_agency_device")]
-        //public async Task<ResponseModel<AgencyDeviceResponse>> GetListAgencyDevice([FromQuery] PaginationRequest model)
-        //{
-        //    return await _RequestSv.GetListAgencyDevice(model);
-        //}
 
         [HttpGet]
-        [Route("get/detail_request/id")]
+        [Route("get_request_details_by_id")]
         public async Task<ResponseModel<RequestDetailResponse>> GetDetailRequest([FromQuery] Guid id)
         {
-            return await _RequestSv.GetDetailRequest(id);
+            return await _request_sv.GetDetailRequest(id);
         }
         [HttpGet]
-        [Route("get/technician")]
+        [Route("get_technician_by_id_request")]
         public async Task<ResponseModel<TechnicanResponse>> GetTechnicanRequest([FromQuery] PaginationRequest model,[FromQuery] Guid id)
         {
-            return await _RequestSv.GetTechnicanRequest(model, id);
+            return await _request_sv.GetTechnicanRequest(model, id);
         }
 
 
         [HttpPost]
-        [Route("create")]
+        [Route("create_request")]
         public async Task<ResponseModel<RequestCreateResponse>> CreateRequest(RequestRequest model)
         {
-            return await _RequestSv.CreateRequest(model);
+            return await _request_sv.CreateRequest(model);
         }
 
         [HttpPut]
-        [Route("update/id")]
+        [Route("update_request_by_id")]
         public async Task<ResponseModel<RequestCreateResponse>> UpdateRequest([FromQuery] Guid id, RequestUpdateRequest model)
         {
-            return await _RequestSv.UpdateRequest(id, model);
+            return await _request_sv.UpdateRequest(id, model);
         }
         [HttpPut]
-        [Route("disable/id")]
+        [Route("disable_request_by_id")]
         public async Task<ResponseModel<RequestDisableResponse>> DisableRequest([FromQuery] Guid id)
         {
-            return await _RequestSv.DisableRequest(id);
+            return await _request_sv.DisableRequest(id);
         }
 
     }

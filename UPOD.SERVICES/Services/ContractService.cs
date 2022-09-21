@@ -5,24 +5,14 @@ using UPOD.REPOSITORIES.ResponeModels;
 
 namespace UPOD.SERVICES.Services
 {
-    public interface IContractService
-    {
-        //Task<ResponseModel<ContractDetailResponse>> GetDetailContract(Guid id);
-        //Task<ResponseModel<ContractListResponse>> GetListContract(PaginationRequest model);
 
-
-    }
     public interface IContractServiceService
     {
         Task<ResponseModel<ContractResponse>> GetAll(PaginationRequest model);
-        //Task<ResponseModel<ContractRespone>> SearchAgencies(PaginationRequest model, String value);
-        //Task<ResponseModel<ContractRespone>> UpdateContract(Guid id, ContractRequest model);
         Task<ResponseModel<ContractResponse>> CreateContract(ContractRequest model);
         Task<ResponseModel<ContractDetailResponse>> GetDetailContract(Guid id);
         Task<ResponseModel<ContractListResponse>> GetListContract(PaginationRequest model);
-        //Task<ResponseModel<ContractRespone>> DisableContract(Guid id, ContractDisableRequest model);
-
-
+        Task<ResponseModel<ContractResponse>> DisableContract(Guid id);
     }
 
     public class ContractServiceService : IContractServiceService
@@ -31,6 +21,24 @@ namespace UPOD.SERVICES.Services
         public ContractServiceService(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ResponseModel<ContractResponse>> DisableContract(Guid id)
+        {
+            var contract = await _context.Contracts.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            contract.IsDelete = true;
+            contract.UpdateDate = DateTime.Now;
+            _context.Contracts.Update(contract);
+            await _context.SaveChangesAsync();
+            var list = new List<ContractResponse>();
+            list.Add(new ContractResponse
+            {
+                is_delete = contract.IsDelete
+            });
+            return new ResponseModel<ContractResponse>(list)
+            {
+                Total = list.Count,
+                Type = "Contract"
+            };
         }
 
         public async Task<ResponseModel<ContractResponse>> GetAll(PaginationRequest model)
@@ -81,7 +89,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<ContractDetailResponse>> GetDetailContract(Guid id)
         {
-            var contract = await _context.Contracts.Where(a => a.Id.Equals(id) || a.IsDelete == false).Select(a => new ContractDetailResponse
+            var contract = await _context.Contracts.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new ContractDetailResponse
             {
                 contract_name = a.ContractName,
                 company_name = a.Company.CompanyName,
@@ -140,8 +148,8 @@ namespace UPOD.SERVICES.Services
             var list = new List<ContractResponse>();
             var message = "blank";
             var status = 500;
-            var Contract_name = await _context.Contracts.Where(x => x.ContractName.Equals(contract.ContractName)).FirstOrDefaultAsync();
-            if (Contract_name != null)
+            var contract_name = await _context.Contracts.Where(x => x.ContractName.Equals(contract.ContractName)).FirstOrDefaultAsync();
+            if (contract_name != null)
             {
                 status = 400;
                 message = "ContractName is already exists!";
@@ -180,88 +188,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Contract"
             };
         }
-        //public async Task<ResponseModel<ContractDetailResponse>> GetDetailContract(Guid Id)
-        //{
-        //    var contract = await _context.Contracts.Where(x => x.Id.Equals(Id)).Select(x => new Contract
-        //    {
-        //        Id = Id,
-        //        CompanyId = x.CompanyId,
-        //        ContractName = x.ContractName,
-        //        StartDate = x.StartDate,
-        //        EndDate = x.EndDate,
-        //        TimeCommit = x.TimeCommit,
-        //        IsDelete = x.IsDelete,
-        //        CreateDate = x.CreateDate,
-        //        UpdateDate = x.UpdateDate,
-        //        ContractPrice = x.ContractPrice,
-        //        Priority = x.Priority,
-        //        PunishmentForCustomer = x.PunishmentForCustomer,
-        //        PunishmentForIt = x.PunishmentForIt,
-        //        Desciption = x.Desciption,
-        //    }).FirstOrDefaultAsync();
-        //    _context.Contracts.Update(contract);
-        //    await _context.SaveChangesAsync();
-        //    var list = new List<ContractDetailResponse>();
-        //    list.Add(new ContractDetailResponse
-        //    {
-        //         contract_name = contract.ContractName,
-        //         company_name = contract.Company.CompanyName,
-        //         create_date = contract.CreateDate,
-        //         start_date = contract.StartDate,
-        //         end_date = contract.EndDate,
-        //         contract_price = contract.ContractPrice,
-        //         time_commit = contract.TimeCommit,
-        //         priority = contract.Priority,
-        //         punishment_for_customer=contract.PunishmentForCustomer,
-        //         punishment_for_it=contract.PunishmentForIt,
-        //         desciption = contract.Desciption,
-        //    });
-        //    return new ResponseModel<ContractDetailResponse>(list)
-        //    {
-        //        Status = 201,
-        //        Total = list.Count,
-        //        Type = "Contract"
-        //    };
-        //}
-
-        //public async Task<ResponseModel<ContractRespone>> DisableContract(Guid id, ContractDisableRequest model)
-        //{
-        //    var Contract = await _context.Agencies.Where(x => x.Id.Equals(id)).Select(x => new Contract
-        //    {
-        //        Id = id,
-        //        ContractName = x.ContractName,
-        //        AccountId = _context.Accounts.Where(x => x.Username.Equals(x.Username)).Select(x => x.Id).FirstOrDefault(),
-        //        Address = x.Address,
-        //        ContractId = _context.Companies.Where(x => x.ContractName.Equals(x.ContractName)).Select(x => x.Id).FirstOrDefault(),
-        //        ManagerName = x.ManagerName,
-        //        Telephone = x.Telephone,
-        //        IsDelete = model.IsDelete,
-        //        CreateDate = x.CreateDate,
-        //        UpdateDate = DateTime.Now,
-        //    }).FirstOrDefaultAsync();
-        //    _context.Agencies.Update(Contract);
-        //    await _context.SaveChangesAsync();
-        //    var list = new List<ContractRespone>();
-        //    list.Add(new ContractRespone
-        //    {
-        //        Id = Contract.Id,
-        //        ContractName = Contract.ContractName,
-        //        Username = await _context.Accounts.Where(x => x.Id.Equals(Contract.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
-        //        Address = Contract.Address,
-        //        ContractName = await _context.Companies.Where(x => x.Id.Equals(Contract.ContractId)).Select(x => x.ContractName).FirstOrDefaultAsync(),
-        //        ManagerName = Contract.ManagerName,
-        //        Telephone = Contract.Telephone,
-        //        IsDelete = Contract.IsDelete,
-        //        CreateDate = Contract.CreateDate,
-        //        UpdateDate = Contract.UpdateDate,
-        //    });
-        //    return new ResponseModel<ContractRespone>(list)
-        //    {
-        //        Status = 201,
-        //        Total = list.Count,
-        //        Type = "Contract"
-        //    };
-        //}
+      
 
     }
 }

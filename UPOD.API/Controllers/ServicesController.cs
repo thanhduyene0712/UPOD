@@ -11,43 +11,44 @@ namespace UPOD.API.Controllers
     public partial class ServicesController : ControllerBase
     {
 
-        private readonly IServiceService _serviceSv;
-        public ServicesController(IServiceService serviceSv)
+        private readonly IServiceService _service_sv;
+        public ServicesController(IServiceService service_sv)
         {
-            _serviceSv = serviceSv;
+            _service_sv = service_sv;
         }
 
         [HttpGet]
-        [Route("get_all")]
+        [Route("get_all_services")]
         public async Task<ResponseModel<ServiceResponse>> GetAllService([FromQuery] PaginationRequest model)
         {
-            return await _serviceSv.GetAll(model);
+            return await _service_sv.GetAll(model);
+        }
+        [HttpGet]
+        [Route("get_service_details")]
+        public async Task<ResponseModel<ServiceResponse>> GetServiceDetails(Guid id, [FromQuery] PaginationRequest model)
+        {
+            return await _service_sv.GetServiceDetails(id, model);
         }
 
-        //[HttpGet]
-        //[Route("Search")]
-        //public async Task<ResponseModel<ServiceRespone>> SearchAgencies([FromQuery] PaginationRequest model, String value)
-        //{
-        //    return await _ServiceSv.SearchAgencies(model, value);
-        //}
         [HttpPost]
-        [Route("create")]
-        public async Task<ResponseModel<ServiceResponse>> CreateService([FromQuery] ServiceRequest model)
+        [Route("create_service")]
+        public async Task<ResponseModel<ServiceResponse>> CreateService(ServiceRequest model)
         {
-            return await _serviceSv.CreateService(model);
+            return await _service_sv.CreateService(model);
         }
-        //[HttpPut]
-        //[Route("Update")]
-        //public async Task<ResponseModel<ServiceRespone>> UpdateService(Guid id, [FromQuery] ServiceRequest model)
-        //{
-        //    return await _ServiceSv.UpdateService(id, model);
-        //}
-        //[HttpPut]
-        //[Route("Deisable")]
-        //public async Task<ResponseModel<ServiceRespone>> DisableService(Guid id, [FromQuery] ServiceDisableRequest model)
-        //{
-        //    return await _ServiceSv.DisableService(id, model);
-        //}
+        [HttpPut]
+        [Route("update_service_by_id")]
+        public async Task<ResponseModel<ServiceResponse>> UpdateService([FromQuery] Guid id, ServiceRequest model)
+        {
+            return await _service_sv.UpdateService(id, model);
+        }
+        [HttpPut]
+        [Route("disable_service_by_id")]
+        public async Task<ResponseModel<ServiceResponse>> DisableService([FromQuery] Guid id)
+        {
+            return await _service_sv.DisableService(id);
+        }
+
 
 
     }

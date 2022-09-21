@@ -8,10 +8,10 @@ namespace UPOD.SERVICES.Services
     public interface IServiceService
     {
         Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model);
-        //Task<ResponseModel<ServiceRespone>> SearchAgencies(PaginationRequest model, String value);
-        //Task<ResponseModel<ServiceRespone>> UpdateService(Guid id, ServiceRequest model);
+        Task<ResponseModel<ServiceResponse>> GetServiceDetails(Guid id, PaginationRequest model);
+        Task<ResponseModel<ServiceResponse>> UpdateService(Guid id, ServiceRequest model);
         Task<ResponseModel<ServiceResponse>> CreateService(ServiceRequest model);
-        //Task<ResponseModel<ServiceRespone>> DisableService(Guid id, ServiceDisableRequest model);
+        Task<ResponseModel<ServiceResponse>> DisableService(Guid id);
 
 
     }
@@ -23,9 +23,9 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model)
+        public async Task<ResponseModel<ServiceResponse>> GetServiceDetails(Guid id, PaginationRequest model)
         {
-            var services = await _context.Services.Select(a => new ServiceResponse
+            var service = await _context.Services.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new ServiceResponse
             {
                 id = a.Id,
                 service_name = a.ServiceName,
@@ -36,51 +36,49 @@ namespace UPOD.SERVICES.Services
 
 
             }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            return new ResponseModel<ServiceResponse>(service)
+            {
+                Total = service.Count,
+                Type = "Service"
+            };
+        }
+        public async Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model)
+        {
+            var services = await _context.Services.Where(a => a.IsDelete == false).Select(a => new ServiceResponse
+            {
+                id = a.Id,
+                service_name = a.ServiceName,
+                desciption = a.Desciption,
+                is_delete = a.IsDelete,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
+
+
+            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<ServiceResponse>(services)
             {
                 Total = services.Count,
                 Type = "Services"
             };
         }
-        //public async Task<ResponseModel<ServiceRespone>> SearchCom(PaginationRequest model, string value)
-        //{
-        //    var agencies = await _context.Agencies.Where(a => a.Service.ServiceName.Contains(value) || a.Account.Username.Contains(value)
-        //    || a.ManagerName.Contains(value) || a.ServiceName.Contains(value) || a.Address.Contains(value) || a.Telephone.Contains(value)).Select(a => new ServiceRespone
-        //    {
-        //        Id = a.Id,
-        //        ServiceName = a.ServiceName,
-        //        Username = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Username).FirstOrDefault(),
-        //        Address = a.Address,
-        //        ServiceName = _context.Companies.Where(x => x.Id.Equals(a.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
-        //        ManagerName = a.ManagerName,
-        //        Telephone = a.Telephone,
-        //        IsDelete = a.IsDelete,
-        //        CreateDate = a.CreateDate,
-        //        UpdateDate = a.UpdateDate,
-        //    }).OrderBy(x => x.CreateDate).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-        //    return new ResponseModel<ServiceRespone>(agencies)
-        //    {
-        //        Total = agencies.Count,
-        //        Type = "Agencies"
-        //    };
-        //}
+
         public async Task<ResponseModel<ServiceResponse>> CreateService(ServiceRequest model)
         {
-            var Service = new Service
+            var service = new Service
             {
                 Id = Guid.NewGuid(),
                 ServiceName = model.service_name,
                 Desciption = model.desciption,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
-                UpdateDate = null,
+                UpdateDate = DateTime.Now,
 
             };
             var list = new List<ServiceResponse>();
             var message = "blank";
             var status = 500;
-            var Service_name = await _context.Services.Where(x => x.ServiceName.Equals(Service.ServiceName)).FirstOrDefaultAsync();
-            if (Service_name != null)
+            var service_name = await _context.Services.Where(x => x.ServiceName.Equals(service.ServiceName)).FirstOrDefaultAsync();
+            if (service_name != null)
             {
                 status = 400;
                 message = "ServiceName is already exists!";
@@ -89,16 +87,16 @@ namespace UPOD.SERVICES.Services
             {
                 message = "Successfully";
                 status = 201;
-                await _context.Services.AddAsync(Service);
+                await _context.Services.AddAsync(service);
                 await _context.SaveChangesAsync();
                 list.Add(new ServiceResponse
                 {
-                    id = Service.Id,
-                    service_name = Service.ServiceName,
-                    desciption = Service.Desciption,
-                    is_delete = Service.IsDelete,
-                    create_date = Service.CreateDate,
-                    update_date = Service.UpdateDate,
+                    id = service.Id,
+                    service_name = service.ServiceName,
+                    desciption = service.Desciption,
+                    is_delete = service.IsDelete,
+                    create_date = service.CreateDate,
+                    update_date = service.UpdateDate,
                 });
             }
             return new ResponseModel<ServiceResponse>(list)
@@ -109,83 +107,61 @@ namespace UPOD.SERVICES.Services
                 Type = "Service"
             };
         }
-        //public async Task<ResponseModel<ServiceRespone>> UpdateService(Guid id, ServiceRequest model)
-        //{
-        //    var Service = await _context.Agencies.Where(x => x.Id.Equals(id)).Select(x => new Service
-        //    {
-        //        Id = id,
-        //        ServiceName = model.ServiceName,
-        //        AccountId = _context.Accounts.Where(x => x.Username.Equals(model.Username)).Select(x => x.Id).FirstOrDefault(),
-        //        Address = model.Address,
-        //        ServiceId = _context.Companies.Where(x => x.ServiceName.Equals(model.ServiceName)).Select(x => x.Id).FirstOrDefault(),
-        //        ManagerName = model.ManagerName,
-        //        Telephone = model.Telephone,
-        //        IsDelete = x.IsDelete,
-        //        CreateDate = x.CreateDate,
-        //        UpdateDate = DateTime.Now,
-        //    }).FirstOrDefaultAsync();
-        //    _context.Agencies.Update(Service);
-        //    await _context.SaveChangesAsync();
-        //    var list = new List<ServiceRespone>();
-        //    list.Add(new ServiceRespone
-        //    {
-        //        Id = Service.Id,
-        //        ServiceName = Service.ServiceName,
-        //        Username = await _context.Accounts.Where(x => x.Id.Equals(Service.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
-        //        Address = Service.Address,
-        //        ServiceName = await _context.Companies.Where(x => x.Id.Equals(Service.ServiceId)).Select(x => x.ServiceName).FirstOrDefaultAsync(),
-        //        ManagerName = Service.ManagerName,
-        //        Telephone = Service.Telephone,
-        //        IsDelete = Service.IsDelete,
-        //        CreateDate = Service.CreateDate,
-        //        UpdateDate = Service.UpdateDate,
-        //    });
-        //    return new ResponseModel<ServiceRespone>(list)
-        //    {
-        //        Status = 201,
-        //        Total = list.Count,
-        //        Type = "Service"
-        //    };
-        //}
+        public async Task<ResponseModel<ServiceResponse>> UpdateService(Guid id, ServiceRequest model)
+        {
+            var service = await _context.Services.Where(x => x.Id.Equals(id)).Select(x => new Service
+            {
+                Id = id,
+                ServiceName = model.service_name,
+                Desciption = model.desciption,
+                IsDelete = false,
+                CreateDate = x.CreateDate,
+                UpdateDate = DateTime.Now,
+            }).FirstOrDefaultAsync();
+            _context.Services.Update(service);
+            await _context.SaveChangesAsync();
+            var list = new List<ServiceResponse>();
+            list.Add(new ServiceResponse
+            {
+                id = service.Id,
+                service_name = service.ServiceName,
+                desciption = service.Desciption,
+                is_delete = service.IsDelete,
+                create_date = service.CreateDate,
+                update_date = service.UpdateDate,
+            });
+            return new ResponseModel<ServiceResponse>(list)
+            {
+                Status = 201,
+                Total = list.Count,
+                Type = "Service"
+            };
+        }
 
-        //public async Task<ResponseModel<ServiceRespone>> DisableService(Guid id, ServiceDisableRequest model)
-        //{
-        //    var Service = await _context.Agencies.Where(x => x.Id.Equals(id)).Select(x => new Service
-        //    {
-        //        Id = id,
-        //        ServiceName = x.ServiceName,
-        //        AccountId = _context.Accounts.Where(x => x.Username.Equals(x.Username)).Select(x => x.Id).FirstOrDefault(),
-        //        Address = x.Address,
-        //        ServiceId = _context.Companies.Where(x => x.ServiceName.Equals(x.ServiceName)).Select(x => x.Id).FirstOrDefault(),
-        //        ManagerName = x.ManagerName,
-        //        Telephone = x.Telephone,
-        //        IsDelete = model.IsDelete,
-        //        CreateDate = x.CreateDate,
-        //        UpdateDate = DateTime.Now,
-        //    }).FirstOrDefaultAsync();
-        //    _context.Agencies.Update(Service);
-        //    await _context.SaveChangesAsync();
-        //    var list = new List<ServiceRespone>();
-        //    list.Add(new ServiceRespone
-        //    {
-        //        Id = Service.Id,
-        //        ServiceName = Service.ServiceName,
-        //        Username = await _context.Accounts.Where(x => x.Id.Equals(Service.AccountId)).Select(x => x.Username).FirstOrDefaultAsync(),
-        //        Address = Service.Address,
-        //        ServiceName = await _context.Companies.Where(x => x.Id.Equals(Service.ServiceId)).Select(x => x.ServiceName).FirstOrDefaultAsync(),
-        //        ManagerName = Service.ManagerName,
-        //        Telephone = Service.Telephone,
-        //        IsDelete = Service.IsDelete,
-        //        CreateDate = Service.CreateDate,
-        //        UpdateDate = Service.UpdateDate,
-        //    });
-        //    return new ResponseModel<ServiceRespone>(list)
-        //    {
-        //        Status = 201,
-        //        Total = list.Count,
-        //        Type = "Service"
-        //    };
-        //}
+        public async Task<ResponseModel<ServiceResponse>> DisableService(Guid id)
+        {
+            var service = await _context.Services.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
+            service.IsDelete = true;
+            service.UpdateDate = DateTime.Now;
+            _context.Services.Update(service);
+            await _context.SaveChangesAsync();
+            var list = new List<ServiceResponse>();
+            list.Add(new ServiceResponse
+            {
+                id = service.Id,
+                service_name = service.ServiceName,
+                desciption = service.Desciption,
+                is_delete = service.IsDelete,
+                create_date = service.CreateDate,
+                update_date = service.UpdateDate,
+            });
+            return new ResponseModel<ServiceResponse>(list)
+            {
+                Status = 201,
+                Total = list.Count,
+                Type = "Service"
+            };
+        }
 
     }
 }

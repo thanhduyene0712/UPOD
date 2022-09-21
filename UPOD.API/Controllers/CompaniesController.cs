@@ -16,43 +16,44 @@ namespace UPOD.API.Controllers
     public partial class CompaniesController : ControllerBase
     {
 
-        private readonly ICompanyService _companySv;
-        public CompaniesController(ICompanyService companySv)
+        private readonly ICompanyService _company_sv;
+        public CompaniesController(ICompanyService company_sv)
         {
-            _companySv = companySv;
+            _company_sv = company_sv;
         }
 
         [HttpGet]
-        [Route("get_all")]
+        [Route("get_all_companies")]
         public async Task<ResponseModel<CompanyResponse>> GetAllCompanies([FromQuery] PaginationRequest model)
         {
-            return await _companySv.GetAll(model);
+            return await _company_sv.GetAll(model);
+        }
+        [HttpGet]
+        [Route("get_company_details_by_id")]
+        public async Task<ResponseModel<CompanyResponse>> GetCompanyDetails([FromQuery] PaginationRequest model, Guid id)
+        {
+            return await _company_sv.GetCompanyDetails(model, id);
         }
 
-        //[HttpGet]
-        //[Route("Search")]
-        //public async Task<ResponseModel<CompanyRespone>> SearchAgencies([FromQuery] PaginationRequest model, String value)
-        //{
-        //    return await _CompanySv.SearchAgencies(model, value);
-        //}
         [HttpPost]
-        [Route("Create")]
-        public async Task<ResponseModel<CompanyResponse>> CreateCompany([FromQuery] CompanyRequest model)
+        [Route("create_companies")]
+        public async Task<ResponseModel<CompanyResponse>> CreateCompany(CompanyRequest model)
         {
-            return await _companySv.CreateCompany(model);
+            return await _company_sv.CreateCompany(model);
         }
-        //[HttpPut]
-        //[Route("Update")]
-        //public async Task<ResponseModel<CompanyRespone>> UpdateCompany(Guid id, [FromQuery] CompanyRequest model)
-        //{
-        //    return await _CompanySv.UpdateCompany(id, model);
-        //}
-        //[HttpPut]
-        //[Route("Deisable")]
-        //public async Task<ResponseModel<CompanyRespone>> DisableCompany(Guid id, [FromQuery] CompanyDisableRequest model)
-        //{
-        //    return await _CompanySv.DisableCompany(id, model);
-        //}
+        [HttpPut]
+        [Route("update_comnpany_by_id")]
+        public async Task<ResponseModel<CompanyResponse>> UpdateCompany(Guid id, CompanyRequest model)
+        {
+            return await _company_sv.UpdateCompany(id, model);
+        }
+
+        [HttpPut]
+        [Route("disable_company_by_id")]
+        public async Task<ResponseModel<CompanyResponse>> DisableCompany(Guid id)
+        {
+            return await _company_sv.DisableCompany(id);
+        }
 
 
     }

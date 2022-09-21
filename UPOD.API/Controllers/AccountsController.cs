@@ -16,39 +16,44 @@ namespace UPOD.API.Controllers
     public partial class AccountsController : ControllerBase
     {
 
-        private readonly IAccountService _accountSv;
-        public AccountsController(IAccountService accountSv)
+        private readonly IAccountService _account_sv;
+        public AccountsController(IAccountService account_sv)
         {
-            _accountSv = accountSv;
+            _account_sv = account_sv;
         }
 
         [HttpGet]
-        [Route("get_all")]
+        [Route("get_all_accounts")]
         public async Task<ResponseModel<AccountResponse>> GetAllAccounts([FromQuery] PaginationRequest model)
         {
-            return await _accountSv.GetAll(model);
+            return await _account_sv.GetAll(model);
         }
 
         [HttpGet]
-        [Route("search/value")]
+        [Route("search_accounts_by_value")]
         public async Task<ResponseModel<AccountResponse>> SearchAccounts([FromQuery] PaginationRequest model, String value)
         {
-            return await _accountSv.SearchAccounts(model, value);
+            return await _account_sv.SearchAccounts(model, value);
         }
         [HttpPost]
-        [Route("create")]
+        [Route("create_account")]
         public async Task<ResponseModel<AccRegisterResponse>> CreateAccount(AccRegisterRequest model)
         {
-            return await _accountSv.CreateAccount(model);
+            return await _account_sv.CreateAccount(model);
         }
         [HttpPut]
-        [Route("update/id")]
-        public async Task<ResponseModel<AccountResponse>> UpdateAccount(Guid id, [FromQuery] AccountRequest model)
+        [Route("update_account_by_id")]
+        public async Task<ResponseModel<AccountResponse>> UpdateAccount(Guid id, AccountRequest model)
         {
-            return await _accountSv.UpdateAccount(id, model);
+            return await _account_sv.UpdateAccount(id, model);
         }
-       
 
+        [HttpPut]
+        [Route("disable_account_by_id")]
+        public async Task<ResponseModel<AccountResponse>> DisableAccount(Guid id)
+        {
+            return await _account_sv.DisableAccount(id);
+        }
 
     }
 }

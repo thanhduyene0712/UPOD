@@ -9,8 +9,8 @@ namespace UPOD.REPOSITORIES.ResponeModels
     public class DeviceTypeResponse
     {
         public Guid id { get; set; }
-        public Guid? service_dd { get; set; }
-        public string? devicetype_name { get; set; }
+        public Guid? service_id { get; set; }
+        public string? device_type_name { get; set; }
         public string? desciption { get; set; }
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }

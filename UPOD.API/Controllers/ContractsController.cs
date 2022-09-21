@@ -15,50 +15,43 @@ namespace UPOD.API.Controllers
     public partial class ContractsController : ControllerBase
     {
 
-        private readonly IContractServiceService _contractServiceSv;
-        public ContractsController(IContractServiceService contractServiceSv)
+        private readonly IContractServiceService _contract_service_sv;
+        public ContractsController(IContractServiceService contract_service_sv)
         {
-            _contractServiceSv = contractServiceSv;
+            _contract_service_sv = contract_service_sv;
         }
 
         [HttpGet]
-        [Route("get_all")]
+        [Route("get_all_contracts")]
         public async Task<ResponseModel<ContractResponse>> GetAllContracs([FromQuery] PaginationRequest model)
         {
-            return await _contractServiceSv.GetAll(model);
+            return await _contract_service_sv.GetAll(model);
         }
 
         [HttpGet]
-        [Route("get_list_contract")]
+        [Route("get_list_contracts")]
         public async Task<ResponseModel<ContractListResponse>> GetListContract([FromQuery] PaginationRequest model)
         {
-            return await _contractServiceSv.GetListContract(model);
+            return await _contract_service_sv.GetListContract(model);
         }
         [HttpGet]
-        [Route("get_detail_contract/id")]
+        [Route("get_contract_details_by_id")]
         public async Task<ResponseModel<ContractDetailResponse>> GetDetailContract([FromQuery] Guid Id)
         {
-            return await _contractServiceSv.GetDetailContract(Id);
+            return await _contract_service_sv.GetDetailContract(Id);
         }
         [HttpPost]
-        [Route("create")]
-        public async Task<ResponseModel<ContractResponse>> CreateContract(/*[FromQuery]*/ ContractRequest model)
+        [Route("create_contract")]
+        public async Task<ResponseModel<ContractResponse>> CreateContract(ContractRequest model)
         {
-            return await _contractServiceSv.CreateContract(model);
+            return await _contract_service_sv.CreateContract(model);
         }
-        //[HttpPut]
-        //[Route("Update")]
-        //public async Task<ResponseModel<ContractRespone>> UpdateContract(Guid id, [FromQuery] ContractRequest model)
-        //{
-        //    return await _ContractSv.UpdateContract(id, model);
-        //}
-        //[HttpPut]
-        //[Route("Deisable")]
-        //public async Task<ResponseModel<ContractRespone>> DisableContract(Guid id, [FromQuery] ContractDisableRequest model)
-        //{
-        //    return await _ContractSv.DisableContract(id, model);
-        //}
-
+        [HttpPut]
+        [Route("disable_contract_by_id")]
+        public async Task<ResponseModel<ContractResponse>> DisableContract(Guid id)
+        {
+            return await _contract_service_sv.DisableContract(id);
+        }
 
     }
 }

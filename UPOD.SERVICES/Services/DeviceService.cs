@@ -13,9 +13,6 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<DeviceResponse>> CreateDevice(DeviceRequest model);
         Task<ResponseModel<DeviceResponse>> UpdateDevice(Guid id, DeviceUpdateRequest model);
         Task<ResponseModel<DeviceResponse>> DisableDevice(Guid id);
-
-
-
     }
 
     public class DeviceService : IDeviceService
@@ -28,7 +25,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<DeviceResponse>> GetListDevice(PaginationRequest model)
         {
-            var Devices = await _context.Devices.Where(a => a.IsDelete == false).Select(a => new DeviceResponse
+            var devices = await _context.Devices.Where(a => a.IsDelete == false).Select(a => new DeviceResponse
             {
                 id = a.Id,
                 conpany_id = a.ConpanyId,
@@ -47,15 +44,15 @@ namespace UPOD.SERVICES.Services
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate
             }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<DeviceResponse>(Devices)
+            return new ResponseModel<DeviceResponse>(devices)
             {
-                Total = Devices.Count,
+                Total = devices.Count,
                 Type = "Devices"
             };
         }
         public async Task<ResponseModel<DeviceResponse>> GetDetailDevice(Guid id)
         {
-            var Devices = await _context.Devices.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(a => new DeviceResponse
+            var devices = await _context.Devices.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(a => new DeviceResponse
             {
                 id = a.Id,
                 conpany_id = a.ConpanyId,
@@ -75,18 +72,18 @@ namespace UPOD.SERVICES.Services
                 update_date = a.UpdateDate
 
             }).ToListAsync();
-            return new ResponseModel<DeviceResponse>(Devices)
+            return new ResponseModel<DeviceResponse>(devices)
             {
-                Total = Devices.Count,
+                Total = devices.Count,
                 Type = "Devices"
             };
         }
 
-       
+
         public async Task<ResponseModel<DeviceResponse>> CreateDevice(DeviceRequest model)
         {
 
-            var Device = new Device
+            var device = new Device
             {
                 Id = Guid.NewGuid(),
                 ConpanyId = model.conpany_id,
@@ -109,36 +106,36 @@ namespace UPOD.SERVICES.Services
             var list = new List<DeviceResponse>();
             var message = "blank";
             var status = 500;
-            var Device_id = await _context.Devices.Where(x => x.Id.Equals(Device.Id)).FirstOrDefaultAsync();
-            if (Device_id != null)
+            var device_id = await _context.Devices.Where(x => x.Id.Equals(device.Id)).FirstOrDefaultAsync();
+            if (device_id != null)
             {
                 status = 400;
-                message = "Device_id is already exists!";
+                message = "DeviceId is already exists!";
             }
             else
             {
                 message = "Successfully";
                 status = 201;
-                await _context.Devices.AddAsync(Device);
+                await _context.Devices.AddAsync(device);
                 await _context.SaveChangesAsync();
                 list.Add(new DeviceResponse
                 {
-                    id = Device.Id,
-                    conpany_id = Device.ConpanyId,
-                    devicetype_id = Device.DeviceTypeId,
-                    device_name = Device.DeviceName,
-                    device_code = Device.DeviceCode,
-                    guaranty_start_date = Device.GuarantyStartDate,
-                    guaranty_end_date = Device.GuarantyEndDate,
-                    ip = Device.Ip,
-                    port = Device.Port,
-                    device_account = Device.DeviceAccount,
-                    device_password = Device.DevicePassword,
-                    setting_date = Device.SettingDate,
-                    other = Device.Other,
-                    is_delete = Device.IsDelete,
-                    create_date = Device.CreateDate,
-                    update_date = Device.UpdateDate
+                    id = device.Id,
+                    conpany_id = device.ConpanyId,
+                    devicetype_id = device.DeviceTypeId,
+                    device_name = device.DeviceName,
+                    device_code = device.DeviceCode,
+                    guaranty_start_date = device.GuarantyStartDate,
+                    guaranty_end_date = device.GuarantyEndDate,
+                    ip = device.Ip,
+                    port = device.Port,
+                    device_account = device.DeviceAccount,
+                    device_password = device.DevicePassword,
+                    setting_date = device.SettingDate,
+                    other = device.Other,
+                    is_delete = device.IsDelete,
+                    create_date = device.CreateDate,
+                    update_date = device.UpdateDate
                 });
             }
 
@@ -154,14 +151,15 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<DeviceResponse>> DisableDevice(Guid id)
         {
-            var Device = await _context.Devices.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
-            Device.IsDelete = true;
-            _context.Devices.Update(Device);
+            var device = await _context.Devices.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
+            device.IsDelete = true;
+            device.UpdateDate = DateTime.Now;
+            _context.Devices.Update(device);
             await _context.SaveChangesAsync();
             var list = new List<DeviceResponse>();
             list.Add(new DeviceResponse
             {
-                is_delete = Device.IsDelete,
+                is_delete = device.IsDelete,
             });
             return new ResponseModel<DeviceResponse>(list)
             {
@@ -218,7 +216,7 @@ namespace UPOD.SERVICES.Services
             {
                 Status = 201,
                 Total = list.Count,
-                Type = "Account"
+                Type = "Device"
             };
         }
 

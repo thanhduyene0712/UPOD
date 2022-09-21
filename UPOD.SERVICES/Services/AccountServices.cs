@@ -11,7 +11,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<AccountResponse>> SearchAccounts(PaginationRequest model, String value);
         Task<ResponseModel<AccountResponse>> UpdateAccount(Guid id, AccountRequest model);
         Task<ResponseModel<AccRegisterResponse>> CreateAccount(AccRegisterRequest model);
-
+        Task<ResponseModel<AccountResponse>> DisableAccount(Guid id);
 
 
     }
@@ -22,6 +22,30 @@ namespace UPOD.SERVICES.Services
         public AccountService(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ResponseModel<AccountResponse>> DisableAccount(Guid id)
+        {
+            var account = await _context.Accounts.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            account.IsDelete = true;
+            account.UpdateDate = DateTime.Now;
+            _context.Accounts.Update(account);
+            await _context.SaveChangesAsync();
+            var list = new List<AccountResponse>();
+            list.Add(new AccountResponse
+            {
+                id = account.Id,
+                role_id = account.RoleId,
+                username = account.Username,
+                is_delete = account.IsDelete,
+                create_date = account.CreateDate,
+                update_date = account.UpdateDate,
+            });
+            return new ResponseModel<AccountResponse>(list)
+            {
+                Status = 201,
+                Total = list.Count,
+                Type = "Account"
+            };
         }
         public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model)
         {
