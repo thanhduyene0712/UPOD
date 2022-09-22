@@ -16,6 +16,8 @@ namespace UPOP.SERVICES.App_Start
             services.AddScoped<IRequestService, RequestService>();
             services.AddScoped<IDeviceService, DeviceService>();
             services.AddScoped<IDeviceTypeService, DeviceTypeService>();
+            services.AddScoped<IAgencyService, AgencyService>();
+
 
         }
     }

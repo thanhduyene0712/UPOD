@@ -11,8 +11,8 @@ namespace UPOD.REPOSITORIES.Models
         public Guid? DeviceId { get; set; }
         public Guid? AgencyId { get; set; }
 
-        public Agency Agency { get; set; }
-        public Device Device { get; set; }
+        public Agency? Agency { get; set; }
+        public Device? Device { get; set; }
 
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UPOD.REPOSITORIES.RequestModels
+namespace UPOD.REPOSITORIES.ResponeModels
 {
     public class RequestCreateResponse
     {
