@@ -25,18 +25,33 @@ namespace UPOD.API.Controllers
         {
             return await _technician_sv.GetListTechnicians(model);
         }
+
         [HttpGet]
         [Route("get_technician_details")]
         public async Task<ResponseModel<TechnicianResponse>> GetDetailTechnician(Guid id)
         {
             return await _technician_sv.GetDetailTechnician(id);
         }
+        [HttpGet]
+        [Route("get_list_requests_by_id_technician")]
+        public async Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician([FromQuery] PaginationRequest model, Guid id)
+        {
+            return await _technician_sv.GetListRequestsOfTechnician(model, id);
+        }
+
         [HttpPost]
         [Route("create_technician")]
         public async Task<ResponseModel<TechnicianResponse>> CreateTechnician(TechnicianRequest model)
         {
             return await _technician_sv.CreateTechnician(model);
         }
+        [HttpPost]
+        [Route("create_ticket_by_id_request")]
+        public async Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, TicketRequest model)
+        {
+            return await _technician_sv.CreateTicket(id, model);
+        }
+
         [HttpPut]
         [Route("update_technician_by_id")]
         public async Task<ResponseModel<TechnicianResponse>> UpdateTechnician(Guid id, TechnicianRequest model)
