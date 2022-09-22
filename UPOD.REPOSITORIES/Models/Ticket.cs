@@ -12,6 +12,7 @@ namespace UPOD.REPOSITORIES.Models
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string? Solution { get; set; }
         public string? CreateBy { get; set; }
 
         public virtual Device? Device { get; set; }

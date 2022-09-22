@@ -36,12 +36,17 @@ namespace UPOD.API.Controllers
             return await _request_sv.GetDetailRequest(id);
         }
         [HttpGet]
-        [Route("get_technician_by_id_request")]
-        public async Task<ResponseModel<TechnicanResponse>> GetTechnicanRequest([FromQuery] PaginationRequest model,[FromQuery] Guid id)
+        [Route("get_technicians_by_id_request")]
+        public async Task<ResponseModel<TechnicianRequestResponse>> GetTechnicanRequest([FromQuery] PaginationRequest model,[FromQuery] Guid id)
         {
             return await _request_sv.GetTechnicanRequest(model, id);
         }
-
+        [HttpGet]
+        [Route("get_devices_by_id_request")]
+        public async Task<ResponseModel<DeviceResponse>> GetDeviceRequest([FromQuery]  PaginationRequest model, Guid id)
+        {
+            return await _request_sv.GetDeviceRequest(model, id);
+        }
 
         [HttpPost]
         [Route("create_request")]
@@ -55,6 +60,12 @@ namespace UPOD.API.Controllers
         public async Task<ResponseModel<RequestCreateResponse>> UpdateRequest([FromQuery] Guid id, RequestUpdateRequest model)
         {
             return await _request_sv.UpdateRequest(id, model);
+        }
+        [HttpPut]
+        [Route("mapping_technician_to_request_by_id")]
+        public async Task<ResponseModel<MappingTechnicianResponse>> MappingTechnicianRequest(Guid request_id, Guid technician_id)
+        {
+            return await _request_sv.MappingTechnicianRequest(request_id, technician_id);
         }
         [HttpPut]
         [Route("disable_request_by_id")]

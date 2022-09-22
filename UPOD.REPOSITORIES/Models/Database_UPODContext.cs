@@ -296,7 +296,6 @@ namespace UPOD.REPOSITORIES.Models
                     .IsUnicode(false)
                     .HasColumnName("phone");
 
-                entity.Property(e => e.Solution).HasMaxLength(255);
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
@@ -466,6 +465,9 @@ namespace UPOD.REPOSITORIES.Models
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Solution).HasMaxLength(255);
+
 
                 entity.HasOne(d => d.Device)
                     .WithMany(p => p.Tickets)

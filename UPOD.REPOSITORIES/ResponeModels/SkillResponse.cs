@@ -8,6 +8,11 @@ namespace UPOD.REPOSITORIES.ResponeModels
 {
     public class SkillResponse
     {
-        public Guid id  { get; set; }  
+        public Guid id { get; set; }
+        public Guid? technican_id { get; set; }
+        public Guid? service_id { get; set; }
+        public bool? is_delete { get; set; }
+        public DateTime? create_date { get; set; }
+        public DateTime? update_date { get; set; }
     }
 }

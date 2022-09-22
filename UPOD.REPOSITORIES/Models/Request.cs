@@ -30,7 +30,6 @@ namespace UPOD.REPOSITORIES.Models
         public int? Priority { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string? ExceptionSource { get; set; }
-        public string? Solution { get; set; }
         public string? Img { get; set; }
         public string? Token { get; set; }
 

@@ -61,8 +61,7 @@ namespace UPOD.SERVICES.Services
                 desciption = a.PunishmentForIt,
                 service_id = _context.ContractServices.Where(x => x.ContactId.Equals(a.Id)).Select(x => x.ServiceId).ToList(),
 
-
-            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<ContractResponse>(contracts)
             {
                 Total = contracts.Count,

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UPOD.REPOSITORIES.ResponeModels
 {
-    public class TechnicanResponse
+    public class TechnicianResponse
     {
         public Guid? id { get; set; }
         public Guid? area_id { get; set; }
@@ -16,10 +16,11 @@ namespace UPOD.REPOSITORIES.ResponeModels
         public string? email { get; set; }
         public int? gender { get; set; }
         public string? address { get; set; }
-        public double? ratingAvg { get; set; }
+        public double? rating_avg { get; set; }
         public bool? is_busy { get; set; }
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
+        public List<Guid?> service_id { get; set; }
     }
 }
