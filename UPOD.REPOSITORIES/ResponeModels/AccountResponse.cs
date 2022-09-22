@@ -1,13 +1,6 @@
-﻿using Reso.Core.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UPOD.REPOSITORIES.ResponeModels
+﻿namespace UPOD.REPOSITORIES.ResponeModels
 {
-    public  class AccountResponse
+    public class AccountResponse
     {
         public Guid id { get; set; }
         public Guid? role_id { get; set; }

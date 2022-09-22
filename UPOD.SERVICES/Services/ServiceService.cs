@@ -114,7 +114,7 @@ namespace UPOD.SERVICES.Services
                 Id = id,
                 ServiceName = model.service_name,
                 Desciption = model.desciption,
-                IsDelete = false,
+                IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now,
             }).FirstOrDefaultAsync();

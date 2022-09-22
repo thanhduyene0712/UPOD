@@ -31,7 +31,7 @@ namespace UPOD.SERVICES.Services
                 service_id = a.ServiceId,
                 device_type_name = a.DeviceTypeName,
                 desciption = a.Desciption,
-                is_delete = false,
+                is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate
 

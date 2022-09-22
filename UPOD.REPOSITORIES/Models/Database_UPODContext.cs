@@ -261,7 +261,7 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Guideline1).HasColumnName("Guideline");
+                entity.Property(e => e.GuidelineDes).HasColumnName("Guideline");
 
                 entity.Property(e => e.GuidelineName).HasMaxLength(255);
 

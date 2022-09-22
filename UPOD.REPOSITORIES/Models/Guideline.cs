@@ -7,7 +7,7 @@ namespace UPOD.REPOSITORIES.Models
     {
         public Guid Id { get; set; }
         public Guid? ServiceId { get; set; }
-        public string? Guideline1 { get; set; }
+        public string? GuidelineDes { get; set; }
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
         public string? GuidelineName { get; set; }

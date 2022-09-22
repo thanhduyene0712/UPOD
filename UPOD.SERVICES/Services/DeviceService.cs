@@ -185,7 +185,7 @@ namespace UPOD.SERVICES.Services
                 DevicePassword = model.device_password,
                 SettingDate = model.setting_date,
                 Other = model.other,
-                IsDelete = false,
+                IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now
 
