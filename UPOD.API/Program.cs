@@ -25,8 +25,8 @@ builder.Services.ConfigureAutoMapper();
 builder.Services.ConfigureDI();
 builder.Services.ConfigureServiceWorkers();
 builder.Services.ConfigDataProtection();
-//var port = Environment.GetEnvironmentVariable("PORT");
-//builder.WebHost.UseUrls("http://*:" + port);
+var port = Environment.GetEnvironmentVariable("PORT");
+builder.WebHost.UseUrls("http://*:" + port);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
