@@ -8,14 +8,13 @@ namespace UPOD.REPOSITORIES.Models
         public Device()
         {
             Tickets = new HashSet<Ticket>();
-            AgencyDevices = new HashSet<AgencyDevice>();
         }
 
         public Guid Id { get; set; }
-        public Guid? ConpanyId { get; set; }
+        public Guid? AgencyId { get; set; }
         public Guid? DeviceTypeId { get; set; }
         public string? DeviceName { get; set; }
-        public string? DeviceCode { get; set; }
+        public string? Code { get; set; }
         public DateTime? GuarantyStartDate { get; set; }
         public DateTime? GuarantyEndDate { get; set; }
         public string? Ip { get; set; }
@@ -28,9 +27,8 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 
-        public virtual Company? Conpany { get; set; }
+        public virtual Agency? Agency { get; set; }
         public virtual DeviceType? DeviceType { get; set; }
-        public virtual ICollection<AgencyDevice> AgencyDevices { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

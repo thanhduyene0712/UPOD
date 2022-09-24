@@ -13,6 +13,5 @@ namespace UPOD.REPOSITORIES.RequestModels
         public string? telephone { get; set; }
         public Guid? area_id { get; set; }
         public string? manager_name { get; set; }
-        public List<Guid> device_id { get; set; }
     }
 }

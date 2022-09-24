@@ -9,13 +9,13 @@ namespace UPOD.REPOSITORIES.RequestModels
     public class TechnicianRequest
     {
         public Guid? area_id { get; set; }
-        public string? technican_name { get; set; }
+        public string? technician_name { get; set; }
         public Guid? account_id { get; set; }
         public string? telephone { get; set; }
         public string? email { get; set; }
         public int? gender { get; set; }
         public string? address { get; set; }
         public double? rating_avg { get; set; }
-        public List<Guid> service_id { get; set; }
+        public List<Guid?> service_id { get; set; } = null!;
     }
 }

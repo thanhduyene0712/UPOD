@@ -26,19 +26,19 @@ namespace UPOD.API.Controllers
 
         [HttpPost]
         [Route("create_area")]
-        public async Task<ResponseModel<AreaResponse>> CreateArea(AreaRequest model)
+        public async Task<ObjectModelResponse> CreateArea(AreaRequest model)
         {
             return await _area_sv.CreateArea(model);
         }
         [HttpPut]
         [Route("update_area_by_id")]
-        public async Task<ResponseModel<AreaResponse>> UpdateDervice(Guid id, AreaRequest model)
+        public async Task<ObjectModelResponse> UpdateDervice(Guid id, AreaRequest model)
         {
             return await _area_sv.UpdateArea(id, model);
         }
         [HttpPut]
         [Route("disable_area_by_id")]
-        public async Task<ResponseModel<AreaResponse>> DisableDervice(Guid id)
+        public async Task<ObjectModelResponse> DisableDervice(Guid id)
         {
             return await _area_sv.DisableArea(id);
         }

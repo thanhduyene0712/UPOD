@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace UPOD.REPOSITORIES.RequestModels
 {
-    public class AgencyDeviceRequest
+    public class AccountUpdateRequest
     {
-        public Guid? device_id { get; set; }
-        public Guid? agency_id { get; set; }
+        public Guid role_id { get; set; }
+        public string? password { get; set; }
     }
 }

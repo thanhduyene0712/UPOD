@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace UPOD.REPOSITORIES.ResponeModels
 {
-    public class ResponseModel<T>
+    public class ObjectModelResponse
     {
-        public ResponseModel(ICollection<T> data)
+        public ObjectModelResponse(object data)
         {
-            Data = data;
             Message = "Successfull";
             Status = 200;
+            Data = data;
         }
-       
+
         public string Message { get; set; }
         public int Status { get; set; }
         public string Type { get; set; }
-        public int Total { get; set; }
-        public ICollection<T> Data { get; set; }
+        public object Data { get; set; }
+
     }
 }

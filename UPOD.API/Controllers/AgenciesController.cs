@@ -27,25 +27,25 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_agency_details")]
-        public async Task<ResponseModel<AgencyResponse>> GetDetailAgency(Guid id)
+        public async Task<ObjectModelResponse> GetDetailsAgency(Guid id)
         {
-            return await _agency_sv.GetDetailAgency(id);
+            return await _agency_sv.GetDetailsAgency(id);
         }
         [HttpPost]
         [Route("create_agency")]
-        public async Task<ResponseModel<AgencyResponse>> CreateAgency(AgencyRequest model)
+        public async Task<ObjectModelResponse> CreateAgency(AgencyRequest model)
         {
             return await _agency_sv.CreateAgency(model);
         }
         [HttpPut]
         [Route("update_agency_by_id")]
-        public async Task<ResponseModel<AgencyResponse>> UpdateAgency(Guid id, AgencyUpdateRequest model)
+        public async Task<ObjectModelResponse> UpdateAgency(Guid id, AgencyUpdateRequest model)
         {
             return await _agency_sv.UpdateAgency(id, model);
         }
         [HttpPut]
         [Route("disable_agency_by_id")]
-        public async Task<ResponseModel<AgencyResponse>> DisableAgency(Guid id)
+        public async Task<ObjectModelResponse> DisableAgency(Guid id)
         {
             return await _agency_sv.DisableAgency(id);
         }

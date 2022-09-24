@@ -34,16 +34,16 @@ namespace UPOD.REPOSITORIES.Commons
             services.AddScoped<IAreaRepository, AreaRepository>();
         
 
-            services.AddScoped<ICompanySv, CompanySv>();
-            services.AddScoped<ICompanyRepository, CompanyRepository>();
-        
-
             services.AddScoped<IContractSv, ContractSv>();
             services.AddScoped<IContractRepository, ContractRepository>();
         
 
             services.AddScoped<IContractServiceSv, ContractServiceSv>();
             services.AddScoped<IContractServiceRepository, ContractServiceRepository>();
+        
+
+            services.AddScoped<ICustomerSv, CustomerSv>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
         
 
             services.AddScoped<IDeviceSv, DeviceSv>();
@@ -78,8 +78,8 @@ namespace UPOD.REPOSITORIES.Commons
             services.AddScoped<ISkillRepository, SkillRepository>();
         
 
-            services.AddScoped<ITechnicanSv, TechnicanSv>();
-            services.AddScoped<ITechnicanRepository, TechnicanRepository>();
+            services.AddScoped<ITechnicianSv, TechnicianSv>();
+            services.AddScoped<ITechnicianRepository, TechnicianRepository>();
         
 
             services.AddScoped<ITicketSv, TicketSv>();

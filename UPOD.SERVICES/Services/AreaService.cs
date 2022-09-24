@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
 {
@@ -9,9 +11,9 @@ namespace UPOD.SERVICES.Services
     public interface IAreaService
     {
         Task<ResponseModel<AreaResponse>> GetListAreas(PaginationRequest model);
-        Task<ResponseModel<AreaResponse>> CreateArea(AreaRequest model);
-        Task<ResponseModel<AreaResponse>> UpdateArea(Guid id, AreaRequest model);
-        Task<ResponseModel<AreaResponse>> DisableArea(Guid id);
+        Task<ObjectModelResponse> CreateArea(AreaRequest model);
+        Task<ObjectModelResponse> UpdateArea(Guid id, AreaRequest model);
+        Task<ObjectModelResponse> DisableArea(Guid id);
     }
 
     public class AreaService : IAreaService
@@ -28,13 +30,14 @@ namespace UPOD.SERVICES.Services
             var areas = await _context.Areas.Where(a => a.IsDelete == false).Select(a => new AreaResponse
             {
                 id = a.Id,
+                code = a.Code,
                 area_name = a.AreaName,
                 description = a.Description,
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate
 
-            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AreaResponse>(areas)
             {
                 Total = areas.Count,
@@ -42,12 +45,14 @@ namespace UPOD.SERVICES.Services
             };
         }
 
-        public async Task<ResponseModel<AreaResponse>> CreateArea(AreaRequest model)
+        public async Task<ObjectModelResponse> CreateArea(AreaRequest model)
         {
-
+            var code_number = await GetLastCode();
+            var code = CodeHelper.GeneratorCode("AR", code_number + 1);
             var area = new Area
             {
                 Id = Guid.NewGuid(),
+                Code = code,
                 Description = model.description,
                 AreaName = model.area_name,
                 IsDelete = false,
@@ -55,7 +60,7 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = DateTime.Now
 
             };
-            var list = new List<AreaResponse>();
+            var data = new AreaResponse();
             var message = "blank";
             var status = 500;
             var area_id = await _context.Areas.Where(x => x.Id.Equals(area.Id)).FirstOrDefaultAsync();
@@ -69,77 +74,99 @@ namespace UPOD.SERVICES.Services
                 message = "Successfully";
                 status = 201;
                 await _context.Areas.AddAsync(area);
-                await _context.SaveChangesAsync();
-                list.Add(new AreaResponse
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = area.Id,
-                    area_name = area.AreaName,
-                    description = area.Description,
-                    is_delete = area.IsDelete,
-                    create_date = area.CreateDate,
-                    update_date = area.UpdateDate
-                });
+                    data = new AreaResponse
+                    {
+                        id = area.Id,
+                        code = area.Code,
+                        area_name = area.AreaName,
+                        description = area.Description,
+                        is_delete = area.IsDelete,
+                        create_date = area.CreateDate,
+                        update_date = area.UpdateDate
+                    };
+                }
+
             }
 
-            return new ResponseModel<AreaResponse>(list)
+            return new ObjectModelResponse(data)
             {
                 Message = message,
                 Status = status,
-                Total = list.Count,
                 Type = "Area"
             };
         }
 
 
-        public async Task<ResponseModel<AreaResponse>> DisableArea(Guid id)
+        public async Task<ObjectModelResponse> DisableArea(Guid id)
         {
             var area = await _context.Areas.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
-            area.IsDelete = true;
+            area!.IsDelete = true;
             area.UpdateDate = DateTime.Now;
             _context.Areas.Update(area);
-            await _context.SaveChangesAsync();
-            var list = new List<AreaResponse>();
-            list.Add(new AreaResponse
+            var data = new AreaResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
             {
+
+            }
+            data = new AreaResponse
+            {
+                id = id,
+                code = area.Code,
+                description = area.Description,
+                area_name = area.AreaName,
                 is_delete = area.IsDelete,
-            });
-            return new ResponseModel<AreaResponse>(list)
+                create_date = area.CreateDate,
+                update_date = area.UpdateDate
+            };
+            return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Total = list.Count,
                 Type = "Area"
             };
         }
-        public async Task<ResponseModel<AreaResponse>> UpdateArea(Guid id, AreaRequest model)
+        public async Task<ObjectModelResponse> UpdateArea(Guid id, AreaRequest model)
         {
             var area = await _context.Areas.Where(a => a.Id.Equals(id)).Select(x => new Area
             {
                 Id = id,
+                Code = x.Code,
                 AreaName = model.area_name,
                 Description = model.description,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now
             }).FirstOrDefaultAsync();
-            _context.Areas.Update(area);
-            await _context.SaveChangesAsync();
-            var list = new List<AreaResponse>();
-            list.Add(new AreaResponse
+            _context.Areas.Update(area!);
+            var data = new AreaResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
             {
-                id = area.Id,
-                area_name = area.AreaName,
-                description = area.Description,
-                is_delete = area.IsDelete,
-                create_date = area.CreateDate,
-                update_date = area.UpdateDate
-            });
-            return new ResponseModel<AreaResponse>(list)
+                data = new AreaResponse
+                {
+                    id = area!.Id,
+                    code = area.Code,
+                    area_name = area.AreaName,
+                    description = area.Description,
+                    is_delete = area.IsDelete,
+                    create_date = area.CreateDate,
+                    update_date = area.UpdateDate
+                };
+            }
+
+            return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Total = list.Count,
                 Type = "Area"
             };
         }
-
+        private async Task<int> GetLastCode()
+        {
+            var area = await _context.Areas.OrderBy(x => x.Code).LastOrDefaultAsync();
+            return CodeHelper.StringToInt(area!.Code!);
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class DeviceRequest
     {
-        public Guid? conpany_id { get; set; }
+        public Guid? customer_id { get; set; }
         public Guid? devicetype_id { get; set; }
         public string? device_name { get; set; }
         public string? device_code { get; set; }
