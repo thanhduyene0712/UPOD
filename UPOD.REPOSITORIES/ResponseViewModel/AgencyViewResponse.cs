@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace UPOD.REPOSITORIES.ResponseViewModel
 {
-    public class DeviceViewResponse
+    public class AgencyViewResponse
     {
-        public Guid? id { get; set; }
+        public Guid id { get; set; }
         public string? code { get; set; }
-        public string? device_name { get; set; }
+        public string? agency_name { get; set; }
+        public string? address { get; set; }
     }
 }

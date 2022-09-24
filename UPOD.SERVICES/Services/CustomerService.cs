@@ -116,7 +116,7 @@ namespace UPOD.SERVICES.Services
             if (customer_name != null)
             {
                 status = 400;
-                message = "CompanyName is already exists!";
+                message = "CustomerName is already exists!";
             }
             else
             {
@@ -199,7 +199,7 @@ namespace UPOD.SERVICES.Services
             return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Type = "Company"
+                Type = "Customer"
             };
         }
         public async Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model)
@@ -215,7 +215,7 @@ namespace UPOD.SERVICES.Services
                 PercentForTechnicianRate = model.percent_for_technican_rate,
                 PercentForTechnicianFamiliarWithAgency = model.percent_for_technican_familiar_with_agency,
                 IsDelete = x.IsDelete,
-                CreateDate = DateTime.Now,
+                CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now,
 
             }).FirstOrDefaultAsync();
@@ -252,7 +252,7 @@ namespace UPOD.SERVICES.Services
             return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Type = "Company"
+                Type = "Customer"
             };
         }
 

@@ -9,6 +9,7 @@ namespace UPOD.REPOSITORIES.ResponeModels
     public class RequestCreateResponse
     {
         public Guid id { get; set; }
+        public string? code { get; set; }
         public string? request_name { get; set; }
         public string? request_description { get; set; }
         public int? estimation { get; set; }
