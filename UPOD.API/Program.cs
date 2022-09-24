@@ -4,21 +4,15 @@ using UPOD.REPOSITORIES.Models;
 using UPOD.SERVICES.Handlers;
 using UPOP.SERVICES.App_Start;
 
-
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
                           policy.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-                      });
-});
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
 
 // Add services to the container.
 
@@ -39,8 +33,8 @@ builder.Services.ConfigDataProtection();
 var port = Environment.GetEnvironmentVariable("PORT");
 builder.WebHost.UseUrls("http://*:" + port);
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -54,6 +48,7 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseRouting();
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseCors(MyAllowSpecificOrigins);
 
