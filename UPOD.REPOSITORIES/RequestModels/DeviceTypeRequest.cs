@@ -10,6 +10,6 @@ namespace UPOD.REPOSITORIES.RequestModels
     {
         public Guid? service_id { get; set; }
         public string? device_type_name { get; set; }
-        public string? desciption { get; set; }
+        public string? description { get; set; }
     }
 }

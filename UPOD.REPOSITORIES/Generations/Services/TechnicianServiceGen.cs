@@ -9,11 +9,11 @@ namespace UPOD.REPOSITORIES.Services
     using Reso.Core.BaseConnect;
     using UPOD.REPOSITORIES.Models;
     using UPOD.REPOSITORIES.Repositories;
-    public partial interface IAgencyDeviceSv:IBaseService<AgencyDevice>
+    public partial interface ITechnicianSv:IBaseService<Technician>
     {
     }
-    public partial class AgencyDeviceSv:BaseService<AgencyDevice>,IAgencyDeviceSv
+    public partial class TechnicianSv:BaseService<Technician>,ITechnicianSv
     {
-        public AgencyDeviceSv(IUnitOfWork unitOfWork,IAgencyDeviceRepository repository):base(unitOfWork,repository){}
+        public TechnicianSv(IUnitOfWork unitOfWork,ITechnicianRepository repository):base(unitOfWork,repository){}
     }
 }

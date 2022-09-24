@@ -28,9 +28,9 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_technician_details")]
-        public async Task<ResponseModel<TechnicianResponse>> GetDetailTechnician(Guid id)
+        public async Task<ObjectModelResponse> GetDetailsTechnician(Guid id)
         {
-            return await _technician_sv.GetDetailTechnician(id);
+            return await _technician_sv.GetDetailsTechnician(id);
         }
         [HttpGet]
         [Route("get_list_requests_by_id_technician")]
@@ -41,26 +41,26 @@ namespace UPOD.API.Controllers
 
         [HttpPost]
         [Route("create_technician")]
-        public async Task<ResponseModel<TechnicianResponse>> CreateTechnician(TechnicianRequest model)
+        public async Task<ObjectModelResponse> CreateTechnician(TechnicianRequest model)
         {
             return await _technician_sv.CreateTechnician(model);
         }
         [HttpPost]
         [Route("create_ticket_by_id_request")]
-        public async Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, TicketRequest model)
+        public async Task<ObjectModelResponse> CreateTicket(Guid id, TicketRequest model)
         {
             return await _technician_sv.CreateTicket(id, model);
         }
 
         [HttpPut]
         [Route("update_technician_by_id")]
-        public async Task<ResponseModel<TechnicianResponse>> UpdateTechnician(Guid id, TechnicianRequest model)
+        public async Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model)
         {
             return await _technician_sv.UpdateTechnician(id, model);
         }
         [HttpPut]
         [Route("disable_technician_by_id")]
-        public async Task<ResponseModel<TechnicianResponse>> DisableTechnician(Guid id)
+        public async Task<ObjectModelResponse> DisableTechnician(Guid id)
         {
             return await _technician_sv.DisableTechnician(id);
         }

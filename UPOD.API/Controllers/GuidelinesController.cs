@@ -26,19 +26,19 @@ namespace UPOD.API.Controllers
 
         [HttpPost]
         [Route("create_guideline")]
-        public async Task<ResponseModel<GuidelineResponse>> CreateGuideline(GuidelineRequest model)
+        public async Task<ObjectModelResponse> CreateGuideline(GuidelineRequest model)
         {
             return await _guideline_sv.CreateGuideline(model);
         }
         [HttpPut]
         [Route("update_guideline_by_id")]
-        public async Task<ResponseModel<GuidelineResponse>> UpdateDervice(Guid id, GuidelineRequest model)
+        public async Task<ObjectModelResponse> UpdateDervice(Guid id, GuidelineRequest model)
         {
             return await _guideline_sv.UpdateGuideline(id, model);
         }
         [HttpPut]
         [Route("disable_guideline_by_id")]
-        public async Task<ResponseModel<GuidelineResponse>> DisableDervice(Guid id)
+        public async Task<ObjectModelResponse> DisableDervice(Guid id)
         {
             return await _guideline_sv.DisableGuideline(id);
         }

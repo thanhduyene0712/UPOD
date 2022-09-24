@@ -2,6 +2,8 @@
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseViewModel;
+using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
 {
@@ -9,10 +11,9 @@ namespace UPOD.SERVICES.Services
     public interface IContractServiceService
     {
         Task<ResponseModel<ContractResponse>> GetAll(PaginationRequest model);
-        Task<ResponseModel<ContractResponse>> CreateContract(ContractRequest model);
-        Task<ResponseModel<ContractDetailResponse>> GetDetailContract(Guid id);
-        Task<ResponseModel<ContractListResponse>> GetListContract(PaginationRequest model);
-        Task<ResponseModel<ContractResponse>> DisableContract(Guid id);
+        Task<ObjectModelResponse> CreateContract(ContractRequest model);
+        Task<ObjectModelResponse> GetDetailsContract(Guid id);
+        Task<ObjectModelResponse> DisableContract(Guid id);
     }
 
     public class ContractServiceService : IContractServiceService
@@ -22,21 +23,55 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<ContractResponse>> DisableContract(Guid id)
+        public async Task<ObjectModelResponse> DisableContract(Guid id)
         {
             var contract = await _context.Contracts.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
-            contract.IsDelete = true;
+            contract!.IsDelete = true;
             contract.UpdateDate = DateTime.Now;
             _context.Contracts.Update(contract);
-            await _context.SaveChangesAsync();
-            var list = new List<ContractResponse>();
-            list.Add(new ContractResponse
+            var data = new ContractResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
             {
-                is_delete = contract.IsDelete
-            });
-            return new ResponseModel<ContractResponse>(list)
+                data = new ContractResponse
+                {
+                    id = id,
+                    code = contract.Code,
+                    contract_name = contract.ContractName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                        percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
+                        percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
+                        percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
+                    },
+                    start_date = contract.StartDate,
+                    end_date = contract.EndDate,
+                    is_delete = contract.IsDelete,
+                    create_date = contract.CreateDate,
+                    update_date = contract.UpdateDate,
+                    contract_price = contract.ContractPrice,
+                    time_commit = contract.TimeCommit,
+                    priority = contract.Priority,
+                    description = contract.Description,
+                    punishment_for_customer = contract.PunishmentForCustomer,
+                    punishment_for_it = contract.PunishmentForIt,
+                    service = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
+                    {
+                        id = x.ServiceId,
+                        code = x.Service!.Code,
+                        service_name = x.Service!.ServiceName,
+                        description = x.Service!.Description,
+                    }).ToList()
+
+                };
+            }
+
+            return new ObjectModelResponse(data)
             {
-                Total = list.Count,
                 Type = "Contract"
             };
         }
@@ -46,87 +81,108 @@ namespace UPOD.SERVICES.Services
             var contracts = await _context.Contracts.Where(a => a.IsDelete == false).Select(a => new ContractResponse
             {
                 id = a.Id,
-                company_id = a.CompanyId,
+                code = a.Code,
                 contract_name = a.ContractName,
-                contract_price = a.ContractPrice,
+                customer = new CustomerViewResponse
+                {
+                    id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                    name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                    description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
+                    percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
+                    percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
+                },
                 start_date = a.StartDate,
                 end_date = a.EndDate,
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
+                contract_price = a.ContractPrice,
                 time_commit = a.TimeCommit,
                 priority = a.Priority,
+                description = a.Description,
                 punishment_for_customer = a.PunishmentForCustomer,
                 punishment_for_it = a.PunishmentForIt,
-                desciption = a.PunishmentForIt,
-                service_id = _context.ContractServices.Where(x => x.ContactId.Equals(a.Id)).Select(x => x.ServiceId).ToList(),
+                service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
+                {
+                    id = x.ServiceId,
+                    code = x.Service!.Code,
+                    service_name = x.Service!.ServiceName,
+                    description = x.Service!.Description,
+                }).ToList()
 
-            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<ContractResponse>(contracts)
             {
                 Total = contracts.Count,
                 Type = "Contracts"
             };
         }
-        public async Task<ResponseModel<ContractListResponse>> GetListContract(PaginationRequest model)
+
+
+        public async Task<ObjectModelResponse> GetDetailsContract(Guid id)
         {
-            var contracts = await _context.Contracts.Where(a => a.IsDelete == false).Select(a => new ContractListResponse
+            var contract = await _context.Contracts.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new ContractResponse
             {
-                company_name = a.Company.CompanyName,
+                id = a.Id,
+                code = a.Code,
                 contract_name = a.ContractName,
+                customer = new CustomerViewResponse
+                {
+                    id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                    name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                    description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
+                    percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
+                    percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
+                },
                 start_date = a.StartDate,
                 end_date = a.EndDate,
+                is_delete = a.IsDelete,
                 create_date = a.CreateDate,
-
-            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<ContractListResponse>(contracts)
-            {
-                Total = contracts.Count,
-                Type = "Contracts"
-            };
-        }
-
-        public async Task<ResponseModel<ContractDetailResponse>> GetDetailContract(Guid id)
-        {
-            var contract = await _context.Contracts.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new ContractDetailResponse
-            {
-                contract_name = a.ContractName,
-                company_name = a.Company.CompanyName,
-                create_date = a.CreateDate,
-                start_date = a.StartDate,
-                end_date = a.EndDate,
+                update_date = a.UpdateDate,
                 contract_price = a.ContractPrice,
                 time_commit = a.TimeCommit,
                 priority = a.Priority,
+                description = a.Description,
                 punishment_for_customer = a.PunishmentForCustomer,
                 punishment_for_it = a.PunishmentForIt,
-                desciption = a.Desciption,
-            }).ToListAsync();
-            return new ResponseModel<ContractDetailResponse>(contract)
+                service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
+                {
+                    id = x.ServiceId,
+                    code = x.Service!.Code,
+                    service_name = x.Service!.ServiceName,
+                    description = x.Service!.Description,
+                }).ToList(),
+            }).FirstOrDefaultAsync();
+            return new ObjectModelResponse(contract!)
             {
-                Total = contract.Count,
                 Type = "Contract"
             };
         }
-        public async Task<ResponseModel<ContractResponse>> CreateContract(ContractRequest model)
+        public async Task<ObjectModelResponse> CreateContract(ContractRequest model)
         {
-
+            var code_number = await GetLastCode();
+            var code = CodeHelper.GeneratorCode("CON", code_number + 1);
             var contract = new Contract
             {
                 Id = Guid.NewGuid(),
-                CompanyId = model.company_id,
+                Code = code,
+                CustomerId = model.customer_id,
                 ContractName = model.contract_name,
                 StartDate = model.start_date,
                 EndDate = model.end_date,
                 TimeCommit = model.time_commit,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
-                UpdateDate = null,
+                UpdateDate = DateTime.Now,
                 ContractPrice = model.contract_price,
                 Priority = model.priority,
-                PunishmentForCustomer = model.punishment_for_customer,
-                PunishmentForIt = model.punishment_for_it,
-                Desciption = model.desciption,
+                PunishmentForCustomer = model.punishment_for_customer!,
+                PunishmentForIt = model.punishment_for_it!,
+                Description = model.description!,
 
             };
             foreach (var item in model.service_id)
@@ -134,7 +190,8 @@ namespace UPOD.SERVICES.Services
                 var contract_service = new ContractService
                 {
                     Id = Guid.NewGuid(),
-                    ContactId = contract.Id,
+                    Code = null,
+                    ContractId = contract.Id,
                     ServiceId = item,
                     StartDate = contract.StartDate,
                     EndDate = contract.EndDate,
@@ -144,10 +201,10 @@ namespace UPOD.SERVICES.Services
                 };
                 _context.ContractServices.Add(contract_service);
             }
-            var list = new List<ContractResponse>();
+            var data = new ContractResponse();
             var message = "blank";
             var status = 500;
-            var contract_name = await _context.Contracts.Where(x => x.ContractName.Equals(contract.ContractName)).FirstOrDefaultAsync();
+            var contract_name = await _context.Contracts.Where(x => x.ContractName!.Equals(contract.ContractName)).FirstOrDefaultAsync();
             if (contract_name != null)
             {
                 status = 400;
@@ -158,36 +215,59 @@ namespace UPOD.SERVICES.Services
                 message = "Successfully";
                 status = 201;
                 await _context.Contracts.AddAsync(contract);
-                await _context.SaveChangesAsync();
-                list.Add(new ContractResponse
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = contract.Id,
-                    company_id = contract.CompanyId,
-                    contract_name = contract.ContractName,
-                    start_date = contract.StartDate,
-                    end_date = contract.EndDate,
-                    time_commit = contract.TimeCommit,
-                    is_delete = contract.IsDelete,
-                    create_date = contract.CreateDate,
-                    update_date = contract.UpdateDate,
-                    contract_price = contract.ContractPrice,
-                    priority = contract.Priority,
-                    punishment_for_customer = contract.PunishmentForCustomer,
-                    punishment_for_it = contract.PunishmentForIt,
-                    desciption = contract.Desciption,
-                    service_id = _context.ContractServices.Where(x => x.ContactId.Equals(contract.Id)).Select(x => x.ServiceId).ToList(),
-                });
+                    data = new ContractResponse
+                    {
+                        id = contract.Id,
+                        code = contract.Code,
+                        contract_name = contract.ContractName,
+                        customer = new CustomerViewResponse
+                        {
+                            id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                            code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                            name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                            description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                            percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
+                            percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
+                            percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
+                        },
+                        start_date = contract.StartDate,
+                        end_date = contract.EndDate,
+                        is_delete = contract.IsDelete,
+                        create_date = contract.CreateDate,
+                        update_date = contract.UpdateDate,
+                        contract_price = contract.ContractPrice,
+                        time_commit = contract.TimeCommit,
+                        priority = contract.Priority,
+                        description = contract.Description,
+                        punishment_for_customer = contract.PunishmentForCustomer,
+                        punishment_for_it = contract.PunishmentForIt,
+                        service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
+                        {
+                            id = x.ServiceId,
+                            code = x.Service!.Code,
+                            service_name = x.Service!.ServiceName,
+                            description = x.Service!.Description,
+                        }).ToList(),
+                    };
+                }
             }
 
-            return new ResponseModel<ContractResponse>(list)
+
+            return new ObjectModelResponse(data)
             {
                 Message = message,
                 Status = status,
-                Total = list.Count,
                 Type = "Contract"
             };
         }
-      
 
+        private async Task<int> GetLastCode()
+        {
+            var contract = await _context.Contracts.OrderBy(x => x.Code).LastOrDefaultAsync();
+            return CodeHelper.StringToInt(contract!.Code!);
+        }
     }
 }

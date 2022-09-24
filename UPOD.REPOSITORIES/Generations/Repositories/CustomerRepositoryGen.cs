@@ -10,12 +10,12 @@ using Reso.Core.BaseConnect;
 using UPOD.REPOSITORIES.Models;
 namespace UPOD.REPOSITORIES.Repositories
 {
-    public partial interface ICompanyRepository :IBaseRepository<Company>
+    public partial interface ICustomerRepository :IBaseRepository<Customer>
     {
     }
-    public partial class CompanyRepository :BaseRepository<Company>, ICompanyRepository
+    public partial class CustomerRepository :BaseRepository<Customer>, ICustomerRepository
     {
-         public CompanyRepository(DbContext dbContext) : base(dbContext)
+         public CustomerRepository(DbContext dbContext) : base(dbContext)
          {
          }
     }

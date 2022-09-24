@@ -1,18 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq.Dynamic.Core;
+using System.Threading.Tasks;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseViewModel;
+using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
 {
 
     public interface IDeviceService
     {
-        Task<ResponseModel<DeviceResponse>> GetListDevice(PaginationRequest model);
-        Task<ResponseModel<DeviceResponse>> GetDetailDevice(Guid id);
-        Task<ResponseModel<DeviceResponse>> CreateDevice(DeviceRequest model);
-        Task<ResponseModel<DeviceResponse>> UpdateDevice(Guid id, DeviceUpdateRequest model);
-        Task<ResponseModel<DeviceResponse>> DisableDevice(Guid id);
+        Task<ResponseModel<DeviceResponse>> GetListDevices(PaginationRequest model);
+        Task<ObjectModelResponse> GetDetailsDevice(Guid id);
+        Task<ObjectModelResponse> CreateDevice(DeviceRequest model);
+        Task<ObjectModelResponse> UpdateDevice(Guid id, DeviceUpdateRequest model);
+        Task<ObjectModelResponse> DisableDevice(Guid id);
     }
 
     public class DeviceService : IDeviceService
@@ -23,15 +29,27 @@ namespace UPOD.SERVICES.Services
             _context = context;
         }
 
-        public async Task<ResponseModel<DeviceResponse>> GetListDevice(PaginationRequest model)
+        public async Task<ResponseModel<DeviceResponse>> GetListDevices(PaginationRequest model)
         {
             var devices = await _context.Devices.Where(a => a.IsDelete == false).Select(a => new DeviceResponse
             {
                 id = a.Id,
-                conpany_id = a.ConpanyId,
-                devicetype_id = a.DeviceTypeId,
+                code = a.Code,
+                agency = new AgencyViewResponse
+                {
+                    id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                    agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                },
+                devicetype = new DeviceTypeViewResponse
+                {
+                    id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
+                    service_id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
+                    device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
+                    code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                },
                 device_name = a.DeviceName,
-                device_code = a.DeviceCode,
                 guaranty_start_date = a.GuarantyStartDate,
                 guaranty_end_date = a.GuarantyEndDate,
                 ip = a.Ip,
@@ -43,22 +61,34 @@ namespace UPOD.SERVICES.Services
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate
-            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<DeviceResponse>(devices)
             {
                 Total = devices.Count,
                 Type = "Devices"
             };
         }
-        public async Task<ResponseModel<DeviceResponse>> GetDetailDevice(Guid id)
+        public async Task<ObjectModelResponse> GetDetailsDevice(Guid id)
         {
-            var devices = await _context.Devices.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(a => new DeviceResponse
+            var device = await _context.Devices.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(a => new DeviceResponse
             {
                 id = a.Id,
-                conpany_id = a.ConpanyId,
-                devicetype_id = a.DeviceTypeId,
+                code = a.Code,
+                agency = new AgencyViewResponse
+                {
+                    id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                    agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                },
+                devicetype = new DeviceTypeViewResponse
+                {
+                    id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
+                    service_id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
+                    device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
+                    code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                },
                 device_name = a.DeviceName,
-                device_code = a.DeviceCode,
                 guaranty_start_date = a.GuarantyStartDate,
                 guaranty_end_date = a.GuarantyEndDate,
                 ip = a.Ip,
@@ -70,26 +100,25 @@ namespace UPOD.SERVICES.Services
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate
-
-            }).ToListAsync();
-            return new ResponseModel<DeviceResponse>(devices)
+            }).FirstOrDefaultAsync();
+            return new ObjectModelResponse(device!)
             {
-                Total = devices.Count,
                 Type = "Devices"
             };
         }
 
 
-        public async Task<ResponseModel<DeviceResponse>> CreateDevice(DeviceRequest model)
+        public async Task<ObjectModelResponse> CreateDevice(DeviceRequest model)
         {
-
+            var code_number = await GetLastCode();
+            var code = CodeHelper.GeneratorCode("DE", code_number + 1);
             var device = new Device
             {
                 Id = Guid.NewGuid(),
-                ConpanyId = model.conpany_id,
+                Code = code,
+                AgencyId = model.agency_id,
                 DeviceTypeId = model.devicetype_id,
                 DeviceName = model.device_name,
-                DeviceCode = model.device_code,
                 GuarantyStartDate = model.guaranty_start_date,
                 GuarantyEndDate = model.guaranty_end_date,
                 Ip = model.ip,
@@ -103,7 +132,7 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = DateTime.Now
 
             };
-            var list = new List<DeviceResponse>();
+            var data = new DeviceResponse();
             var message = "blank";
             var status = 500;
             var device_id = await _context.Devices.Where(x => x.Id.Equals(device.Id)).FirstOrDefaultAsync();
@@ -117,14 +146,82 @@ namespace UPOD.SERVICES.Services
                 message = "Successfully";
                 status = 201;
                 await _context.Devices.AddAsync(device);
-                await _context.SaveChangesAsync();
-                list.Add(new DeviceResponse
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    data = new DeviceResponse
+                    {
+                        id = device.Id,
+                        code = device.Code,
+                        agency = new AgencyViewResponse
+                        {
+                            id = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                            code = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                            agency_name = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                            address = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                        },
+                        devicetype = new DeviceTypeViewResponse
+                        {
+                            id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
+                            service_id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
+                            device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
+                            code = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                        },
+                        device_name = device.DeviceName,
+                        guaranty_start_date = device.GuarantyStartDate,
+                        guaranty_end_date = device.GuarantyEndDate,
+                        ip = device.Ip,
+                        port = device.Port,
+                        device_account = device.DeviceAccount,
+                        device_password = device.DevicePassword,
+                        setting_date = device.SettingDate,
+                        other = device.Other,
+                        is_delete = device.IsDelete,
+                        create_date = device.CreateDate,
+                        update_date = device.UpdateDate
+                    };
+                }
+
+            }
+
+            return new ObjectModelResponse(data)
+            {
+                Message = message,
+                Status = status,
+                Type = "Device"
+            };
+        }
+
+
+        public async Task<ObjectModelResponse> DisableDevice(Guid id)
+        {
+            var device = await _context.Devices.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
+            device!.IsDelete = true;
+            device.UpdateDate = DateTime.Now;
+            _context.Devices.Update(device);
+            var data = new DeviceResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new DeviceResponse
                 {
                     id = device.Id,
-                    conpany_id = device.ConpanyId,
-                    devicetype_id = device.DeviceTypeId,
+                    code = device.Code,
+                    agency = new AgencyViewResponse
+                    {
+                        id = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                    },
+                    devicetype = new DeviceTypeViewResponse
+                    {
+                        id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
+                        service_id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
+                        device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
+                        code = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                    },
                     device_name = device.DeviceName,
-                    device_code = device.DeviceCode,
                     guaranty_start_date = device.GuarantyStartDate,
                     guaranty_end_date = device.GuarantyEndDate,
                     ip = device.Ip,
@@ -136,47 +233,24 @@ namespace UPOD.SERVICES.Services
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
                     update_date = device.UpdateDate
-                });
+                };
             }
-
-            return new ResponseModel<DeviceResponse>(list)
-            {
-                Message = message,
-                Status = status,
-                Total = list.Count,
-                Type = "Device"
-            };
-        }
-
-
-        public async Task<ResponseModel<DeviceResponse>> DisableDevice(Guid id)
-        {
-            var device = await _context.Devices.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
-            device.IsDelete = true;
-            device.UpdateDate = DateTime.Now;
-            _context.Devices.Update(device);
-            await _context.SaveChangesAsync();
-            var list = new List<DeviceResponse>();
-            list.Add(new DeviceResponse
-            {
-                is_delete = device.IsDelete,
-            });
-            return new ResponseModel<DeviceResponse>(list)
+            return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Total = list.Count,
                 Type = "Device"
             };
+
         }
-        public async Task<ResponseModel<DeviceResponse>> UpdateDevice(Guid id, DeviceUpdateRequest model)
+        public async Task<ObjectModelResponse> UpdateDevice(Guid id, DeviceUpdateRequest model)
         {
             var device = await _context.Devices.Where(a => a.Id.Equals(id)).Select(x => new Device
             {
                 Id = id,
-                ConpanyId = x.ConpanyId,
+                Code = x.Code,
+                AgencyId = x.AgencyId,
                 DeviceTypeId = model.devicetype_id,
                 DeviceName = model.device_name,
-                DeviceCode = model.device_code,
                 GuarantyStartDate = model.guaranty_start_date,
                 GuarantyEndDate = model.guaranty_end_date,
                 Ip = model.ip,
@@ -190,35 +264,54 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = DateTime.Now
 
             }).FirstOrDefaultAsync();
-            _context.Devices.Update(device);
-            await _context.SaveChangesAsync();
-            var list = new List<DeviceResponse>();
-            list.Add(new DeviceResponse
+            _context.Devices.Update(device!);
+            var data = new DeviceResponse();
+            var rs = await _context.SaveChangesAsync();
+            if(rs > 0)
             {
-                id = device.Id,
-                conpany_id = device.ConpanyId,
-                devicetype_id = device.DeviceTypeId,
-                device_name = device.DeviceName,
-                device_code = device.DeviceCode,
-                guaranty_start_date = device.GuarantyStartDate,
-                guaranty_end_date = device.GuarantyEndDate,
-                ip = device.Ip,
-                port = device.Port,
-                device_account = device.DeviceAccount,
-                device_password = device.DevicePassword,
-                setting_date = device.SettingDate,
-                other = device.Other,
-                is_delete = device.IsDelete,
-                create_date = device.CreateDate,
-                update_date = device.UpdateDate
-            });
-            return new ResponseModel<DeviceResponse>(list)
+                data = new DeviceResponse
+                {
+                    id = device!.Id,
+                    code = device.Code,
+                    agency = new AgencyViewResponse
+                    {
+                        id = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                    },
+                    devicetype = new DeviceTypeViewResponse
+                    {
+                        id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
+                        service_id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
+                        device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
+                        code = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                    },
+                    device_name = device.DeviceName,
+                    guaranty_start_date = device.GuarantyStartDate,
+                    guaranty_end_date = device.GuarantyEndDate,
+                    ip = device.Ip,
+                    port = device.Port,
+                    device_account = device.DeviceAccount,
+                    device_password = device.DevicePassword,
+                    setting_date = device.SettingDate,
+                    other = device.Other,
+                    is_delete = device.IsDelete,
+                    create_date = device.CreateDate,
+                    update_date = device.UpdateDate
+                };
+            }
+           
+            return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Total = list.Count,
                 Type = "Device"
             };
         }
-
+        private async Task<int> GetLastCode()
+        {
+            var device = await _context.Devices.OrderBy(x => x.Code).LastOrDefaultAsync();
+            return CodeHelper.StringToInt(device!.Code!);
+        }
     }
 }

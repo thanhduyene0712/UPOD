@@ -9,6 +9,7 @@ namespace UPOD.REPOSITORIES.ResponeModels
     public class AreaResponse
     {
         public Guid id { get; set; }
+        public string? code { get; set; }
         public string? area_name { get; set; }
         public string? description { get; set; }
         public bool? is_delete { get; set; }

@@ -19,32 +19,32 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_device")]
-        public async Task<ResponseModel<DeviceResponse>> GetListDevice([FromQuery] PaginationRequest model)
+        public async Task<ResponseModel<DeviceResponse>> GetListDevices([FromQuery] PaginationRequest model)
         {
-            return await _device_sv.GetListDevice(model);
+            return await _device_sv.GetListDevices(model);
         }
 
         [HttpGet]
         [Route("get_device_details_by_id")]
-        public async Task<ResponseModel<DeviceResponse>> GetDetailDevice(Guid id)
+        public async Task<ObjectModelResponse> GetDetailsDevice(Guid id)
         {
-            return await _device_sv.GetDetailDevice(id);
+            return await _device_sv.GetDetailsDevice(id);
         }
         [HttpPost]
         [Route("create_device")]
-        public async Task<ResponseModel<DeviceResponse>> CreateDevice(DeviceRequest model)
+        public async Task<ObjectModelResponse> CreateDevice(DeviceRequest model)
         {
             return await _device_sv.CreateDevice(model);
         }
         [HttpPut]
         [Route("update_device_by_id")]
-        public async Task<ResponseModel<DeviceResponse>> UpdateDervice(Guid id, DeviceUpdateRequest model)
+        public async Task<ObjectModelResponse> UpdateDervice(Guid id, DeviceUpdateRequest model)
         {
             return await _device_sv.UpdateDevice(id, model);
         }
         [HttpPut]
         [Route("disable_device_by_id")]
-        public async Task<ResponseModel<DeviceResponse>> DisableDervice(Guid id)
+        public async Task<ObjectModelResponse> DisableDervice(Guid id)
         {
             return await _device_sv.DisableDevice(id);
         }

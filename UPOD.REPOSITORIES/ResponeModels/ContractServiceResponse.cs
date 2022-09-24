@@ -9,7 +9,7 @@ namespace UPOD.REPOSITORIES.ResponeModels
     public class ContractServiceResponse
     {
         public Guid id { get; set; }
-        public Guid contact_id { get; set; }
+        public Guid contract_id { get; set; }
         public Guid service_id { get; set; }
         public DateTime? start_date { get; set; }
         public DateTime? end_date { get; set; }

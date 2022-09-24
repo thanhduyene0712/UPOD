@@ -23,32 +23,27 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_all_contracts")]
-        public async Task<ResponseModel<ContractResponse>> GetAllContracs([FromQuery] PaginationRequest model)
+        public async Task<ResponseModel<ContractResponse>> GetAllContracts([FromQuery] PaginationRequest model)
         {
             return await _contract_service_sv.GetAll(model);
         }
 
-        [HttpGet]
-        [Route("get_list_contracts")]
-        public async Task<ResponseModel<ContractListResponse>> GetListContract([FromQuery] PaginationRequest model)
-        {
-            return await _contract_service_sv.GetListContract(model);
-        }
+
         [HttpGet]
         [Route("get_contract_details_by_id")]
-        public async Task<ResponseModel<ContractDetailResponse>> GetDetailContract([FromQuery] Guid Id)
+        public async Task<ObjectModelResponse> GetDetailsContract([FromQuery] Guid Id)
         {
-            return await _contract_service_sv.GetDetailContract(Id);
+            return await _contract_service_sv.GetDetailsContract(Id);
         }
         [HttpPost]
         [Route("create_contract")]
-        public async Task<ResponseModel<ContractResponse>> CreateContract(ContractRequest model)
+        public async Task<ObjectModelResponse> CreateContract(ContractRequest model)
         {
             return await _contract_service_sv.CreateContract(model);
         }
         [HttpPut]
         [Route("disable_contract_by_id")]
-        public async Task<ResponseModel<ContractResponse>> DisableContract(Guid id)
+        public async Task<ObjectModelResponse> DisableContract(Guid id)
         {
             return await _contract_service_sv.DisableContract(id);
         }

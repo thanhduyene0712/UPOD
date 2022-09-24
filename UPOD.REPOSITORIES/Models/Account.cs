@@ -7,8 +7,8 @@ namespace UPOD.REPOSITORIES.Models
     {
         public Account()
         {
-            Companies = new HashSet<Company>();
-            Technicans = new HashSet<Technican>();
+            Customers = new HashSet<Customer>();
+            Technicians = new HashSet<Technician>();
         }
 
         public Guid Id { get; set; }
@@ -18,9 +18,10 @@ namespace UPOD.REPOSITORIES.Models
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string? Code { get; set; }
 
         public virtual Role? Role { get; set; }
-        public virtual ICollection<Company> Companies { get; set; }
-        public virtual ICollection<Technican> Technicans { get; set; }
+        public virtual ICollection<Customer> Customers { get; set; }
+        public virtual ICollection<Technician> Technicians { get; set; }
     }
 }

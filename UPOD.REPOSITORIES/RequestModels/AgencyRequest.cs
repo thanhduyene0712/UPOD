@@ -8,12 +8,11 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class AgencyRequest
     {
-        public Guid? company_id { get; set; }
+        public Guid? customer_id { get; set; }
         public string? agency_name { get; set; }
         public string? address { get; set; }
         public string? telephone { get; set; }
         public Guid? area_id { get; set; }
         public string? manager_name { get; set; }
-        public List<Guid> device_id { get; set; }
     }
 }

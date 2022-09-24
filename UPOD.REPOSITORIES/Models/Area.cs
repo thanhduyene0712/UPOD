@@ -8,7 +8,7 @@ namespace UPOD.REPOSITORIES.Models
         public Area()
         {
             Agencies = new HashSet<Agency>();
-            Technicans = new HashSet<Technican>();
+            Technicians = new HashSet<Technician>();
         }
 
         public Guid Id { get; set; }
@@ -17,8 +17,9 @@ namespace UPOD.REPOSITORIES.Models
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string? Code { get; set; }
 
         public virtual ICollection<Agency> Agencies { get; set; }
-        public virtual ICollection<Technican> Technicans { get; set; }
+        public virtual ICollection<Technician> Technicians { get; set; }
     }
 }

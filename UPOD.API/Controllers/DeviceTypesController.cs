@@ -21,25 +21,25 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_device_type")]
-        public async Task<ResponseModel<DeviceTypeResponse>> GetListDeviceType([FromQuery] PaginationRequest model)
+        public async Task<ResponseModel<DeviceTypeResponse>> GetListDeviceTypes([FromQuery] PaginationRequest model)
         {
-            return await _device_type_sv.GetListDeviceType(model);
+            return await _device_type_sv.GetListDeviceTypes(model);
         }
         [HttpPost]
         [Route("create_device_type")]
-        public async Task<ResponseModel<DeviceTypeResponse>> CreateDeviceType(DeviceTypeRequest model)
+        public async Task<ObjectModelResponse> CreateDeviceType(DeviceTypeRequest model)
         {
             return await _device_type_sv.CreateDeviceType(model);
         }
         [HttpPut]
         [Route("update_device_type_by_id")]
-        public async Task<ResponseModel<DeviceTypeResponse>> UpdateDerviceType(Guid id, DeviceTypeRequest model)
+        public async Task<ObjectModelResponse> UpdateDerviceType(Guid id, DeviceTypeRequest model)
         {
             return await _device_type_sv.UpdateDeviceType(id, model);
         }
         [HttpPut]
         [Route("disable_device_type_by_id")]
-        public async Task<ResponseModel<DeviceTypeResponse>> DisableDerviceType(Guid id)
+        public async Task<ObjectModelResponse> DisableDerviceType(Guid id)
         {
             return await _device_type_sv.DisableDeviceType(id);
         }

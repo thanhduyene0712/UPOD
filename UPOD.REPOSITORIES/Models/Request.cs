@@ -12,7 +12,7 @@ namespace UPOD.REPOSITORIES.Models
         }
 
         public Guid Id { get; set; }
-        public Guid? CompanyId { get; set; }
+        public Guid? CustomerId { get; set; }
         public Guid? ServiceId { get; set; }
         public string? RequestDesciption { get; set; }
         public int? RequestStatus { get; set; }
@@ -22,7 +22,7 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public Guid? AgencyId { get; set; }
-        public Guid? CurrentTechnicanId { get; set; }
+        public Guid? CurrentTechnicianId { get; set; }
         public double? Rating { get; set; }
         public string? Feedback { get; set; }
         public bool? IsDelete { get; set; }
@@ -32,10 +32,11 @@ namespace UPOD.REPOSITORIES.Models
         public string? ExceptionSource { get; set; }
         public string? Img { get; set; }
         public string? Token { get; set; }
+        public string? Code { get; set; }
 
         public virtual Agency? Agency { get; set; }
-        public virtual Company? Company { get; set; }
-        public virtual Technican? CurrentTechnican { get; set; }
+        public virtual Technician? CurrentTechnician { get; set; }
+        public virtual Customer? Customer { get; set; }
         public virtual Service? Service { get; set; }
         public virtual ICollection<RequestHistory> RequestHistories { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }

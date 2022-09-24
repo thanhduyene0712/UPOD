@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseViewModel;
 using UPOD.REPOSITORIES.Services;
+using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
 {
@@ -10,9 +13,9 @@ namespace UPOD.SERVICES.Services
     public interface IGuidelineService
     {
         Task<ResponseModel<GuidelineResponse>> GetListGuidelines(PaginationRequest model);
-        Task<ResponseModel<GuidelineResponse>> CreateGuideline(GuidelineRequest model);
-        Task<ResponseModel<GuidelineResponse>> UpdateGuideline(Guid id, GuidelineRequest model);
-        Task<ResponseModel<GuidelineResponse>> DisableGuideline(Guid id);
+        Task<ObjectModelResponse> CreateGuideline(GuidelineRequest model);
+        Task<ObjectModelResponse> UpdateGuideline(Guid id, GuidelineRequest model);
+        Task<ObjectModelResponse> DisableGuideline(Guid id);
     }
 
     public class GuidelineService : IGuidelineService
@@ -29,36 +32,49 @@ namespace UPOD.SERVICES.Services
             var guidelines = await _context.Guidelines.Where(a => a.IsDelete == false).Select(a => new GuidelineResponse
             {
                 id = a.Id,
-                service_id = a.ServiceId,
-                guideline_des = a.GuidelineDes,
+                code = a.Code,
+                service = new ServiceViewResponse
+                {
+                    id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                    code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                    service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                    description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                },
+                guideline_des = a.Guideline1,
                 guideline_name = a.GuidelineName,
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate
 
-            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<GuidelineResponse>(guidelines)
             {
                 Total = guidelines.Count,
                 Type = "Guidelines"
             };
         }
-
-        public async Task<ResponseModel<GuidelineResponse>> CreateGuideline(GuidelineRequest model)
+        private async Task<int> GetLastCode()
         {
-
+            var guideline = await _context.Guidelines.OrderBy(x => x.Code).LastOrDefaultAsync();
+            return CodeHelper.StringToInt(guideline!.Code!);
+        }
+        public async Task<ObjectModelResponse> CreateGuideline(GuidelineRequest model)
+        {
+            var num = await GetLastCode();
+            var code = CodeHelper.GeneratorCode("GL", num + 1);
             var guideline = new Guideline
             {
                 Id = Guid.NewGuid(),
+                Code = code,
                 ServiceId = model.service_id,
                 GuidelineName = model.guideline_name,
-                GuidelineDes = model.guideline_des,
+                Guideline1 = model.guideline_des,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
                 UpdateDate = DateTime.Now
 
             };
-            var list = new List<GuidelineResponse>();
+            var data = new GuidelineResponse();
             var message = "blank";
             var status = 500;
             var guideline_id = await _context.Guidelines.Where(x => x.Id.Equals(guideline.Id)).FirstOrDefaultAsync();
@@ -72,77 +88,116 @@ namespace UPOD.SERVICES.Services
                 message = "Successfully";
                 status = 201;
                 await _context.Guidelines.AddAsync(guideline);
-                await _context.SaveChangesAsync();
-                list.Add(new GuidelineResponse
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = guideline.Id,
-                    service_id = guideline.ServiceId,
-                    guideline_name = guideline.GuidelineName,
-                    guideline_des = guideline.GuidelineDes,
-                    is_delete = guideline.IsDelete,
-                    create_date = guideline.CreateDate,
-                    update_date = guideline.UpdateDate
-                });
+                    data = new GuidelineResponse
+                    {
+                        id = guideline.Id,
+                        code = guideline.Code,
+                        service = new ServiceViewResponse
+                        {
+                            id = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                            code = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                            service_name = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                            description = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                        },
+                        guideline_des = guideline.Guideline1,
+                        guideline_name = guideline.GuidelineName,
+                        is_delete = guideline.IsDelete,
+                        create_date = guideline.CreateDate,
+                        update_date = guideline.UpdateDate
+                    };
+                }
+
             }
 
-            return new ResponseModel<GuidelineResponse>(list)
+            return new ObjectModelResponse(data)
             {
                 Message = message,
                 Status = status,
-                Total = list.Count,
                 Type = "Guideline"
             };
         }
 
 
-        public async Task<ResponseModel<GuidelineResponse>> DisableGuideline(Guid id)
+        public async Task<ObjectModelResponse> DisableGuideline(Guid id)
         {
             var guideline = await _context.Guidelines.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
-            guideline.IsDelete = true;
+            guideline!.IsDelete = true;
             guideline.UpdateDate = DateTime.Now;
+            var data = new GuidelineResponse();
             _context.Guidelines.Update(guideline);
-            await _context.SaveChangesAsync();
-            var list = new List<GuidelineResponse>();
-            list.Add(new GuidelineResponse
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
             {
-                is_delete = guideline.IsDelete,
-            });
-            return new ResponseModel<GuidelineResponse>(list)
+                data = new GuidelineResponse
+                {
+                    id = guideline.Id,
+                    code = guideline.Code,
+                    service = new ServiceViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                        description = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    guideline_des = guideline.Guideline1,
+                    guideline_name = guideline.GuidelineName,
+                    is_delete = guideline.IsDelete,
+                    create_date = guideline.CreateDate,
+                    update_date = guideline.UpdateDate
+                };
+
+            }
+            return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Total = list.Count,
                 Type = "Guideline"
             };
+
         }
-        public async Task<ResponseModel<GuidelineResponse>> UpdateGuideline(Guid id, GuidelineRequest model)
+        public async Task<ObjectModelResponse> UpdateGuideline(Guid id, GuidelineRequest model)
         {
             var guideline = await _context.Guidelines.Where(a => a.Id.Equals(id)).Select(x => new Guideline
             {
                 Id = id,
-                ServiceId  = model.service_id,
+                Code = x.Code,
+                ServiceId = model.service_id,
                 GuidelineName = model.guideline_name,
-                GuidelineDes = model.guideline_des,
+                Guideline1 = model.guideline_des,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now
             }).FirstOrDefaultAsync();
-            _context.Guidelines.Update(guideline);
-            await _context.SaveChangesAsync();
-            var list = new List<GuidelineResponse>();
-            list.Add(new GuidelineResponse
+            var data = new GuidelineResponse();
+
+            _context.Guidelines.Update(guideline!);
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
             {
-                id = guideline.Id,
-                service_id = guideline.ServiceId,
-                guideline_name = guideline.GuidelineName,
-                guideline_des = guideline.GuidelineDes,
-                is_delete = guideline.IsDelete,
-                create_date = guideline.CreateDate,
-                update_date = guideline.UpdateDate,
-            });
-            return new ResponseModel<GuidelineResponse>(list)
+                data = new GuidelineResponse
+                {
+                    id = guideline!.Id,
+                    code = guideline.Code,
+                    service = new ServiceViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                        description = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    guideline_des = guideline.Guideline1,
+                    guideline_name = guideline.GuidelineName,
+                    is_delete = guideline.IsDelete,
+                    create_date = guideline.CreateDate,
+                    update_date = guideline.UpdateDate
+                };
+            }
+
+            return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Total = list.Count,
                 Type = "Guideline"
             };
         }

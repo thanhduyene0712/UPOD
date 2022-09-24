@@ -8,7 +8,7 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class ServiceRequest
     {
-        public string service_name { get; set; }
-        public string? desciption { get; set; }
+        public string? service_name { get; set; }
+        public string? description { get; set; }
     }
 }

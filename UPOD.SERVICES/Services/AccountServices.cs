@@ -2,16 +2,17 @@
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
 {
     public interface IAccountService
     {
         Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model);
-        Task<ResponseModel<AccountResponse>> SearchAccounts(PaginationRequest model, String value);
-        Task<ResponseModel<AccountResponse>> UpdateAccount(Guid id, AccountRequest model);
-        Task<ResponseModel<AccRegisterResponse>> CreateAccount(AccRegisterRequest model);
-        Task<ResponseModel<AccountResponse>> DisableAccount(Guid id);
+        Task<ObjectModelResponse> GetAccountDetails(Guid id);
+        Task<ObjectModelResponse> UpdateAccount(Guid id, AccountUpdateRequest model);
+        Task<ObjectModelResponse> CreateAccount(AccountRequest model);
+        Task<ObjectModelResponse> DisableAccount(Guid id);
 
 
     }
@@ -23,85 +24,103 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<AccountResponse>> DisableAccount(Guid id)
+        public async Task<ObjectModelResponse> DisableAccount(Guid id)
         {
-            var account = await _context.Accounts.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
-            account.IsDelete = true;
+            var account = await _context.Accounts.Where(a => a.Id.Equals(id)).Include(a => a.Role).FirstOrDefaultAsync();
+            account!.IsDelete = true;
             account.UpdateDate = DateTime.Now;
             _context.Accounts.Update(account);
             await _context.SaveChangesAsync();
-            var list = new List<AccountResponse>();
-            list.Add(new AccountResponse
+            var model = new AccountResponse
             {
                 id = account.Id,
-                role_id = account.RoleId,
+                code = account.Code,
+                role = new RoleResponse
+                {
+                    id = account.Role!.Id,
+                    code = account.Role.Code,
+                    role_name = account.Role.RoleName,
+                },
                 username = account.Username,
                 is_delete = account.IsDelete,
                 create_date = account.CreateDate,
                 update_date = account.UpdateDate,
-            });
-            return new ResponseModel<AccountResponse>(list)
+            };
+            return new ObjectModelResponse(model)
             {
-                Status = 201,
-                Total = list.Count,
-                Type = "Account"
+                Type = "Account",
             };
         }
+
         public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model)
         {
             var accounts = await _context.Accounts.Where(a => a.IsDelete == false).Select(p => new AccountResponse
             {
                 id = p.Id,
-                role_id = p.RoleId,
+                code = p.Code,
+                role = new RoleResponse
+                {
+                    id = p.Role!.Id,
+                    code = p.Role.Code,
+                    role_name = p.Role.RoleName,
+                },
                 username = p.Username,
+                password = p.Password,
                 is_delete = p.IsDelete,
                 create_date = p.CreateDate,
                 update_date = p.UpdateDate,
 
-            }).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AccountResponse>(accounts)
             {
                 Total = accounts.Count,
                 Type = "Accounts"
             };
         }
-        public async Task<ResponseModel<AccountResponse>> SearchAccounts(PaginationRequest model, String value)
+        public async Task<ObjectModelResponse> GetAccountDetails(Guid id)
         {
-            var accounts = await _context.Accounts.Where(p => (p.Username.Contains(value)
-            || p.Role.RoleName.Contains(value)
-            || p.CreateDate.ToString().Contains(value))
-            && p.IsDelete.ToString().Equals("false")).Select(p => new AccountResponse
+            var account = await _context.Accounts.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(p => new AccountResponse
             {
                 id = p.Id,
-                role_id = p.RoleId,
+                code = p.Code,
+                role = new RoleResponse
+                {
+                    id = p.Role!.Id,
+                    code = p.Role.Code,
+                    role_name = p.Role.RoleName,
+                },
                 username = p.Username,
+                password = p.Password,
                 is_delete = p.IsDelete,
                 create_date = p.CreateDate,
                 update_date = p.UpdateDate,
-            }).OrderBy(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<AccountResponse>(accounts)
+
+            }).FirstOrDefaultAsync();
+            return new ObjectModelResponse(account!)
             {
-                Total = accounts.Count,
                 Type = "Accounts"
             };
         }
-        public async Task<ResponseModel<AccRegisterResponse>> CreateAccount(AccRegisterRequest model)
+
+        public async Task<ObjectModelResponse> CreateAccount(AccountRequest model)
         {
+            var code_number = await GetLastCode();
+            var code = CodeHelper.GeneratorCode("ACC", code_number + 1);
             var account = new Account
             {
                 Id = Guid.NewGuid(),
-                RoleId = await _context.Roles.Where(x => x.RoleName.Equals(model.role_name)).Select(x => x.Id).FirstOrDefaultAsync(),
+                Code = code,
+                RoleId = model.role_id,
                 Username = model.user_name,
                 Password = model.password,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
-                UpdateDate = null,
-
+                UpdateDate = DateTime.Now,
             };
-            var list = new List<AccRegisterResponse>();
+            var data = new AccountResponse();
             var message = "blank";
             var status = 500;
-            var username = await _context.Accounts.Where(x => x.Username.Equals(account.Username)).FirstOrDefaultAsync();
+            var username = await _context.Accounts.Where(x => x.Username!.Equals(account.Username)).FirstOrDefaultAsync();
             if (username != null)
             {
                 status = 400;
@@ -109,57 +128,84 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+
                 message = "Successfully";
                 status = 201;
-                await _context.Accounts.AddAsync(account);
-                await _context.SaveChangesAsync();
-                list.Add(new AccRegisterResponse
+                _context.Accounts.Add(account);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = account.Id,
-                    role_name = await _context.Roles.Where(x => x.Id.Equals(account.RoleId)).Select(x => x.RoleName).FirstOrDefaultAsync(),
-                    user_name = account.Username,
-                    create_date = account.CreateDate,
-                });
+                    data = (new AccountResponse
+                    {
+                        id = account.Id,
+                        code = account.Code,
+                        role = new RoleResponse
+                        {
+                            id = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.Id).FirstOrDefault(),
+                            code = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.Code).FirstOrDefault(),
+                            role_name = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
+                        },
+                        username = account.Username,
+                        is_delete = account.IsDelete,
+                        create_date = account.CreateDate,
+                        update_date = account.UpdateDate,
+                    });
+                }
             }
-            return new ResponseModel<AccRegisterResponse>(list)
+            return new ObjectModelResponse(data)
             {
                 Message = message,
                 Status = status,
-                Total = list.Count,
                 Type = "Account"
             };
         }
-        public async Task<ResponseModel<AccountResponse>> UpdateAccount(Guid id, AccountRequest model)
+        public async Task<ObjectModelResponse> UpdateAccount(Guid id, AccountUpdateRequest model)
         {
             var account = await _context.Accounts.Where(a => a.Id.Equals(id)).Select(x => new Account
             {
                 Id = id,
-                RoleId = _context.Roles.Where(x => x.RoleName.Equals(model.role_name)).Select(x => x.Id).FirstOrDefault(),
+                Code = x.Code,
+                RoleId = model.role_id,
                 Username = x.Username,
                 Password = model.password,
-                IsDelete = model.is_delete,
+                IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now,
             }).FirstOrDefaultAsync();
-            _context.Accounts.Update(account);
-            await _context.SaveChangesAsync();
-            var list = new List<AccountResponse>();
-            list.Add(new AccountResponse
+            _context.Accounts.Update(account!);
+            var data = new AccountResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
             {
-                id = account.Id,
-                role_id = account.RoleId,
-                username = account.Username,
-                is_delete = account.IsDelete,
-                create_date = account.CreateDate,
-                update_date = account.UpdateDate,
-            });
-            return new ResponseModel<AccountResponse>(list)
+                data = new AccountResponse
+                {
+                    id = account!.Id,
+                    code = account.Code,
+                    role = new RoleResponse
+                    {
+                        id = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.Code).FirstOrDefault(),
+                        role_name = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
+                    },
+                    username = account.Username,
+                    password = account.Password,
+                    is_delete = account.IsDelete,
+                    create_date = account.CreateDate,
+                    update_date = account.UpdateDate,
+                };
+            }
+
+            return new ObjectModelResponse(data)
             {
                 Status = 201,
-                Total = list.Count,
                 Type = "Account"
             };
         }
-
+        private async Task<int> GetLastCode()
+        {
+            var account = await _context.Accounts.OrderBy(x => x.Code).LastOrDefaultAsync();
+            return CodeHelper.StringToInt(account!.Code!);
+        }
     }
+
 }

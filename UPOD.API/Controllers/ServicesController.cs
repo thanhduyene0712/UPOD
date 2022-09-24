@@ -19,32 +19,32 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_all_services")]
-        public async Task<ResponseModel<ServiceResponse>> GetAllService([FromQuery] PaginationRequest model)
+        public async Task<ResponseModel<ServiceResponse>> GetAllServices([FromQuery] PaginationRequest model)
         {
             return await _service_sv.GetAll(model);
         }
         [HttpGet]
         [Route("get_service_details")]
-        public async Task<ResponseModel<ServiceResponse>> GetServiceDetails(Guid id, [FromQuery] PaginationRequest model)
+        public async Task<ObjectModelResponse> GetServiceDetails(Guid id)
         {
-            return await _service_sv.GetServiceDetails(id, model);
+            return await _service_sv.GetServiceDetails(id);
         }
 
         [HttpPost]
         [Route("create_service")]
-        public async Task<ResponseModel<ServiceResponse>> CreateService(ServiceRequest model)
+        public async Task<ObjectModelResponse> CreateService(ServiceRequest model)
         {
             return await _service_sv.CreateService(model);
         }
         [HttpPut]
         [Route("update_service_by_id")]
-        public async Task<ResponseModel<ServiceResponse>> UpdateService([FromQuery] Guid id, ServiceRequest model)
+        public async Task<ObjectModelResponse> UpdateService([FromQuery] Guid id, ServiceRequest model)
         {
             return await _service_sv.UpdateService(id, model);
         }
         [HttpPut]
         [Route("disable_service_by_id")]
-        public async Task<ResponseModel<ServiceResponse>> DisableService([FromQuery] Guid id)
+        public async Task<ObjectModelResponse> DisableService([FromQuery] Guid id)
         {
             return await _service_sv.DisableService(id);
         }
