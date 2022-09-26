@@ -10,7 +10,7 @@ namespace UPOD.REPOSITORIES.ResponeModels
     {
         public Guid id { get; set; }
         public Guid technician_id { get; set; }
-        public int? request_status { get; set; }
+        public string? request_status { get; set; }
         public DateTime? start_time { get; set; }                 
     }
 }

@@ -212,7 +212,7 @@ namespace UPOD.SERVICES.Services
             var request = await _context.Requests.Where(a => a.Id.Equals(request_id)).FirstOrDefaultAsync();
             request!.CurrentTechnicianId = technician_id;
             request.StartTime = DateTime.Now;
-            request.RequestStatus = (int)ProcessStatus.Preparing;
+            request.RequestStatus = ProcessStatus.Preparing.ToString();
             _context.Requests.Update(request);
             var data = new MappingTechnicianResponse();
             var rs = await _context.SaveChangesAsync();
@@ -246,7 +246,7 @@ namespace UPOD.SERVICES.Services
                 ServiceId = model.service_id,
                 AgencyId = model.agency_id,
                 RequestDesciption = model.request_description,
-                RequestStatus = (int)ProcessStatus.Pending,
+                RequestStatus = ProcessStatus.Pending.ToString(),
                 Estimation = model.estimation,
                 Phone = _context.Agencies.Where(x => x.Id.Equals(model.agency_id)).Select(x => x.Telephone).FirstOrDefault(),
                 Priority = model.priority,
@@ -336,7 +336,7 @@ namespace UPOD.SERVICES.Services
             var message = "blank";
             var status = 500;
             var data = new RequestCreateResponse();
-            if (request!.RequestStatus != 1)
+            if (request!.RequestStatus != ProcessStatus.Pending.ToString())
             {
                 status = 400;
                 message = "You just update when request status is pending";
