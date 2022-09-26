@@ -185,7 +185,7 @@ namespace UPOD.SERVICES.Services
             var code = CodeHelper.GeneratorCode("TI", num + 1);
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
-            request!.RequestStatus = (int)ProcessStatus.Resoved;
+            request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
             request.EndTime = DateTime.Now;
             request.UpdateDate = DateTime.Now;
             _context.Requests.Update(request);

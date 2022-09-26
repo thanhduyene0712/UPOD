@@ -9,10 +9,9 @@ namespace UPOD.SERVICES.Enum
 {
     public enum ProcessStatus
     {
-        Pending = 1,
-        Reject = 2,
-        Preparing = 3,
-        Resoved = 4,
-        Closed = 5,
+        PENDING,
+        REJECT,
+        PREPARING,
+        RESOLVED
     }
 }
