@@ -52,6 +52,12 @@ namespace UPOD.SERVICES.Services
                     area_name = a.Area.AreaName,
                     description = a.Area.Description
                 },
+                technician_default = new TechnicianViewResponse
+                {
+                    id = a.TechnicianDefault,
+                    code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
+                },
                 manager_name = a.ManagerName,
                 agency_name = a.AgencyName,
                 address = a.Address,
@@ -95,6 +101,12 @@ namespace UPOD.SERVICES.Services
                     area_name = a.Area.AreaName,
                     description = a.Area.Description
                 },
+                technician_default = new TechnicianViewResponse
+                {
+                    id = a.TechnicianDefault,
+                    code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
+                },
                 manager_name = a.ManagerName,
                 agency_name = a.AgencyName,
                 address = a.Address,
@@ -127,6 +139,7 @@ namespace UPOD.SERVICES.Services
                 Code = code,
                 CustomerId = model.customer_id,
                 AgencyName = model.agency_name,
+                TechnicianDefault = model.technician_default,
                 AreaId = model.area_id,
                 ManagerName = model.manager_name,
                 Address = model.address,
@@ -173,6 +186,12 @@ namespace UPOD.SERVICES.Services
                             code = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.Code).FirstOrDefault(),
                             area_name = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.AreaName).FirstOrDefault(),
                             description = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.Description).FirstOrDefault(),
+                        },
+                        technician_default = new TechnicianViewResponse
+                        {
+                            id = agency.TechnicianDefault,
+                            code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
+                            name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
                         },
                         manager_name = agency.ManagerName,
                         agency_name = agency.AgencyName,
@@ -231,6 +250,12 @@ namespace UPOD.SERVICES.Services
                         area_name = agency.Area.AreaName,
                         description = agency.Area.Description
                     },
+                    technician_default = new TechnicianViewResponse
+                    {
+                        id = agency.TechnicianDefault,
+                        code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    },
                     manager_name = agency.ManagerName,
                     agency_name = agency.AgencyName,
                     address = agency.Address,
@@ -259,6 +284,7 @@ namespace UPOD.SERVICES.Services
                 Id = id,
                 Code = x.Code,
                 CustomerId = x.CustomerId,
+                TechnicianDefault = model.technician_default,
                 AgencyName = model.agency_name,
                 AreaId = model.area_id,
                 ManagerName = model.manager_name,
@@ -294,6 +320,12 @@ namespace UPOD.SERVICES.Services
                         code = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.Code).FirstOrDefault(),
                         area_name = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.AreaName).FirstOrDefault(),
                         description = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    technician_default = new TechnicianViewResponse
+                    {
+                        id = agency.TechnicianDefault,
+                        code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     manager_name = agency.ManagerName,
                     agency_name = agency.AgencyName,

@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reso.Core.Extension;
+using System.Text.Json.Serialization;
 using UPOD.REPOSITORIES.Models;
 using UPOD.SERVICES.Handlers;
 using UPOP.SERVICES.App_Start;
@@ -19,8 +22,9 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 
 
-builder.Services.AddControllers();
-
+//builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<Database_UPODContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

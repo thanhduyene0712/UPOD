@@ -7,21 +7,18 @@ using UPOD.REPOSITORIES.ResponseViewModel;
 
 namespace UPOD.REPOSITORIES.ResponeModels
 {
-    public class AgencyResponse
+    public class RequestListResponse
     {
         public Guid id { get; set; }
         public string? code { get; set; }
-        public string? agency_name { get; set; }
+        public string? request_name { get; set; }
         public CustomerViewResponse customer { get; set; } = null!;
-        public AreaViewResponse area { get; set; } = null!;
-        public TechnicianViewResponse technician_default { get; set; }
-        public string? address { get; set; }
-        public string? telephone { get; set; }
-        public bool? is_delete { get; set; }
+        public AgencyViewResponse agency { get; set; } = null!;
+        public ServiceViewResponse service { get; set; } = null!;
+        public int? estimation { get; set; }
+        public int? priority { get; set; }
+        public string? request_status { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
-        public string? manager_name { get; set; }
-        public List<DeviceViewResponse> device { get; set; } = null!;
-
     }
 }
