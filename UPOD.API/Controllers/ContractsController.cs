@@ -23,29 +23,57 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_all_contracts")]
-        public async Task<ResponseModel<ContractResponse>> GetAllContracts([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<ContractResponse>>> GetAllContracts([FromQuery] PaginationRequest model)
         {
-            return await _contract_service_sv.GetAll(model);
+            try
+            {
+                return await _contract_service_sv.GetAll(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 
         [HttpGet]
         [Route("get_contract_details_by_id")]
-        public async Task<ObjectModelResponse> GetDetailsContract([FromQuery] Guid Id)
+        public async Task<ActionResult<ObjectModelResponse>> GetDetailsContract([FromQuery] Guid Id)
         {
-            return await _contract_service_sv.GetDetailsContract(Id);
+            try
+            {
+                return await _contract_service_sv.GetDetailsContract(Id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost]
         [Route("create_contract")]
-        public async Task<ObjectModelResponse> CreateContract(ContractRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateContract(ContractRequest model)
         {
-            return await _contract_service_sv.CreateContract(model);
+            try
+            {
+                return await _contract_service_sv.CreateContract(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("disable_contract_by_id")]
-        public async Task<ObjectModelResponse> DisableContract(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> DisableContract(Guid id)
         {
-            return await _contract_service_sv.DisableContract(id);
+            try
+            {
+                return await _contract_service_sv.DisableContract(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

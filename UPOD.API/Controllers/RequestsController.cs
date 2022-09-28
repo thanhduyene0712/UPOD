@@ -25,54 +25,110 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_requests")]
-        public async Task<ResponseModel<RequestListResponse>> GetListRequests([FromQuery] PaginationRequest model, [FromQuery] FilterRequest status)
+        public async Task<ActionResult<ResponseModel<RequestListResponse>>> GetListRequests([FromQuery] PaginationRequest model, [FromQuery] FilterRequest status)
         {
-            return await _request_sv.GetListRequests(model, status);
+            try
+            {
+                return await _request_sv.GetListRequests(model, status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("get_request_details_by_id")]
-        public async Task<ObjectModelResponse> GetDetailsRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> GetDetailsRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
         {
-            return await _request_sv.GetDetailsRequest(model, id);
+            try
+            {
+                return await _request_sv.GetDetailsRequest(model, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpGet]
         [Route("get_technicians_by_id_request")]
-        public async Task<ResponseModel<TechnicianRequestResponse>> GetTechnicianRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
+        public async Task<ActionResult<ResponseModel<TechnicianRequestResponse>>> GetTechnicianRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
         {
-            return await _request_sv.GetTechnicianRequest(model, id);
+            try
+            {
+                return await _request_sv.GetTechnicianRequest(model, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpGet]
         [Route("get_devices_by_id_request")]
-        public async Task<ResponseModel<DeviceResponse>> GetDeviceRequest([FromQuery] PaginationRequest model, Guid id)
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetDeviceRequest([FromQuery] PaginationRequest model, Guid id)
         {
-            return await _request_sv.GetDeviceRequest(model, id);
+            try
+            {
+                return await _request_sv.GetDeviceRequest(model, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         [Route("create_request")]
-        public async Task<ObjectModelResponse> CreateRequest(RequestRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateRequest(RequestRequest model)
         {
-            return await _request_sv.CreateRequest(model);
+            try
+            {
+                return await _request_sv.CreateRequest(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
         [Route("update_request_by_id")]
-        public async Task<ObjectModelResponse> UpdateRequest([FromQuery] Guid id, RequestUpdateRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> UpdateRequest([FromQuery] Guid id, RequestUpdateRequest model)
         {
-            return await _request_sv.UpdateRequest(id, model);
+            try
+            {
+                return await _request_sv.UpdateRequest(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("mapping_technician_to_request_by_id")]
-        public async Task<ObjectModelResponse> MappingTechnicianRequest(Guid request_id, Guid technician_id)
+        public async Task<ActionResult<ObjectModelResponse>> MappingTechnicianRequest(Guid request_id, Guid technician_id)
         {
-            return await _request_sv.MappingTechnicianRequest(request_id, technician_id);
+            try
+            {
+                return await _request_sv.MappingTechnicianRequest(request_id, technician_id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("disable_request_by_id")]
-        public async Task<ObjectModelResponse> DisableRequest([FromQuery] Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> DisableRequest([FromQuery] Guid id)
         {
-            return await _request_sv.DisableRequest(id);
+            try
+            {
+                return await _request_sv.DisableRequest(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

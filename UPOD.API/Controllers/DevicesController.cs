@@ -19,34 +19,69 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_device")]
-        public async Task<ResponseModel<DeviceResponse>> GetListDevices([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevices([FromQuery] PaginationRequest model)
         {
-            return await _device_sv.GetListDevices(model);
+            try
+            {
+                return await _device_sv.GetListDevices(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("get_device_details_by_id")]
-        public async Task<ObjectModelResponse> GetDetailsDevice(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> GetDetailsDevice(Guid id)
         {
-            return await _device_sv.GetDetailsDevice(id);
+            try
+            {
+                return await _device_sv.GetDetailsDevice(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost]
         [Route("create_device")]
-        public async Task<ObjectModelResponse> CreateDevice(DeviceRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateDevice(DeviceRequest model)
         {
-            return await _device_sv.CreateDevice(model);
+            try
+            {
+                return await _device_sv.CreateDevice(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("update_device_by_id")]
-        public async Task<ObjectModelResponse> UpdateDervice(Guid id, DeviceUpdateRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> UpdateDervice(Guid id, DeviceUpdateRequest model)
         {
-            return await _device_sv.UpdateDevice(id, model);
+            try
+            {
+                return await _device_sv.UpdateDevice(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("disable_device_by_id")]
-        public async Task<ObjectModelResponse> DisableDervice(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> DisableDervice(Guid id)
         {
-            return await _device_sv.DisableDevice(id);
+            try
+            {
+                return await _device_sv.DisableDevice(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

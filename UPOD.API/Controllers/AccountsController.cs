@@ -24,35 +24,70 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_all_accounts")]
-        public async Task<ResponseModel<AccountResponse>> GetAllAccounts([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<AccountResponse>>> GetAllAccounts([FromQuery] PaginationRequest model)
         {
-            return await _account_sv.GetAll(model);
+            try
+            {
+                return await _account_sv.GetAll(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("search_accounts_by_id")]
-        public async Task<ObjectModelResponse> GetAccountDetails(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> GetAccountDetails(Guid id)
         {
-            return await _account_sv.GetAccountDetails(id);
+            try
+            {
+                return await _account_sv.GetAccountDetails(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost]
         [Route("create_account")]
-        public async Task<ObjectModelResponse> CreateAccount(AccountRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateAccount(AccountRequest model)
         {
-            return await _account_sv.CreateAccount(model);
+            try
+            {
+                return await _account_sv.CreateAccount(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("update_account_by_id")]
-        public async Task<ObjectModelResponse> UpdateAccount(Guid id, AccountUpdateRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> UpdateAccount(Guid id, AccountUpdateRequest model)
         {
-            return await _account_sv.UpdateAccount(id, model);
+            try
+            {
+                return await _account_sv.UpdateAccount(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
         [Route("disable_account_by_id")]
-        public async Task<ObjectModelResponse> DisableAccount(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> DisableAccount(Guid id)
         {
-            return await _account_sv.DisableAccount(id);
+            try
+            {
+                return await _account_sv.DisableAccount(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }
