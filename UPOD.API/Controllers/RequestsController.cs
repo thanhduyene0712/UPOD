@@ -6,6 +6,7 @@ using Reso.Core.Utilities;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Services;
 using IRequestService = UPOD.SERVICES.Services.IRequestService;
 
@@ -24,16 +25,16 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_requests")]
-        public async Task<ResponseModel<RequestResponse>> GetListRequests([FromQuery] PaginationRequest model)
+        public async Task<ResponseModel<RequestListResponse>> GetListRequests([FromQuery] PaginationRequest model, [FromQuery] FilterRequest status)
         {
-            return await _request_sv.GetListRequests(model);
+            return await _request_sv.GetListRequests(model, status);
         }
 
         [HttpGet]
         [Route("get_request_details_by_id")]
-        public async Task<ObjectModelResponse> GetDetailsRequest([FromQuery] Guid id)
+        public async Task<ObjectModelResponse> GetDetailsRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
         {
-            return await _request_sv.GetDetailsRequest(id);
+            return await _request_sv.GetDetailsRequest(model, id);
         }
         [HttpGet]
         [Route("get_technicians_by_id_request")]
