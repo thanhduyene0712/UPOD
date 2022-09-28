@@ -19,28 +19,56 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_guideline")]
-        public async Task<ResponseModel<GuidelineResponse>> GetListGuidelines([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<GuidelineResponse>>> GetListGuidelines([FromQuery] PaginationRequest model)
         {
-            return await _guideline_sv.GetListGuidelines(model);
+            try
+            {
+                return await _guideline_sv.GetListGuidelines(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         [Route("create_guideline")]
-        public async Task<ObjectModelResponse> CreateGuideline(GuidelineRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateGuideline(GuidelineRequest model)
         {
-            return await _guideline_sv.CreateGuideline(model);
+            try
+            {
+                return await _guideline_sv.CreateGuideline(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("update_guideline_by_id")]
-        public async Task<ObjectModelResponse> UpdateDervice(Guid id, GuidelineRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> UpdateDervice(Guid id, GuidelineRequest model)
         {
-            return await _guideline_sv.UpdateGuideline(id, model);
+            try
+            {
+                return await _guideline_sv.UpdateGuideline(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("disable_guideline_by_id")]
-        public async Task<ObjectModelResponse> DisableDervice(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> DisableDervice(Guid id)
         {
-            return await _guideline_sv.DisableGuideline(id);
+            try
+            {
+                return await _guideline_sv.DisableGuideline(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

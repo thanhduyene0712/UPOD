@@ -18,35 +18,70 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_all_customers")]
-        public async Task<ResponseModel<CustomerResponse>> GetAllCustomers([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<CustomerResponse>>> GetAllCustomers([FromQuery] PaginationRequest model)
         {
-            return await _customer_sv.GetAll(model);
+            try
+            {
+                return await _customer_sv.GetAll(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpGet]
         [Route("get_customer_details_by_id")]
-        public async Task<ObjectModelResponse> GetCustomerDetails(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> GetCustomerDetails(Guid id)
         {
-            return await _customer_sv.GetCustomerDetails(id);
+            try
+            {
+                return await _customer_sv.GetCustomerDetails(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         [Route("create_customer")]
-        public async Task<ObjectModelResponse> CreateCustomer(CustomerRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateCustomer(CustomerRequest model)
         {
-            return await _customer_sv.CreateCustomer(model);
+            try
+            {
+                return await _customer_sv.CreateCustomer(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("update_customer_by_id")]
-        public async Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> UpdateCustomer(Guid id, CustomerRequest model)
         {
-            return await _customer_sv.UpdateCustomer(id, model);
+            try
+            {
+                return await _customer_sv.UpdateCustomer(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
         [Route("disable_customer_by_id")]
-        public async Task<ObjectModelResponse> DisableCompany(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> DisableCompany(Guid id)
         {
-            return await _customer_sv.DisableCustomer(id);
+            try
+            {
+                return await _customer_sv.DisableCustomer(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 

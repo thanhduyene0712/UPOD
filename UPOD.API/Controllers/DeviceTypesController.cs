@@ -21,27 +21,55 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_device_type")]
-        public async Task<ResponseModel<DeviceTypeResponse>> GetListDeviceTypes([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<DeviceTypeResponse>>> GetListDeviceTypes([FromQuery] PaginationRequest model)
         {
-            return await _device_type_sv.GetListDeviceTypes(model);
+            try
+            {
+                return await _device_type_sv.GetListDeviceTypes(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost]
         [Route("create_device_type")]
-        public async Task<ObjectModelResponse> CreateDeviceType(DeviceTypeRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateDeviceType(DeviceTypeRequest model)
         {
-            return await _device_type_sv.CreateDeviceType(model);
+            try
+            {
+                return await _device_type_sv.CreateDeviceType(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("update_device_type_by_id")]
-        public async Task<ObjectModelResponse> UpdateDerviceType(Guid id, DeviceTypeRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> UpdateDerviceType(Guid id, DeviceTypeRequest model)
         {
-            return await _device_type_sv.UpdateDeviceType(id, model);
+            try
+            {
+                return await _device_type_sv.UpdateDeviceType(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("disable_device_type_by_id")]
-        public async Task<ObjectModelResponse> DisableDerviceType(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> DisableDerviceType(Guid id)
         {
-            return await _device_type_sv.DisableDeviceType(id);
+            try
+            {
+                return await _device_type_sv.DisableDeviceType(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

@@ -19,28 +19,57 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_area")]
-        public async Task<ResponseModel<AreaResponse>> GetListAreas([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<AreaResponse>>> GetListAreas([FromQuery] PaginationRequest model)
         {
-            return await _area_sv.GetListAreas(model);
+            try
+            {
+                return await _area_sv.GetListAreas(model);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         [Route("create_area")]
-        public async Task<ObjectModelResponse> CreateArea(AreaRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateArea(AreaRequest model)
         {
-            return await _area_sv.CreateArea(model);
+            try
+            {
+                return await _area_sv.CreateArea(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("update_area_by_id")]
-        public async Task<ObjectModelResponse> UpdateDervice(Guid id, AreaRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> UpdateDervice(Guid id, AreaRequest model)
         {
-            return await _area_sv.UpdateArea(id, model);
+            try
+            {
+                return await _area_sv.UpdateArea(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut]
         [Route("disable_area_by_id")]
-        public async Task<ObjectModelResponse> DisableDervice(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> DisableDervice(Guid id)
         {
-            return await _area_sv.DisableArea(id);
+            try
+            {
+                return await _area_sv.DisableArea(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }
