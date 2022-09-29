@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.Contracts;
+using System.Diagnostics.Metrics;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
@@ -20,7 +21,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateTechnician(TechnicianRequest model);
         Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model);
         Task<ObjectModelResponse> DisableTechnician(Guid id);
-        Task<ObjectModelResponse> CreateTicket(Guid id, TicketRequest model);
+        Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, TicketRequests model);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id);
     }
 
@@ -179,68 +180,67 @@ namespace UPOD.SERVICES.Services
             var ticket = await _context.Tickets.OrderBy(x => x.Code).LastOrDefaultAsync();
             return CodeHelper.StringToInt(ticket!.Code!);
         }
-        public async Task<ObjectModelResponse> CreateTicket(Guid id, TicketRequest model)
+        public async Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, TicketRequests model)
         {
-            var num = await GetLastCode1();
-            var code = CodeHelper.GeneratorCode("TI", num + 1);
+
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
             request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
             request.EndTime = DateTime.Now;
             request.UpdateDate = DateTime.Now;
             _context.Requests.Update(request);
-            var ticket = new Ticket
+            var list = new List<TicketResponse>();
+            foreach (var item in model.tickets)
             {
-                Id = Guid.NewGuid(),
-                Code = code,
-                RequestId = request.Id,
-                DeviceId = model.device_id,
-                Description = model.description,
-                Solution = model.solution,
-                IsDelete = false,
-                CreateBy = technician!.Id,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now
-            };
-            var data = new TicketResponse();
-            var message = "blank";
-            var status = 500;
-            var ticket_id = await _context.Technicians.Where(x => x.Id.Equals(ticket.Id)).FirstOrDefaultAsync();
-            if (ticket_id != null)
-            {
-                status = 400;
-                message = "TicketId is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
-                await _context.Tickets.AddAsync(ticket);
-                var rs = await _context.SaveChangesAsync();
-                if (rs > 0)
+                var num = await GetLastCode1();
+                var code = CodeHelper.GeneratorCode("TI", num + 1);
+                var device_id = Guid.NewGuid();
+                while (true)
                 {
-                    data = new TicketResponse
+                    var ticket_id = await _context.Technicians.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
+                    if (ticket_id == null)
                     {
-                        id = ticket.Id,
-                        code = ticket.Code,
-                        request_id = ticket.RequestId,
-                        device_id = ticket.DeviceId,
-                        description = ticket.Description,
-                        solution = ticket.Solution,
-                        is_delete = ticket.IsDelete,
-                        create_by = ticket.CreateBy,
-                        create_date = ticket.CreateDate,
-                        update_date = ticket.UpdateDate,
-
-                    };
+                        break;
+                    }
+                    else
+                    {
+                        device_id = Guid.NewGuid();
+                    }
                 }
+                var ticket = new Ticket
+                {
+                    Id = Guid.NewGuid(),
+                    Code = code,
+                    RequestId = request.Id,
+                    DeviceId = item.device_id,
+                    Description = item.description,
+                    Solution = item.solution,
+                    IsDelete = false,
+                    CreateBy = technician!.Id,
+                    CreateDate = DateTime.Now,
+                    UpdateDate = DateTime.Now
+                };
+                await _context.Tickets.AddAsync(ticket);
+                list.Add(new TicketResponse
+                {
+                    id = ticket.Id,
+                    code = ticket.Code,
+                    request_id = ticket.RequestId,
+                    device_id = ticket.DeviceId,
+                    description = ticket.Description,
+                    solution = ticket.Solution,
+                    is_delete = ticket.IsDelete,
+                    create_by = ticket.CreateBy,
+                    create_date = ticket.CreateDate,
+                    update_date = ticket.UpdateDate,
+
+                });
+                var rs = await _context.SaveChangesAsync();
 
             }
-
-            return new ObjectModelResponse(data)
+            return new ResponseModel<TicketResponse>(list)
             {
-                Message = message,
-                Status = status,
+                Total = list.Count,
                 Type = "Ticket"
             };
         }

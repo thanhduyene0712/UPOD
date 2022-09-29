@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Reso.Core.Utilities;
@@ -17,15 +18,36 @@ namespace UPOD.API.Controllers
     {
 
         private readonly IAccountService _account_sv;
-        public AccountsController(IAccountService account_sv)
+        private readonly IUserAccessor _userAccessor;
+
+        public AccountsController(IAccountService account_sv, IUserAccessor userAccessor)
         {
             _account_sv = account_sv;
+            _userAccessor = userAccessor;
         }
-
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("login")]
+        public async Task<ActionResult<ObjectModelResponse>> Login(LoginRequest model)
+        {
+            try
+            {
+                return await _account_sv.Login(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet]
         [Route("get_all_accounts")]
         public async Task<ActionResult<ResponseModel<AccountResponse>>> GetAllAccounts([FromQuery] PaginationRequest model)
         {
+            //var accountRole = _userAccessor.GetRoleId();
+            //if(accountRole != Guid.Parse("dd3cb3b4-84fe-432e-bb06-2d8aecaa640d"))
+            //{
+            //    return BadRequest("Don't have permission!");
+            //}
             try
             {
                 return await _account_sv.GetAll(model);

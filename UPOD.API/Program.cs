@@ -1,14 +1,47 @@
-using Microsoft.AspNetCore.Http.Json;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Reso.Core.Extension;
+using System.Text;
 using System.Text.Json.Serialization;
 using UPOD.REPOSITORIES.Models;
 using UPOD.SERVICES.Handlers;
 using UPOP.SERVICES.App_Start;
 
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigns";
+
 var builder = WebApplication.CreateBuilder(args);
+
+#region authenticate
+var tokenValidationParams = new TokenValidationParameters
+{
+    ValidateIssuer = false,
+    ValidateAudience = false,
+    ValidateLifetime = true,
+    RequireExpirationTime = false,
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secretkey"]))
+};
+builder.Services.AddSingleton(tokenValidationParams);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt =>
+                {
+                    opt.SaveToken = true;
+                    opt.TokenValidationParameters = tokenValidationParams;
+                });
+builder.Services.AddMvc(opt =>
+{
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    opt.Filters.Add(new AuthorizeFilter(policy));
+});
+builder.Services.AddHttpContextAccessor();
+#endregion
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -21,16 +54,43 @@ builder.Services.AddCors(options =>
 });
 // Add services to the container.
 
-
 //builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddDbContext<Database_UPODContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//Authenticate
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oath2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                    new List<string>()
+                    }
+                });
+
+});
+
 builder.Services.ConfigureFilter<ErrorHandlingFilter>();
 builder.Services.JsonFormatConfig();
 builder.Services.ConfigureAutoMapper();
@@ -57,7 +117,9 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors(MyAllowSpecificOrigins);
-
+#region authenticate
+app.UseAuthentication(); //authenticate
+#endregion
 
 app.UseAuthorization();
 
