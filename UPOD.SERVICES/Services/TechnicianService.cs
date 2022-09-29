@@ -21,7 +21,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateTechnician(TechnicianRequest model);
         Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model);
         Task<ObjectModelResponse> DisableTechnician(Guid id);
-        Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, TicketRequests model);
+        Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, ListTicketRequest model);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id);
     }
 
@@ -180,7 +180,7 @@ namespace UPOD.SERVICES.Services
             var ticket = await _context.Tickets.OrderBy(x => x.Code).LastOrDefaultAsync();
             return CodeHelper.StringToInt(ticket!.Code!);
         }
-        public async Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, TicketRequests model)
+        public async Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, ListTicketRequest model)
         {
 
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
@@ -190,7 +190,7 @@ namespace UPOD.SERVICES.Services
             request.UpdateDate = DateTime.Now;
             _context.Requests.Update(request);
             var list = new List<TicketResponse>();
-            foreach (var item in model.tickets)
+            foreach (var item in model.ticket)
             {
                 var num = await GetLastCode1();
                 var code = CodeHelper.GeneratorCode("TI", num + 1);
