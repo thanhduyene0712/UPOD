@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace UPOD.REPOSITORIES.RequestModels
 {
-    public class TicketRequests
+    public class ListTicketRequest
     {
-        public List<TicketRequest> tickets { get; set; }
+        public List<TicketRequest> ticket { get; set; }
     }
     public class TicketRequest
     {
