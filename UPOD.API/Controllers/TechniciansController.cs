@@ -75,7 +75,7 @@ namespace UPOD.API.Controllers
         }
         [HttpPost]
         [Route("create_ticket_by_id_request")]
-        public async Task<ActionResult<ObjectModelResponse>> CreateTicket(Guid id, TicketRequest model)
+        public async Task<ActionResult<ResponseModel<TicketResponse>>> CreateTicket(Guid id, TicketRequests model)
         {
             try
             {

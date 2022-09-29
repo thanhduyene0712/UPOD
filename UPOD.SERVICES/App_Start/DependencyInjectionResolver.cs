@@ -20,6 +20,7 @@ namespace UPOP.SERVICES.App_Start
             services.AddScoped<IAreaService, AreaService>();
             services.AddScoped<IGuidelineService, GuidelineService>();
             services.AddScoped<ITechnicianService, TechnicianService>();
+            services.AddScoped<IUserAccessor, UserAccessorService>();
         }
     }
 }

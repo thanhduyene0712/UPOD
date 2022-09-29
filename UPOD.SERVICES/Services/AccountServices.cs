@@ -1,4 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
@@ -13,17 +18,74 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateAccount(Guid id, AccountUpdateRequest model);
         Task<ObjectModelResponse> CreateAccount(AccountRequest model);
         Task<ObjectModelResponse> DisableAccount(Guid id);
-
+        Task<ObjectModelResponse> Login(LoginRequest model);
 
     }
 
     public class AccountService : IAccountService
     {
         private readonly Database_UPODContext _context;
-        public AccountService(Database_UPODContext context)
+        private readonly IConfiguration _configuration;
+
+        public AccountService(Database_UPODContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
+        public async Task<ObjectModelResponse> Login(LoginRequest model)
+        {
+            var user = await _context.Accounts.Where(a => a.Username!.Equals(model.username) && a.Password!.Equals(model.password)).FirstOrDefaultAsync();
+            if(user == null)
+            {
+                return new ObjectModelResponse(user!)
+                {
+                    Type = "Account",
+                    Message = "Invalid username or password!",
+                    Status = 401,
+                };
+            }
+            else
+            {
+                var account = new LoginResponse
+                {
+                    id = user.Id,
+                    code = user.Code,
+                    role_id = user.RoleId,
+                    username = user.Username,
+                    token = GenerateToken(user.Id, user.RoleId, user.Code!)
+                };
+                return new ObjectModelResponse(account!)
+                {
+                    Type = "Login",
+                };
+            }
+        }
+        public string GenerateToken(Guid accountId, Guid? roleId, string code)
+        {
+            var Claims = new List<Claim>
+            {
+                new Claim("RoleId", roleId.ToString()!),
+                new Claim("AccountId", accountId.ToString()),
+                new Claim("Code", code)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(Claims),
+                Expires = DateTime.Now.AddDays(int.Parse(_configuration["Jwt:DateExprise"])),
+                SigningCredentials = creds
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
+        }
+
         public async Task<ObjectModelResponse> DisableAccount(Guid id)
         {
             var account = await _context.Accounts.Where(a => a.Id.Equals(id)).Include(a => a.Role).FirstOrDefaultAsync();
