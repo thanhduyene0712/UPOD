@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq.Dynamic.Core;
-using System.Threading.Tasks;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
@@ -267,7 +264,7 @@ namespace UPOD.SERVICES.Services
             _context.Devices.Update(device!);
             var data = new DeviceResponse();
             var rs = await _context.SaveChangesAsync();
-            if(rs > 0)
+            if (rs > 0)
             {
                 data = new DeviceResponse
                 {
@@ -301,7 +298,7 @@ namespace UPOD.SERVICES.Services
                     update_date = device.UpdateDate
                 };
             }
-           
+
             return new ObjectModelResponse(data)
             {
                 Status = 201,

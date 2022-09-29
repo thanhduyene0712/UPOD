@@ -1,13 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.Contracts;
-using System.Diagnostics.Metrics;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
-using UPOD.REPOSITORIES.Services;
 using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Helpers;
 
@@ -21,8 +17,9 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateTechnician(TechnicianRequest model);
         Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model);
         Task<ObjectModelResponse> DisableTechnician(Guid id);
-        Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, ListTicketRequest model);
+        Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id);
+        Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
     }
 
     public class TechnicianService : ITechnicianService
@@ -32,7 +29,20 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-
+        public async Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id)
+        {
+            var device_of_request = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).Select(a => new DevicesOfRequestResponse
+            {
+                id = a.Device!.Id,
+                code = a.Device.Code,
+                name = a.Device.DeviceName
+            }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            return new ResponseModel<DevicesOfRequestResponse>(device_of_request)
+            {
+                Total = device_of_request.Count,
+                Type = "Devices"
+            };
+        }
         public async Task<ResponseModel<TechnicianResponse>> GetListTechnicians(PaginationRequest model)
         {
             var technicians = await _context.Technicians.Where(a => a.IsDelete == false).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).Select(a => new TechnicianResponse
@@ -180,7 +190,7 @@ namespace UPOD.SERVICES.Services
             var ticket = await _context.Tickets.OrderBy(x => x.Code).LastOrDefaultAsync();
             return CodeHelper.StringToInt(ticket!.Code!);
         }
-        public async Task<ResponseModel<TicketResponse>> CreateTicket(Guid id, ListTicketRequest model)
+        public async Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model)
         {
 
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
@@ -189,7 +199,7 @@ namespace UPOD.SERVICES.Services
             request.EndTime = DateTime.Now;
             request.UpdateDate = DateTime.Now;
             _context.Requests.Update(request);
-            var list = new List<TicketResponse>();
+            var list = new List<DevicesOfRequestResponse>();
             foreach (var item in model.ticket)
             {
                 var num = await GetLastCode1();
@@ -221,27 +231,20 @@ namespace UPOD.SERVICES.Services
                     UpdateDate = DateTime.Now
                 };
                 await _context.Tickets.AddAsync(ticket);
-                list.Add(new TicketResponse
+                list.Add(new DevicesOfRequestResponse
                 {
-                    id = ticket.Id,
-                    code = ticket.Code,
-                    request_id = ticket.RequestId,
-                    device_id = ticket.DeviceId,
-                    description = ticket.Description,
-                    solution = ticket.Solution,
-                    is_delete = ticket.IsDelete,
-                    create_by = ticket.CreateBy,
-                    create_date = ticket.CreateDate,
-                    update_date = ticket.UpdateDate,
+                    id = ticket.DeviceId,
+                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
 
                 });
-                var rs = await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
             }
-            return new ResponseModel<TicketResponse>(list)
+            return new ResponseModel<DevicesOfRequestResponse>(list)
             {
                 Total = list.Count,
-                Type = "Ticket"
+                Type = "Devices"
             };
         }
         public async Task<ObjectModelResponse> CreateTechnician(TechnicianRequest model)

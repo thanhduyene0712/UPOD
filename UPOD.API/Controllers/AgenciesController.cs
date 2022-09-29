@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using UPOD.REPOSITORIES.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
-using UPOD.SERVICES.Services;
 using IAgencyService = UPOD.SERVICES.Services.IAgencyService;
 
 namespace UPOD.API.Controllers
