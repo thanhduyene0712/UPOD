@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Json;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,9 +11,12 @@ using UPOD.REPOSITORIES.Models;
 using UPOD.SERVICES.Handlers;
 using UPOP.SERVICES.App_Start;
 
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigns";
+
 var builder = WebApplication.CreateBuilder(args);
 
+#region authenticate
 var tokenValidationParams = new TokenValidationParameters
 {
     ValidateIssuer = false,
@@ -38,8 +39,8 @@ builder.Services.AddMvc(opt =>
     opt.Filters.Add(new AuthorizeFilter(policy));
 });
 builder.Services.AddHttpContextAccessor();
+#endregion
 
-//
 
 builder.Services.AddCors(options =>
 {
@@ -52,7 +53,6 @@ builder.Services.AddCors(options =>
                       });
 });
 // Add services to the container.
-
 
 //builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -117,8 +117,9 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors(MyAllowSpecificOrigins);
-
+#region authenticate
 app.UseAuthentication(); //authenticate
+#endregion
 
 app.UseAuthorization();
 
