@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using UPOD.REPOSITORIES.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
-using UPOD.SERVICES.Services;
 using ITechnicianService = UPOD.SERVICES.Services.ITechnicianService;
 
 namespace UPOD.API.Controllers
@@ -59,7 +56,19 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpGet]
+        [Route("get_list_ticket_by_request_id")]
+        public async Task<ActionResult<ResponseModel<DevicesOfRequestResponse>>> GetDevicesByRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
+        {
+            try
+            {
+                return await _technician_sv.GetDevicesByRequest(model, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost]
         [Route("create_technician")]
         public async Task<ActionResult<ObjectModelResponse>> CreateTechnician(TechnicianRequest model)
@@ -73,9 +82,11 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
         [HttpPost]
         [Route("create_ticket_by_id_request")]
-        public async Task<ActionResult<ResponseModel<TicketResponse>>> CreateTicket(Guid id, ListTicketRequest model)
+        public async Task<ActionResult<ResponseModel<DevicesOfRequestResponse>>> CreateTicket(Guid id, ListTicketRequest model)
         {
             try
             {

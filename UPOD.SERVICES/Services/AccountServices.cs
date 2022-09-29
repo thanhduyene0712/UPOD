@@ -35,7 +35,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> Login(LoginRequest model)
         {
             var user = await _context.Accounts.Where(a => a.Username!.Equals(model.username) && a.Password!.Equals(model.password)).FirstOrDefaultAsync();
-            if(user == null)
+            if (user == null)
             {
                 return new ObjectModelResponse(user!)
                 {

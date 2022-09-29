@@ -1,13 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Security.Principal;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
-using UPOD.REPOSITORIES.Services;
 using UPOD.SERVICES.Helpers;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace UPOD.SERVICES.Services
 {

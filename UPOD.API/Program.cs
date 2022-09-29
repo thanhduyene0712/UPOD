@@ -11,9 +11,9 @@ using UPOD.REPOSITORIES.Models;
 using UPOD.SERVICES.Handlers;
 using UPOP.SERVICES.App_Start;
 
-
+#region Cors Policy
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigns";
-
+#endregion
 var builder = WebApplication.CreateBuilder(args);
 
 #region authenticate
@@ -41,7 +41,7 @@ builder.Services.AddMvc(opt =>
 builder.Services.AddHttpContextAccessor();
 #endregion
 
-
+#region Cors Policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -52,6 +52,7 @@ builder.Services.AddCors(options =>
                           .AllowAnyHeader();
                       });
 });
+#endregion
 // Add services to the container.
 
 //builder.Services.AddControllers();
@@ -62,6 +63,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddDbContext<Database_UPODContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
 //Authenticate
+#region authenticae
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -90,6 +92,7 @@ builder.Services.AddSwaggerGen(c =>
                 });
 
 });
+#endregion
 
 builder.Services.ConfigureFilter<ErrorHandlingFilter>();
 builder.Services.JsonFormatConfig();

@@ -1,11 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Contracts;
-using System.Xml.Linq;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
-using UPOD.REPOSITORIES.Services;
 using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
@@ -170,9 +167,9 @@ namespace UPOD.SERVICES.Services
                     {
                         id = agency.Id,
                         code = agency.Code,
-                        customer =  new CustomerViewResponse
+                        customer = new CustomerViewResponse
                         {
-                            id = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x=>x.Id).FirstOrDefault(),
+                            id = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                             code = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Code).FirstOrDefault(),
                             name = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                             description = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Description).FirstOrDefault(),

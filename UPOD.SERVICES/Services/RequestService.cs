@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq.Dynamic.Core;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
-using UPOD.REPOSITORIES.Services;
 using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Helpers;
 

@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Collections.Generic;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
@@ -144,7 +142,7 @@ namespace UPOD.SERVICES.Services
                     update_date = service.UpdateDate,
                 };
             }
-            
+
             return new ObjectModelResponse(data)
             {
                 Status = 201,
@@ -160,12 +158,12 @@ namespace UPOD.SERVICES.Services
             var data = new ServiceResponse();
             _context.Services.Update(service);
             var rs = await _context.SaveChangesAsync();
-            if(rs> 0)
+            if (rs > 0)
             {
                 data = new ServiceResponse
                 {
                     id = service.Id,
-                    code= service.Code,
+                    code = service.Code,
                     service_name = service.ServiceName,
                     description = service.Description,
                     is_delete = service.IsDelete,
@@ -173,7 +171,7 @@ namespace UPOD.SERVICES.Services
                     update_date = service.UpdateDate,
                 };
             }
-            
+
             return new ObjectModelResponse(data)
             {
                 Status = 201,
