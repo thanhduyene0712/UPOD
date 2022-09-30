@@ -265,7 +265,7 @@ namespace UPOD.SERVICES.Services
         }
         private async Task<int> GetLastCode()
         {
-            var account = await _context.Accounts.OrderBy(x => x.Code).LastOrDefaultAsync();
+            var account = await _context.Accounts.OrderByDescending(x => x.Code).FirstOrDefaultAsync();
             return CodeHelper.StringToInt(account!.Code!);
         }
     }
