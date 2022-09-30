@@ -214,99 +214,52 @@ namespace UPOD.SERVICES.Services
             var service = await _context.Services.Where(a => a.Id.Equals(request!.ServiceId)).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(a => a.Id.Equals(agency!.TechnicianId)).FirstOrDefaultAsync();
             var request_details = new RequestResponse();
-            if (technician!.IsBusy == true)
+            request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestResponse
             {
-                request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestResponse
+                id = a.Id,
+                code = a.Code,
+                request_name = a.RequestName,
+                customer = new CustomerViewResponse
                 {
-                    id = a.Id,
-                    code = a.Code,
-                    request_name = a.RequestName,
-                    customer = new CustomerViewResponse
-                    {
-                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
-                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-                        percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
-                        percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
-                        percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
-                    },
-                    agency = new AgencyViewResponse
-                    {
-                        id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
-                        code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
-                        agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
-                        address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
-                    },
-                    service = new ServiceViewResponse
-                    {
-                        id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                    },
-                    technicican_default = _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician!.AreaId.Equals(area!.Id)
-                    && a.Technician.IsBusy == false
-                    && a.Technician.IsDelete == false).Select(a => new TechnicianViewResponse
-                    {
-                        id = a.TechnicianId,
-                        code = a.Technician!.Code,
-                        name = a.Technician.TechnicianName
-
-                    }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToList(),
-                    priority = a.Priority,
-                    request_status = a.RequestStatus,
-                    create_date = a.CreateDate,
-                    update_date = a.UpdateDate,
-                }).FirstOrDefaultAsync();
-            }
-            else
-            {
-                request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestResponse
+                    id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                    name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                    description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
+                    percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
+                    percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
+                },
+                agency = new AgencyViewResponse
                 {
-                    id = a.Id,
-                    code = a.Code,
-                    request_name = a.RequestName,
-                    customer = new CustomerViewResponse
-                    {
-                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
-                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-                        percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
-                        percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
-                        percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
-                    },
-                    agency = new AgencyViewResponse
-                    {
-                        id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
-                        code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
-                        agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
-                        address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
-                    },
-                    service = new ServiceViewResponse
-                    {
-                        id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                    },
-                    technicican_default = _context.Technicians.Where(a => a.Id.Equals(agency!.TechnicianId) && a.IsDelete == false)
-                    .Select(a => new TechnicianViewResponse
-                    {
-                        id = a.Id,
-                        code = a.Code,
-                        name = a.TechnicianName
+                    id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                    agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                },
+                service = new ServiceViewResponse
+                {
+                    id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                    code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                    service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                    description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                },
+                //technicican = _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                //&& a.Technician!.AreaId.Equals(area!.Id)
+                //&& a.Technician.IsBusy == false
+                //&& a.Technician.IsDelete == false).Select(a => new TechnicianViewResponse
+                //{
+                //    id = a.TechnicianId,
+                //    code = a.Technician!.Code,
+                //    name = a.Technician.TechnicianName
 
-                    }).ToList(),
-                    priority = a.Priority,
-                    request_status = a.RequestStatus,
-                    create_date = a.CreateDate,
-                    update_date = a.UpdateDate,
-                }).FirstOrDefaultAsync();
+                //}).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToList(),
+                priority = a.Priority,
+                request_status = a.RequestStatus,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
+            }).FirstOrDefaultAsync();
 
-            }
+
 
             return new ObjectModelResponse(request_details!)
             {
