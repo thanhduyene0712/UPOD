@@ -83,7 +83,6 @@ namespace UPOD.API.Controllers
             }
         }
 
-
         [HttpPost]
         [Route("create_ticket_by_id_request")]
         public async Task<ActionResult<ResponseModel<DevicesOfRequestResponse>>> CreateTicket(Guid id, ListTicketRequest model)
@@ -97,7 +96,19 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpPut]
+        [Route("resolving_request_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> ResolvingRequest(Guid id)
+        {
+            try
+            {
+                return await _technician_sv.ResolvingRequest(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPut]
         [Route("update_technician_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> UpdateTechnician(Guid id, TechnicianRequest model)

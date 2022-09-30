@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
@@ -15,6 +16,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateAgency(AgencyRequest model);
         Task<ObjectModelResponse> UpdateAgency(Guid id, AgencyUpdateRequest model);
         Task<ObjectModelResponse> DisableAgency(Guid id);
+        Task<ResponseModel<TechnicianViewResponse>> GetTechnicianByAgencyId(PaginationRequest model, Guid id);
     }
 
     public class AgencyService : IAgencyService
@@ -49,11 +51,11 @@ namespace UPOD.SERVICES.Services
                     area_name = a.Area.AreaName,
                     description = a.Area.Description
                 },
-                technician_default = new TechnicianViewResponse
+                technician = new TechnicianViewResponse
                 {
-                    id = a.TechnicianDefault,
-                    code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
-                    name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    id = a.TechnicianId,
+                    code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                 },
                 manager_name = a.ManagerName,
                 agency_name = a.AgencyName,
@@ -73,6 +75,23 @@ namespace UPOD.SERVICES.Services
             {
                 Total = agencies.Count,
                 Type = "Agencies"
+            };
+        }
+        public async Task<ResponseModel<TechnicianViewResponse>> GetTechnicianByAgencyId(PaginationRequest model, Guid id)
+        {
+            var agency = await _context.Agencies.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            var area = await _context.Areas.Where(a => a.Id.Equals(agency!.AreaId)).FirstOrDefaultAsync();
+            var customer = await _context.Customers.Where(a => a.Id.Equals(agency!.CustomerId)).FirstOrDefaultAsync();
+            var contract = await _context.Contracts.Where(a => a.CustomerId.Equals(customer!.Id)).FirstOrDefaultAsync();
+            var services = await _context.ContractServices.Where(a => a.ContractId.Equals(contract!.Id)).ToListAsync();
+            var technician = new TechnicianViewResponse();
+            var list = new List<TechnicianViewResponse>();
+
+
+            return new ResponseModel<TechnicianViewResponse>(list)
+            {
+                Total = list.Count,
+                Type = "Technicians"
             };
         }
         public async Task<ObjectModelResponse> GetDetailsAgency(Guid id)
@@ -98,11 +117,11 @@ namespace UPOD.SERVICES.Services
                     area_name = a.Area.AreaName,
                     description = a.Area.Description
                 },
-                technician_default = new TechnicianViewResponse
+                technician = new TechnicianViewResponse
                 {
-                    id = a.TechnicianDefault,
-                    code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
-                    name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    id = a.TechnicianId,
+                    code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                 },
                 manager_name = a.ManagerName,
                 agency_name = a.AgencyName,
@@ -136,7 +155,7 @@ namespace UPOD.SERVICES.Services
                 Code = code,
                 CustomerId = model.customer_id,
                 AgencyName = model.agency_name,
-                TechnicianDefault = model.technician_default,
+                TechnicianId = model.technician_id,
                 AreaId = model.area_id,
                 ManagerName = model.manager_name,
                 Address = model.address,
@@ -184,11 +203,11 @@ namespace UPOD.SERVICES.Services
                             area_name = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.AreaName).FirstOrDefault(),
                             description = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.Description).FirstOrDefault(),
                         },
-                        technician_default = new TechnicianViewResponse
+                        technician = new TechnicianViewResponse
                         {
-                            id = agency.TechnicianDefault,
-                            code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
-                            name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
+                            id = agency.TechnicianId,
+                            code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                            name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                         },
                         manager_name = agency.ManagerName,
                         agency_name = agency.AgencyName,
@@ -247,11 +266,11 @@ namespace UPOD.SERVICES.Services
                         area_name = agency.Area.AreaName,
                         description = agency.Area.Description
                     },
-                    technician_default = new TechnicianViewResponse
+                    technician = new TechnicianViewResponse
                     {
-                        id = agency.TechnicianDefault,
-                        code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
-                        name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        id = agency.TechnicianId,
+                        code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     manager_name = agency.ManagerName,
                     agency_name = agency.AgencyName,
@@ -281,7 +300,7 @@ namespace UPOD.SERVICES.Services
                 Id = id,
                 Code = x.Code,
                 CustomerId = x.CustomerId,
-                TechnicianDefault = model.technician_default,
+                TechnicianId = model.technician_id,
                 AgencyName = model.agency_name,
                 AreaId = model.area_id,
                 ManagerName = model.manager_name,
@@ -318,11 +337,11 @@ namespace UPOD.SERVICES.Services
                         area_name = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.AreaName).FirstOrDefault(),
                         description = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(x => x.Description).FirstOrDefault(),
                     },
-                    technician_default = new TechnicianViewResponse
+                    technician = new TechnicianViewResponse
                     {
-                        id = agency.TechnicianDefault,
-                        code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.Code).FirstOrDefault(),
-                        name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianDefault)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        id = agency.TechnicianId,
+                        code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     manager_name = agency.ManagerName,
                     agency_name = agency.AgencyName,

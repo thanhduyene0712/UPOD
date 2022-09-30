@@ -54,11 +54,10 @@ namespace UPOD.SERVICES.Services
                     create_date = contract.CreateDate,
                     update_date = contract.UpdateDate,
                     contract_price = contract.ContractPrice,
-                    time_commit = contract.TimeCommit,
                     priority = contract.Priority,
                     description = contract.Description,
-                    punishment_for_customer = contract.PunishmentForCustomer,
-                    punishment_for_it = contract.PunishmentForIt,
+                    attachment = contract.Attachment,
+                    img = contract.Img,
                     service = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
@@ -99,11 +98,10 @@ namespace UPOD.SERVICES.Services
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
                 contract_price = a.ContractPrice,
-                time_commit = a.TimeCommit,
                 priority = a.Priority,
                 description = a.Description,
-                punishment_for_customer = a.PunishmentForCustomer,
-                punishment_for_it = a.PunishmentForIt,
+                attachment = a.Attachment,
+                img = a.Img,
                 service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                 {
                     id = x.ServiceId,
@@ -144,11 +142,10 @@ namespace UPOD.SERVICES.Services
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
                 contract_price = a.ContractPrice,
-                time_commit = a.TimeCommit,
                 priority = a.Priority,
                 description = a.Description,
-                punishment_for_customer = a.PunishmentForCustomer,
-                punishment_for_it = a.PunishmentForIt,
+                attachment = a.Attachment,
+                img = a.Img,
                 service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                 {
                     id = x.ServiceId,
@@ -174,16 +171,16 @@ namespace UPOD.SERVICES.Services
                 ContractName = model.contract_name,
                 StartDate = model.start_date,
                 EndDate = model.end_date,
-                TimeCommit = model.time_commit,
                 IsDelete = false,
                 CreateDate = DateTime.Now,
                 UpdateDate = DateTime.Now,
                 ContractPrice = model.contract_price,
                 Priority = model.priority,
-                PunishmentForCustomer = model.punishment_for_customer!,
-                PunishmentForIt = model.punishment_for_it!,
+                Img = model.img,
+                Attachment = model.attachment,
                 Description = model.description!,
-
+                TerminalTime = null,
+                TerminalContent = null,
             };
             foreach (var item in model.service_id)
             {
@@ -239,11 +236,10 @@ namespace UPOD.SERVICES.Services
                         create_date = contract.CreateDate,
                         update_date = contract.UpdateDate,
                         contract_price = contract.ContractPrice,
-                        time_commit = contract.TimeCommit,
                         priority = contract.Priority,
                         description = contract.Description,
-                        punishment_for_customer = contract.PunishmentForCustomer,
-                        punishment_for_it = contract.PunishmentForIt,
+                        attachment = contract.Attachment,
+                        img = contract.Img,
                         service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                         {
                             id = x.ServiceId,

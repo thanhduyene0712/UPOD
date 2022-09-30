@@ -20,6 +20,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
+        Task<ObjectModelResponse> ResolvingRequest(Guid id);
     }
 
     public class TechnicianService : ITechnicianService
@@ -122,7 +123,6 @@ namespace UPOD.SERVICES.Services
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
                     priority = a.Priority,
-                    estimation = a.Estimation,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
@@ -338,6 +338,12 @@ namespace UPOD.SERVICES.Services
             technician.UpdateDate = DateTime.Now;
             var data = new TechnicianUpdateResponse();
             _context.Technicians.Update(technician);
+            var technician_default = await _context.Agencies.Where(a => a.TechnicianId.Equals(id)).ToListAsync();
+            foreach (var item in technician_default)
+            {
+                item.TechnicianId = null;
+                _context.Agencies.Update(item);
+            }
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
             {
@@ -367,9 +373,35 @@ namespace UPOD.SERVICES.Services
                 Type = "Technician"
             };
         }
+        public async Task<ObjectModelResponse> ResolvingRequest(Guid id)
+        {
+            var request = await _context.Requests.Where(x => x.Id.Equals(id) && x.IsDelete == false).FirstOrDefaultAsync();
+            request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
+            request.StartTime = DateTime.Now;
+            _context.Requests.Update(request);
+            var data = new ResolvingRequestResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new ResolvingRequestResponse
+                {
+                    id = id,
+                    code = request.Code,
+                    status = request.RequestStatus,
+                    name = request.RequestName,
+                    start_time = request.StartTime,
+                };
+            }
+
+            return new ObjectModelResponse(data)
+            {
+                Status = 201,
+                Type = "Request"
+            };
+        }
         public async Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model)
         {
-            var technician = await _context.Technicians.Where(a => a.Id.Equals(id)).Select(x => new Technician
+            var technician = await _context.Technicians.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(x => new Technician
             {
                 Id = id,
                 Code = x.Code,

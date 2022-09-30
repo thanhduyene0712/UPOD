@@ -19,12 +19,13 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public double? ContractPrice { get; set; }
-        public DateTime? TimeCommit { get; set; }
+        public DateTime? TerminalTime { get; set; }
         public int? Priority { get; set; }
-        public string PunishmentForCustomer { get; set; } = null!;
-        public string PunishmentForIt { get; set; } = null!;
-        public string Description { get; set; } = null!;
+        public string? Attachment { get; set; }
+        public string? Img { get; set; }
+        public string? Description { get; set; }
         public string? Code { get; set; }
+        public string? TerminalContent { get; set; }
 
         public virtual Customer? Customer { get; set; }
         public virtual ICollection<ContractService> ContractServices { get; set; }

@@ -14,7 +14,7 @@ namespace UPOD.REPOSITORIES.ResponeModels
         public string? agency_name { get; set; }
         public CustomerViewResponse customer { get; set; } = null!;
         public AreaViewResponse area { get; set; } = null!;
-        public TechnicianViewResponse technician_default { get; set; }
+        public TechnicianViewResponse technician { get; set; }
         public string? address { get; set; }
         public string? telephone { get; set; }
         public bool? is_delete { get; set; }

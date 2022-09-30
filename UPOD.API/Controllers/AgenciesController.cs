@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseViewModel;
 using IAgencyService = UPOD.SERVICES.Services.IAgencyService;
 
 namespace UPOD.API.Controllers
@@ -29,6 +30,20 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("get_technicians_by_agency_id")]
+        public async Task<ActionResult<ResponseModel<TechnicianViewResponse>>> GetTechnicianByAgencyId([FromQuery] PaginationRequest model, [FromQuery] Guid id)
+        {
+            try
+            {
+                return await _agency_sv.GetTechnicianByAgencyId(model, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Route("get_agency_details")]
         public async Task<ActionResult<ObjectModelResponse>> GetDetailsAgency(Guid id)

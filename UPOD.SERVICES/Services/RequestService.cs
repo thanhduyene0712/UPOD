@@ -64,10 +64,10 @@ namespace UPOD.SERVICES.Services
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
                     priority = a.Priority,
-                    estimation = a.Estimation,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
+
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -103,7 +103,6 @@ namespace UPOD.SERVICES.Services
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
                     priority = a.Priority,
-                    estimation = a.Estimation,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
@@ -213,7 +212,7 @@ namespace UPOD.SERVICES.Services
             var agency = await _context.Agencies.Where(a => a.Id.Equals(request!.AgencyId)).FirstOrDefaultAsync();
             var area = await _context.Areas.Where(a => a.Id.Equals(agency!.AreaId)).FirstOrDefaultAsync();
             var service = await _context.Services.Where(a => a.Id.Equals(request!.ServiceId)).FirstOrDefaultAsync();
-            var technician = await _context.Technicians.Where(a => a.Id.Equals(agency!.TechnicianDefault)).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(a => a.Id.Equals(agency!.TechnicianId)).FirstOrDefaultAsync();
             var request_details = new RequestResponse();
             if (technician!.IsBusy == true)
             {
@@ -257,7 +256,6 @@ namespace UPOD.SERVICES.Services
 
                     }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToList(),
                     priority = a.Priority,
-                    estimation = a.Estimation,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
@@ -294,7 +292,7 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
-                    technicican_default = _context.Technicians.Where(a => a.Id.Equals(agency!.TechnicianDefault) && a.IsDelete == false)
+                    technicican_default = _context.Technicians.Where(a => a.Id.Equals(agency!.TechnicianId) && a.IsDelete == false)
                     .Select(a => new TechnicianViewResponse
                     {
                         id = a.Id,
@@ -303,7 +301,6 @@ namespace UPOD.SERVICES.Services
 
                     }).ToList(),
                     priority = a.Priority,
-                    estimation = a.Estimation,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
@@ -321,7 +318,6 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(request_id)).FirstOrDefaultAsync();
             request!.CurrentTechnicianId = technician_id;
-            request.StartTime = DateTime.Now;
             request.RequestStatus = ProcessStatus.PREPARING.ToString();
             _context.Requests.Update(request);
             var data = new MappingTechnicianResponse();
@@ -357,7 +353,7 @@ namespace UPOD.SERVICES.Services
                 AgencyId = model.agency_id,
                 RequestDesciption = model.request_description,
                 RequestStatus = ProcessStatus.PENDING.ToString(),
-                Estimation = model.estimation,
+                ReasonReject = null,
                 Phone = _context.Agencies.Where(x => x.Id.Equals(model.agency_id)).Select(x => x.Telephone).FirstOrDefault(),
                 Priority = model.priority,
                 CreateDate = DateTime.Now,
@@ -371,6 +367,7 @@ namespace UPOD.SERVICES.Services
                 CurrentTechnicianId = null,
                 StartTime = null,
                 EndTime = null,
+
             };
             var data = new RequestCreateResponse();
             var message = "blank";
@@ -395,7 +392,6 @@ namespace UPOD.SERVICES.Services
                         code = request.Code,
                         request_name = request.RequestName,
                         request_description = request.RequestDesciption,
-                        estimation = request.Estimation,
                         phone = request.Phone,
                         priority = request.Priority,
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
@@ -428,7 +424,6 @@ namespace UPOD.SERVICES.Services
                 AgencyId = model.agency_id,
                 RequestDesciption = model.request_description,
                 RequestStatus = x.RequestStatus,
-                Estimation = model.estimation,
                 Phone = model.phone,
                 Priority = model.priority,
                 CreateDate = x.CreateDate,
@@ -465,7 +460,6 @@ namespace UPOD.SERVICES.Services
                         code = request.Code,
                         request_name = request.RequestName,
                         request_description = request.RequestDesciption,
-                        estimation = request.Estimation,
                         phone = request.Phone,
                         priority = request.Priority,
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),

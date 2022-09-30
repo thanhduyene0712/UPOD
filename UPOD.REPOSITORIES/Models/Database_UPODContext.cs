@@ -25,6 +25,7 @@ namespace UPOD.REPOSITORIES.Models
         public virtual DbSet<Device> Devices { get; set; } = null!;
         public virtual DbSet<DeviceType> DeviceTypes { get; set; } = null!;
         public virtual DbSet<Guideline> Guidelines { get; set; } = null!;
+        public virtual DbSet<MaintenanceSchedule> MaintenanceSchedules { get; set; } = null!;
         public virtual DbSet<Request> Requests { get; set; } = null!;
         public virtual DbSet<RequestHistory> RequestHistories { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
@@ -97,6 +98,11 @@ namespace UPOD.REPOSITORIES.Models
                     .WithMany(p => p.Agencies)
                     .HasForeignKey(d => d.CustomerId)
                     .HasConstraintName("AgencyAccount");
+
+                entity.HasOne(d => d.Technician)
+                    .WithMany(p => p.Agencies)
+                    .HasForeignKey(d => d.TechnicianId)
+                    .HasConstraintName("FK_Agency_Technician");
             });
 
             modelBuilder.Entity<Area>(entity =>
@@ -122,6 +128,8 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
+                entity.Property(e => e.Attachment).HasMaxLength(200);
+
                 entity.Property(e => e.Code).HasMaxLength(255);
 
                 entity.Property(e => e.ContractName).HasMaxLength(200);
@@ -132,15 +140,13 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
-                entity.Property(e => e.PunishmentForCustomer).HasMaxLength(200);
-
-                entity.Property(e => e.PunishmentForIt)
-                    .HasMaxLength(200)
-                    .HasColumnName("PunishmentForIT");
+                entity.Property(e => e.Img).HasMaxLength(200);
 
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
-                entity.Property(e => e.TimeCommit).HasColumnType("datetime");
+                entity.Property(e => e.TerminalContent).HasMaxLength(255);
+
+                entity.Property(e => e.TerminalTime).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
@@ -284,6 +290,35 @@ namespace UPOD.REPOSITORIES.Models
                     .WithMany(p => p.Guidelines)
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK_Guideline_Service");
+            });
+
+            modelBuilder.Entity<MaintenanceSchedule>(entity =>
+            {
+                entity.ToTable("MaintenanceSchedule");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).HasMaxLength(255);
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.MaintainTime).HasColumnType("datetime");
+
+                entity.Property(e => e.Name).HasMaxLength(250);
+
+                entity.Property(e => e.Status).HasMaxLength(255);
+
+                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Agency)
+                    .WithMany(p => p.MaintenanceSchedules)
+                    .HasForeignKey(d => d.AgencyId)
+                    .HasConstraintName("FK_MaintenanceSchedule_Agency");
+
+                entity.HasOne(d => d.Technician)
+                    .WithMany(p => p.MaintenanceSchedules)
+                    .HasForeignKey(d => d.TechnicianId)
+                    .HasConstraintName("FK_MaintenanceSchedule_Technician");
             });
 
             modelBuilder.Entity<Request>(entity =>
@@ -483,6 +518,11 @@ namespace UPOD.REPOSITORIES.Models
                     .WithMany(p => p.Tickets)
                     .HasForeignKey(d => d.DeviceId)
                     .HasConstraintName("TicketDevice");
+
+                entity.HasOne(d => d.MaintenenceSchedule)
+                    .WithMany(p => p.Tickets)
+                    .HasForeignKey(d => d.MaintenenceScheduleId)
+                    .HasConstraintName("FK_Ticket_MaintenanceSchedule");
 
                 entity.HasOne(d => d.Request)
                     .WithMany(p => p.Tickets)
