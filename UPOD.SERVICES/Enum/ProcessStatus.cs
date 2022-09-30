@@ -12,6 +12,7 @@ namespace UPOD.SERVICES.Enum
         PENDING,
         REJECT,
         PREPARING,
+        RESOLVING,
         RESOLVED
     }
 }

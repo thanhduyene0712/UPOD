@@ -7,6 +7,8 @@ namespace UPOD.REPOSITORIES.Models
     {
         public Technician()
         {
+            Agencies = new HashSet<Agency>();
+            MaintenanceSchedules = new HashSet<MaintenanceSchedule>();
             RequestHistories = new HashSet<RequestHistory>();
             Requests = new HashSet<Request>();
             Skills = new HashSet<Skill>();
@@ -29,6 +31,8 @@ namespace UPOD.REPOSITORIES.Models
 
         public virtual Account? Account { get; set; }
         public virtual Area? Area { get; set; }
+        public virtual ICollection<Agency> Agencies { get; set; }
+        public virtual ICollection<MaintenanceSchedule> MaintenanceSchedules { get; set; }
         public virtual ICollection<RequestHistory> RequestHistories { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
         public virtual ICollection<Skill> Skills { get; set; }

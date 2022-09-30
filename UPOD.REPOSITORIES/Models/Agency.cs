@@ -8,6 +8,7 @@ namespace UPOD.REPOSITORIES.Models
         public Agency()
         {
             Devices = new HashSet<Device>();
+            MaintenanceSchedules = new HashSet<MaintenanceSchedule>();
             Requests = new HashSet<Request>();
         }
 
@@ -22,11 +23,13 @@ namespace UPOD.REPOSITORIES.Models
         public Guid? AreaId { get; set; }
         public string? ManagerName { get; set; }
         public string? Code { get; set; }
-        public Guid? TechnicianDefault { get; set; }
+        public Guid? TechnicianId { get; set; }
 
         public virtual Area? Area { get; set; }
         public virtual Customer? Customer { get; set; }
+        public virtual Technician? Technician { get; set; }
         public virtual ICollection<Device> Devices { get; set; }
+        public virtual ICollection<MaintenanceSchedule> MaintenanceSchedules { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace UPOD.REPOSITORIES.RequestModels
     public class AgencyRequest
     {
         public Guid? customer_id { get; set; }
-        public Guid? technician_default { get; set; }
+        public Guid? technician_id { get; set; }
         public string? agency_name { get; set; }
         public string? address { get; set; }
         public string? telephone { get; set; }
