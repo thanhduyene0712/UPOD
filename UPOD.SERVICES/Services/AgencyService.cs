@@ -81,16 +81,15 @@ namespace UPOD.SERVICES.Services
         {
             var agency = await _context.Agencies.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             var area = await _context.Areas.Where(a => a.Id.Equals(agency!.AreaId)).FirstOrDefaultAsync();
-            var customer = await _context.Customers.Where(a => a.Id.Equals(agency!.CustomerId)).FirstOrDefaultAsync();
-            var contract = await _context.Contracts.Where(a => a.CustomerId.Equals(customer!.Id)).FirstOrDefaultAsync();
-            var services = await _context.ContractServices.Where(a => a.ContractId.Equals(contract!.Id)).ToListAsync();
-            var technician = new TechnicianViewResponse();
-            var list = new List<TechnicianViewResponse>();
-
-
-            return new ResponseModel<TechnicianViewResponse>(list)
+            var technician = await _context.Technicians.Where(a => a.AreaId.Equals(area!.Id)).Select(a => new TechnicianViewResponse
             {
-                Total = list.Count,
+                id = a.Id,
+                code =  a.Code,
+                name = a.TechnicianName,
+            }).ToListAsync();
+            return new ResponseModel<TechnicianViewResponse>(technician)
+            {
+                Total = technician.Count,
                 Type = "Technicians"
             };
         }

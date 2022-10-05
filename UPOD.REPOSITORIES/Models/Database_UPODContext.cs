@@ -25,6 +25,8 @@ namespace UPOD.REPOSITORIES.Models
         public virtual DbSet<Device> Devices { get; set; } = null!;
         public virtual DbSet<DeviceType> DeviceTypes { get; set; } = null!;
         public virtual DbSet<Guideline> Guidelines { get; set; } = null!;
+        public virtual DbSet<MaintenanceReport> MaintenanceReports { get; set; } = null!;
+        public virtual DbSet<MaintenanceReportService> MaintenanceReportServices { get; set; } = null!;
         public virtual DbSet<MaintenanceSchedule> MaintenanceSchedules { get; set; } = null!;
         public virtual DbSet<Request> Requests { get; set; } = null!;
         public virtual DbSet<RequestHistory> RequestHistories { get; set; } = null!;
@@ -38,7 +40,7 @@ namespace UPOD.REPOSITORIES.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=localhost,1433;Initial Catalog=Database_UPOD;User ID=sa;Password=THANHDUYEN07121999;Trusted_Connection=True;");
             }
         }
@@ -292,6 +294,56 @@ namespace UPOD.REPOSITORIES.Models
                     .HasConstraintName("FK_Guideline_Service");
             });
 
+            modelBuilder.Entity<MaintenanceReport>(entity =>
+            {
+                entity.ToTable("MaintenanceReport");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).HasMaxLength(255);
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Agency)
+                    .WithMany(p => p.MaintenanceReports)
+                    .HasForeignKey(d => d.AgencyId)
+                    .HasConstraintName("FK_MaintenanceReport_Agency");
+
+                entity.HasOne(d => d.CreateByNavigation)
+                    .WithMany(p => p.MaintenanceReports)
+                    .HasForeignKey(d => d.CreateBy)
+                    .HasConstraintName("FK_MaintenanceReport_Technician");
+
+                entity.HasOne(d => d.Customer)
+                    .WithMany(p => p.MaintenanceReports)
+                    .HasForeignKey(d => d.CustomerId)
+                    .HasConstraintName("FK_MaintenanceReport_Customer");
+
+                entity.HasOne(d => d.MaintenanceSchedule)
+                    .WithMany(p => p.MaintenanceReports)
+                    .HasForeignKey(d => d.MaintenanceScheduleId)
+                    .HasConstraintName("FK_MaintenanceReport_MaintenanceSchedule1");
+            });
+
+            modelBuilder.Entity<MaintenanceReportService>(entity =>
+            {
+                entity.ToTable("MaintenanceReportService");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.HasOne(d => d.MaintenanceReport)
+                    .WithMany(p => p.MaintenanceReportServices)
+                    .HasForeignKey(d => d.MaintenanceReportId)
+                    .HasConstraintName("FK_MaintenanceReportService_MaintenanceReport");
+
+                entity.HasOne(d => d.Service)
+                    .WithMany(p => p.MaintenanceReportServices)
+                    .HasForeignKey(d => d.ServiceId)
+                    .HasConstraintName("FK_MaintenanceReportService_Service");
+            });
+
             modelBuilder.Entity<MaintenanceSchedule>(entity =>
             {
                 entity.ToTable("MaintenanceSchedule");
@@ -518,16 +570,6 @@ namespace UPOD.REPOSITORIES.Models
                     .WithMany(p => p.Tickets)
                     .HasForeignKey(d => d.DeviceId)
                     .HasConstraintName("TicketDevice");
-
-                entity.HasOne(d => d.MaintenenceSchedule)
-                    .WithMany(p => p.Tickets)
-                    .HasForeignKey(d => d.MaintenenceScheduleId)
-                    .HasConstraintName("FK_Ticket_MaintenanceSchedule");
-
-                entity.HasOne(d => d.Request)
-                    .WithMany(p => p.Tickets)
-                    .HasForeignKey(d => d.RequestId)
-                    .HasConstraintName("TicketRequest");
             });
 
             OnModelCreatingPartial(modelBuilder);

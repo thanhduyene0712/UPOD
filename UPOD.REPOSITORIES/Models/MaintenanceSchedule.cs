@@ -7,7 +7,7 @@ namespace UPOD.REPOSITORIES.Models
     {
         public MaintenanceSchedule()
         {
-            Tickets = new HashSet<Ticket>();
+            MaintenanceReports = new HashSet<MaintenanceReport>();
         }
 
         public Guid Id { get; set; }
@@ -24,6 +24,6 @@ namespace UPOD.REPOSITORIES.Models
 
         public virtual Agency? Agency { get; set; }
         public virtual Technician? Technician { get; set; }
-        public virtual ICollection<Ticket> Tickets { get; set; }
+        public virtual ICollection<MaintenanceReport> MaintenanceReports { get; set; }
     }
 }

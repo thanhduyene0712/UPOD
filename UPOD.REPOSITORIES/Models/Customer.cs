@@ -9,6 +9,7 @@ namespace UPOD.REPOSITORIES.Models
         {
             Agencies = new HashSet<Agency>();
             Contracts = new HashSet<Contract>();
+            MaintenanceReports = new HashSet<MaintenanceReport>();
             Requests = new HashSet<Request>();
         }
 
@@ -27,6 +28,7 @@ namespace UPOD.REPOSITORIES.Models
         public virtual Account? Account { get; set; }
         public virtual ICollection<Agency> Agencies { get; set; }
         public virtual ICollection<Contract> Contracts { get; set; }
+        public virtual ICollection<MaintenanceReport> MaintenanceReports { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
     }
 }
