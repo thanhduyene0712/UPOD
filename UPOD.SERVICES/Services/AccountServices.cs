@@ -39,21 +39,51 @@ namespace UPOD.SERVICES.Services
             {
                 return new ObjectModelResponse(user!)
                 {
-                    Type = "Account",
+                    Type = "Login",
                     Message = "Invalid username or password!",
                     Status = 401,
                 };
             }
             else
             {
-                var account = new LoginResponse
+                var account = new LoginResponse();
+                if (user.RoleId.Equals(Guid.Parse("d66fe081-becb-4538-a371-a1fb56c89a33")))
                 {
-                    id = user.Id,
-                    code = user.Code,
-                    role_id = user.RoleId,
-                    username = user.Username,
-                    token = GenerateToken(user.Id, user.RoleId, user.Code!)
-                };
+                    account = new LoginResponse
+                    {
+                        id = _context.Technicians.Where(a => a.AccountId.Equals(user.Id)).Select(a => a.Id).FirstOrDefault(),
+                        code = user.Code,
+                        role_id = user.RoleId,
+                        role_name = _context.Roles.Where(a => a.Id.Equals(user.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
+                        username = user.Username,
+                        token = GenerateToken(user.Id, user.RoleId, user.Code!)
+                    };
+                }
+                else if (user.RoleId.Equals(Guid.Parse("ef9edd4f-0885-4910-a02c-831ca863c733")))
+                {
+                    account = new LoginResponse
+                    {
+                        id = _context.Customers.Where(a => a.AccountId.Equals(user.Id)).Select(a => a.Id).FirstOrDefault(),
+                        code = user.Code,
+                        role_id = user.RoleId,
+                        role_name = _context.Roles.Where(a => a.Id.Equals(user.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
+                        username = user.Username,
+                        token = GenerateToken(user.Id, user.RoleId, user.Code!)
+                    };
+                }
+                else if (user.RoleId.Equals(Guid.Parse("dd3cb3b4-84fe-432e-bb06-2d8aecaa640d")))
+                {
+                    account = new LoginResponse
+                    {
+                        id = _context.Admins.Where(a => a.AccountId.Equals(user.Id)).Select(a => a.Id).FirstOrDefault(),
+                        code = user.Code,
+                        role_id = user.RoleId,
+                        role_name = _context.Roles.Where(a => a.Id.Equals(user.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
+                        username = user.Username,
+                        token = GenerateToken(user.Id, user.RoleId, user.Code!)
+                    };
+                }
+
                 return new ObjectModelResponse(account!)
                 {
                     Type = "Login",

@@ -17,6 +17,7 @@ namespace UPOD.REPOSITORIES.Models
         }
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;
+        public virtual DbSet<Admin> Admins { get; set; } = null!;
         public virtual DbSet<Agency> Agencies { get; set; } = null!;
         public virtual DbSet<Area> Areas { get; set; } = null!;
         public virtual DbSet<Contract> Contracts { get; set; } = null!;
@@ -40,7 +41,7 @@ namespace UPOD.REPOSITORIES.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=localhost,1433;Initial Catalog=Database_UPOD;User ID=sa;Password=THANHDUYEN07121999;Trusted_Connection=True;");
             }
         }
@@ -69,6 +70,28 @@ namespace UPOD.REPOSITORIES.Models
                     .WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.RoleId)
                     .HasConstraintName("AccountRole");
+            });
+
+            modelBuilder.Entity<Admin>(entity =>
+            {
+                entity.ToTable("Admin");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateDate).HasMaxLength(250);
+
+                entity.Property(e => e.Mail).HasMaxLength(250);
+
+                entity.Property(e => e.Name).HasMaxLength(255);
+
+                entity.Property(e => e.Telephone).HasMaxLength(250);
+
+                entity.Property(e => e.UpdateDate).HasMaxLength(250);
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Admins)
+                    .HasForeignKey(d => d.AccountId)
+                    .HasConstraintName("FK_Admin_Account");
             });
 
             modelBuilder.Entity<Agency>(entity =>
@@ -301,6 +324,8 @@ namespace UPOD.REPOSITORIES.Models
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code).HasMaxLength(255);
+                entity.Property(e => e.Status).HasMaxLength(255);
+                entity.Property(e => e.Description).HasMaxLength(255);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -393,11 +418,6 @@ namespace UPOD.REPOSITORIES.Models
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Phone)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .HasColumnName("phone");
-
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
                 entity.Property(e => e.Token)
@@ -405,6 +425,11 @@ namespace UPOD.REPOSITORIES.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Admin)
+                    .WithMany(p => p.Requests)
+                    .HasForeignKey(d => d.AdminId)
+                    .HasConstraintName("FK_Request_Admin");
 
                 entity.HasOne(d => d.Agency)
                     .WithMany(p => p.Requests)
@@ -570,6 +595,11 @@ namespace UPOD.REPOSITORIES.Models
                     .WithMany(p => p.Tickets)
                     .HasForeignKey(d => d.DeviceId)
                     .HasConstraintName("TicketDevice");
+
+                entity.HasOne(d => d.Request)
+                    .WithMany(p => p.Tickets)
+                    .HasForeignKey(d => d.RequestId)
+                    .HasConstraintName("FK_Ticket_Request");
             });
 
             OnModelCreatingPartial(modelBuilder);

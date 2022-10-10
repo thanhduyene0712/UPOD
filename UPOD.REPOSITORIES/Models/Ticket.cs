@@ -17,5 +17,6 @@ namespace UPOD.REPOSITORIES.Models
         public string? Code { get; set; }
 
         public virtual Device? Device { get; set; }
+        public virtual Request? Request { get; set; }
     }
 }

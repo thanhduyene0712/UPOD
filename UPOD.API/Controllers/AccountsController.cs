@@ -43,11 +43,11 @@ namespace UPOD.API.Controllers
         [Route("get_all_accounts")]
         public async Task<ActionResult<ResponseModel<AccountResponse>>> GetAllAccounts([FromQuery] PaginationRequest model)
         {
-            //var accountRole = _userAccessor.GetRoleId();
-            //if(accountRole != Guid.Parse("dd3cb3b4-84fe-432e-bb06-2d8aecaa640d"))
-            //{
-            //    return BadRequest("Don't have permission!");
-            //}
+            var accountRole = _userAccessor.GetRoleId();
+            if (accountRole != Guid.Parse("dd3cb3b4-84fe-432e-bb06-2d8aecaa640d"))
+            {
+                return BadRequest("Don't have permission!");
+            }
             try
             {
                 return await _account_sv.GetAll(model);

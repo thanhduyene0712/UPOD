@@ -7,6 +7,7 @@ namespace UPOD.REPOSITORIES.Models
     {
         public Account()
         {
+            Admins = new HashSet<Admin>();
             Customers = new HashSet<Customer>();
             Technicians = new HashSet<Technician>();
         }
@@ -21,6 +22,7 @@ namespace UPOD.REPOSITORIES.Models
         public string? Code { get; set; }
 
         public virtual Role? Role { get; set; }
+        public virtual ICollection<Admin> Admins { get; set; }
         public virtual ICollection<Customer> Customers { get; set; }
         public virtual ICollection<Technician> Technicians { get; set; }
     }
