@@ -15,4 +15,10 @@ namespace UPOD.SERVICES.Enum
         RESOLVING,
         RESOLVED
     }
+
+    public enum ReportStatus
+    {
+        //1:có service hư, 2: không có service hư (nên có 2 status này)
+
+    }
 }

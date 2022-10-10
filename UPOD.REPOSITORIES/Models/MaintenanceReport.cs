@@ -17,9 +17,12 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? UpdateDate { get; set; }
         public Guid? MaintenanceScheduleId { get; set; }
         public string? Code { get; set; }
+        public string? Status { get; set; }
+        public string? Description { get; set; }
         public Guid? ServiceId { get; set; }
         public Guid? CustomerId { get; set; }
         public Guid? CreateBy { get; set; }
+
 
         public virtual Agency? Agency { get; set; }
         public virtual Technician? CreateByNavigation { get; set; }

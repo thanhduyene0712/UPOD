@@ -39,11 +39,11 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_request_details_by_id")]
-        public async Task<ActionResult<ObjectModelResponse>> GetDetailsRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> GetDetailsRequest([FromQuery] Guid id)
         {
             try
             {
-                return await _request_sv.GetDetailsRequest(model, id);
+                return await _request_sv.GetDetailsRequest(id);
             }
             catch (Exception ex)
             {
@@ -81,6 +81,7 @@ namespace UPOD.API.Controllers
         [Route("create_request")]
         public async Task<ActionResult<ObjectModelResponse>> CreateRequest(RequestRequest model)
         {
+
             try
             {
                 return await _request_sv.CreateRequest(model);
@@ -90,7 +91,21 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost]
+        [Route("create_request_by_admin")]
+        public async Task<ActionResult<ObjectModelResponse>> CreateRequestByAdmin(RequestRequest model)
+        {
 
+            try
+            {
+                return await _request_sv.CreateRequestByAdmin(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
         [HttpPut]
         [Route("update_request_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> UpdateRequest([FromQuery] Guid id, RequestUpdateRequest model)

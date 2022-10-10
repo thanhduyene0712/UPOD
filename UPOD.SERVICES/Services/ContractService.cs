@@ -4,6 +4,7 @@ using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
 using UPOD.SERVICES.Helpers;
+using Contract = UPOD.REPOSITORIES.Models.Contract;
 
 namespace UPOD.SERVICES.Services
 {
@@ -58,6 +59,7 @@ namespace UPOD.SERVICES.Services
                     description = contract.Description,
                     attachment = contract.Attachment,
                     img = contract.Img,
+                    frequency_maintain = contract.FrequencyMaintain,
                     service = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
@@ -101,6 +103,7 @@ namespace UPOD.SERVICES.Services
                 priority = a.Priority,
                 description = a.Description,
                 attachment = a.Attachment,
+                frequency_maintain = a.FrequencyMaintain,
                 img = a.Img,
                 service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                 {
@@ -145,6 +148,7 @@ namespace UPOD.SERVICES.Services
                 priority = a.Priority,
                 description = a.Description,
                 attachment = a.Attachment,
+                frequency_maintain = a.FrequencyMaintain,
                 img = a.Img,
                 service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                 {
@@ -181,6 +185,7 @@ namespace UPOD.SERVICES.Services
                 Description = model.description!,
                 TerminalTime = null,
                 TerminalContent = null,
+                FrequencyMaintain = model.frequency_maintain
             };
             foreach (var item in model.service_id)
             {
@@ -240,6 +245,7 @@ namespace UPOD.SERVICES.Services
                         description = contract.Description,
                         attachment = contract.Attachment,
                         img = contract.Img,
+                        frequency_maintain = contract.FrequencyMaintain,
                         service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                         {
                             id = x.ServiceId,

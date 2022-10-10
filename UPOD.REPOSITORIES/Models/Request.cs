@@ -8,6 +8,7 @@ namespace UPOD.REPOSITORIES.Models
         public Request()
         {
             RequestHistories = new HashSet<RequestHistory>();
+            Tickets = new HashSet<Ticket>();
         }
 
         public Guid Id { get; set; }
@@ -17,7 +18,6 @@ namespace UPOD.REPOSITORIES.Models
         public string? RequestStatus { get; set; }
         public string? RequestName { get; set; }
         public string? ReasonReject { get; set; }
-        public string? Phone { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public Guid? AgencyId { get; set; }
@@ -32,11 +32,14 @@ namespace UPOD.REPOSITORIES.Models
         public string? Img { get; set; }
         public string? Token { get; set; }
         public string? Code { get; set; }
+        public Guid? AdminId { get; set; }
 
+        public virtual Admin? Admin { get; set; }
         public virtual Agency? Agency { get; set; }
         public virtual Technician? CurrentTechnician { get; set; }
         public virtual Customer? Customer { get; set; }
         public virtual Service? Service { get; set; }
         public virtual ICollection<RequestHistory> RequestHistories { get; set; }
+        public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

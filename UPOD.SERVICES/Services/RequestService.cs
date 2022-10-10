@@ -13,13 +13,14 @@ namespace UPOD.SERVICES.Services
     public interface IRequestService
     {
         Task<ResponseModel<RequestListResponse>> GetListRequests(PaginationRequest model, FilterRequest status);
-        Task<ObjectModelResponse> GetDetailsRequest(PaginationRequest model, Guid id);
+        Task<ObjectModelResponse> GetDetailsRequest(Guid id);
         Task<ObjectModelResponse> CreateRequest(RequestRequest model);
         Task<ObjectModelResponse> UpdateRequest(Guid id, RequestUpdateRequest model);
         Task<ObjectModelResponse> DisableRequest(Guid id);
         Task<ResponseModel<TechnicianRequestResponse>> GetTechnicianRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> MappingTechnicianRequest(Guid request_id, Guid technician_id);
         Task<ResponseModel<DeviceResponse>> GetDeviceRequest(PaginationRequest model, Guid id);
+        Task<ObjectModelResponse> CreateRequestByAdmin(RequestRequest model);
     }
     public class RequestService : IRequestService
     {
@@ -206,7 +207,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Technicians"
             };
         }
-        public async Task<ObjectModelResponse> GetDetailsRequest(PaginationRequest model, Guid id)
+        public async Task<ObjectModelResponse> GetDetailsRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             var agency = await _context.Agencies.Where(a => a.Id.Equals(request!.AgencyId)).FirstOrDefaultAsync();
@@ -235,6 +236,7 @@ namespace UPOD.SERVICES.Services
                     code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
                     agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                     address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                    phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                 },
                 service = new ServiceViewResponse
                 {
@@ -307,7 +309,6 @@ namespace UPOD.SERVICES.Services
                 RequestDesciption = model.request_description,
                 RequestStatus = ProcessStatus.PENDING.ToString(),
                 ReasonReject = null,
-                Phone = _context.Agencies.Where(x => x.Id.Equals(model.agency_id)).Select(x => x.Telephone).FirstOrDefault(),
                 Priority = model.priority,
                 CreateDate = DateTime.Now,
                 UpdateDate = DateTime.Now,
@@ -320,6 +321,7 @@ namespace UPOD.SERVICES.Services
                 CurrentTechnicianId = null,
                 StartTime = null,
                 EndTime = null,
+                AdminId = null,
 
             };
             var data = new RequestCreateResponse();
@@ -345,7 +347,6 @@ namespace UPOD.SERVICES.Services
                         code = request.Code,
                         request_name = request.RequestName,
                         request_description = request.RequestDesciption,
-                        phone = request.Phone,
                         priority = request.Priority,
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
@@ -360,6 +361,74 @@ namespace UPOD.SERVICES.Services
                 Type = "Request"
             };
         }
+        public async Task<ObjectModelResponse> CreateRequestByAdmin(RequestRequest model)
+        {
+            var num = await GetLastCode();
+            var code = CodeHelper.GeneratorCode("RE", num + 1);
+            var request = new Request
+            {
+                Id = Guid.NewGuid(),
+                Code = code,
+                RequestName = model.request_name,
+                CustomerId = _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefault(),
+                ServiceId = model.service_id,
+                AgencyId = model.agency_id,
+                RequestDesciption = model.request_description,
+                RequestStatus = ProcessStatus.PENDING.ToString(),
+                ReasonReject = null,
+                Priority = model.priority,
+                CreateDate = DateTime.Now,
+                UpdateDate = DateTime.Now,
+                Token = null,
+                Img = null,
+                ExceptionSource = null,
+                IsDelete = false,
+                Feedback = "",
+                Rating = 0,
+                CurrentTechnicianId = null,
+                StartTime = null,
+                EndTime = null,
+                AdminId = model.admin_id,
+
+            };
+            var data = new RequestCreateResponse();
+            var message = "blank";
+            var status = 500;
+            var id = await _context.Requests.Where(x => x.Id.Equals(request.Id)).FirstOrDefaultAsync();
+            if (id != null)
+            {
+                status = 400;
+                message = "Id is already exists!";
+            }
+            else
+            {
+                message = "Successfully";
+                status = 201;
+                await _context.Requests.AddAsync(request);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    data = new RequestCreateResponse
+                    {
+                        id = request.Id,
+                        code = request.Code,
+                        request_name = request.RequestName,
+                        request_description = request.RequestDesciption,
+                        priority = request.Priority,
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                    };
+                }
+
+            }
+            return new ObjectModelResponse(data)
+            {
+                Message = message,
+                Status = status,
+                Type = "Request"
+            };
+        }
+
         private async Task<int> GetLastCode()
         {
             var request = await _context.Requests.OrderBy(x => x.Code).LastOrDefaultAsync();
@@ -377,7 +446,6 @@ namespace UPOD.SERVICES.Services
                 AgencyId = model.agency_id,
                 RequestDesciption = model.request_description,
                 RequestStatus = x.RequestStatus,
-                Phone = model.phone,
                 Priority = model.priority,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.Now,
@@ -413,7 +481,6 @@ namespace UPOD.SERVICES.Services
                         code = request.Code,
                         request_name = request.RequestName,
                         request_description = request.RequestDesciption,
-                        phone = request.Phone,
                         priority = request.Priority,
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
