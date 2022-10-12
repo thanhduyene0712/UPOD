@@ -2,6 +2,7 @@
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseViewModel;
 using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
@@ -13,6 +14,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateArea(AreaRequest model);
         Task<ObjectModelResponse> UpdateArea(Guid id, AreaRequest model);
         Task<ObjectModelResponse> DisableArea(Guid id);
+        Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id);
     }
 
     public class AreaService : IAreaService
@@ -41,6 +43,21 @@ namespace UPOD.SERVICES.Services
             {
                 Total = areas.Count,
                 Type = "Areas"
+            };
+        }
+        public async Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id)
+        {
+            var technician = await _context.Technicians.Where(a => a.IsDelete == false && a.AreaId.Equals(id)).Select(a => new TechnicianViewResponse
+            {
+                id = a.Id,
+                code = a.Code,
+                name = a.TechnicianName
+
+            }).OrderBy(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            return new ResponseModel<TechnicianViewResponse>(technician)
+            {
+                Total = technician.Count,
+                Type = "Technicians"
             };
         }
 
