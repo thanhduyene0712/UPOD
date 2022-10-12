@@ -30,7 +30,6 @@ namespace UPOD.REPOSITORIES.Models
         public virtual DbSet<MaintenanceReportService> MaintenanceReportServices { get; set; } = null!;
         public virtual DbSet<MaintenanceSchedule> MaintenanceSchedules { get; set; } = null!;
         public virtual DbSet<Request> Requests { get; set; } = null!;
-        public virtual DbSet<RequestHistory> RequestHistories { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Service> Services { get; set; } = null!;
         public virtual DbSet<Skill> Skills { get; set; } = null!;
@@ -452,38 +451,7 @@ namespace UPOD.REPOSITORIES.Models
                     .HasConstraintName("FK_Request_Service");
             });
 
-            modelBuilder.Entity<RequestHistory>(entity =>
-            {
-                entity.ToTable("RequestHistory");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code).HasMaxLength(255);
-
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Description).HasMaxLength(255);
-
-                entity.Property(e => e.EndTime).HasColumnType("datetime");
-
-                entity.Property(e => e.PreStatus).HasColumnName("Pre_Status");
-
-                entity.Property(e => e.PreTechnicianId).HasColumnName("Pre_TechnicianId");
-
-                entity.Property(e => e.StartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.PreTechnician)
-                    .WithMany(p => p.RequestHistories)
-                    .HasForeignKey(d => d.PreTechnicianId)
-                    .HasConstraintName("RequestHistoryITSupporter");
-
-                entity.HasOne(d => d.Request)
-                    .WithMany(p => p.RequestHistories)
-                    .HasForeignKey(d => d.RequestId)
-                    .HasConstraintName("RequestHistoryRequest");
-            });
+            
 
             modelBuilder.Entity<Role>(entity =>
             {

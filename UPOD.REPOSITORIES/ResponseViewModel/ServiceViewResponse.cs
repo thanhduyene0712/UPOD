@@ -1,5 +1,11 @@
-﻿namespace UPOD.REPOSITORIES.ResponseViewModel
+﻿using UPOD.REPOSITORIES.ResponeModels;
+
+namespace UPOD.REPOSITORIES.ResponseViewModel
 {
+    public class ListServiceResponse
+    {
+        public List<ServiceViewResponse> service { get; set; }
+    }
     public class ServiceViewResponse
     {
         public Guid? id { get; set; }

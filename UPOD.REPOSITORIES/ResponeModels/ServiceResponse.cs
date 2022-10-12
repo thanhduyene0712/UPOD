@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UPOD.REPOSITORIES.RequestModels;
 
 namespace UPOD.REPOSITORIES.ResponeModels
 {
+    
     public class ServiceResponse
     {
         public Guid id { get; set; }

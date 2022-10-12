@@ -93,7 +93,7 @@ namespace UPOD.API.Controllers
         }
         [HttpPost]
         [Route("create_request_by_admin")]
-        public async Task<ActionResult<ObjectModelResponse>> CreateRequestByAdmin(RequestRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateRequestByAdmin(RequestAdminRequest model)
         {
 
             try
