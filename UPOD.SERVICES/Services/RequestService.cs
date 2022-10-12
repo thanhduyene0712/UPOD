@@ -20,7 +20,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<TechnicianRequestResponse>> GetTechnicianRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> MappingTechnicianRequest(Guid request_id, Guid technician_id);
         Task<ResponseModel<DeviceResponse>> GetDeviceRequest(PaginationRequest model, Guid id);
-        Task<ObjectModelResponse> CreateRequestByAdmin(RequestRequest model);
+        Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model);
     }
     public class RequestService : IRequestService
     {
@@ -316,7 +316,7 @@ namespace UPOD.SERVICES.Services
                 Img = null,
                 ExceptionSource = null,
                 IsDelete = false,
-                Feedback = "",
+                Feedback = null,
                 Rating = 0,
                 CurrentTechnicianId = null,
                 StartTime = null,
@@ -361,7 +361,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Request"
             };
         }
-        public async Task<ObjectModelResponse> CreateRequestByAdmin(RequestRequest model)
+        public async Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model)
         {
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("RE", num + 1);
@@ -383,7 +383,7 @@ namespace UPOD.SERVICES.Services
                 Img = null,
                 ExceptionSource = null,
                 IsDelete = false,
-                Feedback = "",
+                Feedback = null,
                 Rating = 0,
                 CurrentTechnicianId = null,
                 StartTime = null,

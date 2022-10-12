@@ -15,6 +15,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> GetCustomerDetails(Guid id);
         Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
+        Task<ObjectModelResponse> GetServiceByCustomerId(Guid id);
     }
 
     public class CustomerService : ICustomerService
@@ -84,6 +85,25 @@ namespace UPOD.SERVICES.Services
             return new ObjectModelResponse(customer)
             {
                 Type = "Customer"
+            };
+        }
+
+        public async Task<ObjectModelResponse> GetServiceByCustomerId(Guid id)
+        {
+            var service = await _context.Customers.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new ListServiceResponse
+            {
+                service = _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(a.Id) && x.Contract.IsDelete == false
+                && x.Contract.StartDate <= DateTime.Now && x.Contract.EndDate >= DateTime.Now).Select(x => new ServiceViewResponse
+                {
+                    id = x.ServiceId,
+                    code = x.Service!.Code,
+                    service_name = x.Service!.ServiceName,
+                    description = x.Service!.Description,
+                }).Distinct().ToList(),
+            }).FirstOrDefaultAsync();
+            return new ObjectModelResponse(service!)
+            {
+                Type = "Services"
             };
         }
 
