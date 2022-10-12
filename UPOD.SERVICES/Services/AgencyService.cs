@@ -40,9 +40,6 @@ namespace UPOD.SERVICES.Services
                     code = a.Customer!.Code,
                     name = a.Customer.Name,
                     description = a.Customer.Description,
-                    percent_for_technican_exp = a.Customer.PercentForTechnicianExp,
-                    percent_for_technican_familiar_with_agency = a.Customer.PercentForTechnicianFamiliarWithAgency,
-                    percent_for_technican_rate = a.Customer.PercentForTechnicianRate,
                 },
                 area = new AreaViewResponse
                 {
@@ -105,9 +102,6 @@ namespace UPOD.SERVICES.Services
                     code = a.Customer!.Code,
                     name = a.Customer.Name,
                     description = a.Customer.Description,
-                    percent_for_technican_exp = a.Customer.PercentForTechnicianExp,
-                    percent_for_technican_familiar_with_agency = a.Customer.PercentForTechnicianFamiliarWithAgency,
-                    percent_for_technican_rate = a.Customer.PercentForTechnicianRate,
                 },
                 area = new AreaViewResponse
                 {
@@ -191,9 +185,7 @@ namespace UPOD.SERVICES.Services
                             code = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Code).FirstOrDefault(),
                             name = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                             description = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-                            percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
-                            percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
-                            percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
+                   
                         },
                         area = new AreaViewResponse
                         {
@@ -254,9 +246,6 @@ namespace UPOD.SERVICES.Services
                         code = agency.Customer!.Code,
                         name = agency.Customer.Name,
                         description = agency.Customer.Description,
-                        percent_for_technican_exp = agency.Customer.PercentForTechnicianExp,
-                        percent_for_technican_familiar_with_agency = agency.Customer.PercentForTechnicianFamiliarWithAgency,
-                        percent_for_technican_rate = agency.Customer.PercentForTechnicianRate,
                     },
                     area = new AreaViewResponse
                     {
@@ -325,9 +314,7 @@ namespace UPOD.SERVICES.Services
                         code = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Code).FirstOrDefault(),
                         name = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-                        percent_for_technican_exp = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.PercentForTechnicianExp).FirstOrDefault(),
-                        percent_for_technican_familiar_with_agency = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.PercentForTechnicianFamiliarWithAgency).FirstOrDefault(),
-                        percent_for_technican_rate = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(x => x.PercentForTechnicianRate).FirstOrDefault(),
+                    
                     },
                     area = new AreaViewResponse
                     {

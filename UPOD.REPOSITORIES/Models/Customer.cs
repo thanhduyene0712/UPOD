@@ -16,14 +16,14 @@ namespace UPOD.REPOSITORIES.Models
         public Guid Id { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public double? PercentForTechnicianExp { get; set; }
-        public double? PercentForTechnicianRate { get; set; }
-        public double? PercentForTechnicianFamiliarWithAgency { get; set; }
         public bool? IsDelete { get; set; }
         public Guid? AccountId { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string? Code { get; set; }
+        public string? Address { get; set; }
+        public string? Mail { get; set; }
+        public string? Phone { get; set; }
 
         public virtual Account? Account { get; set; }
         public virtual ICollection<Agency> Agencies { get; set; }

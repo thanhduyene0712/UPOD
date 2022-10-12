@@ -11,8 +11,9 @@ namespace UPOD.REPOSITORIES.RequestModels
         public string? name { get; set; }
         public Guid? account_id { get; set; }
         public string? description { get; set; }
-        public double? percent_for_technican_exp { get; set; }
-        public double? percent_for_technican_rate { get; set; }
-        public double? percent_for_technican_familiar_with_agency { get; set; }
+        public string? address { get; set; }
+        public string? mail { get; set; }
+        public string? phone { get; set; }
+
     }
 }
