@@ -221,6 +221,12 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Name).HasMaxLength(250);
 
+                entity.Property(e => e.Address).HasMaxLength(255);
+
+                entity.Property(e => e.Mail).HasMaxLength(255);
+
+                entity.Property(e => e.Phone).HasMaxLength(255);
+
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)

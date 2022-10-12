@@ -13,10 +13,10 @@ namespace UPOD.REPOSITORIES.ResponeModels
         public string? code { get; set; }
         public string? name { get; set; }
         public AccountViewResponse account { get; set; } = null!;
+        public string? mail { get; set; }
+        public string? address { get; set; }
+        public string? phone { get; set; }
         public string? description { get; set; }
-        public double? percent_for_technican_exp { get; set; }
-        public double? percent_for_technican_rate { get; set; }
-        public double? percent_for_technican_familiar_with_agency { get; set; }
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }

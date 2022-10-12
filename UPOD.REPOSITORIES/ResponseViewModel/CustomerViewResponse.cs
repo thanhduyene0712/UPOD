@@ -12,8 +12,5 @@ namespace UPOD.REPOSITORIES.ResponseViewModel
         public string? code { get; set; }
         public string? name { get; set; }
         public string? description { get; set; }
-        public double? percent_for_technican_exp { get; set; }
-        public double? percent_for_technican_rate { get; set; }
-        public double? percent_for_technican_familiar_with_agency { get; set; }
     }
 }
