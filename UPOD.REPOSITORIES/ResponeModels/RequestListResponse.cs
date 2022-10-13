@@ -16,6 +16,8 @@ namespace UPOD.REPOSITORIES.ResponeModels
         public AgencyViewResponse agency { get; set; } = null!;
         public ServiceViewResponse service { get; set; } = null!;
         public int? priority { get; set; }
+
+        public string? description { get; set; }
         public string? request_status { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }

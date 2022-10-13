@@ -61,6 +61,7 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    description = a.RequestDesciption,
                     priority = a.Priority,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
@@ -97,6 +98,7 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    description = a.RequestDesciption,
                     priority = a.Priority,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
@@ -246,6 +248,7 @@ namespace UPOD.SERVICES.Services
                 //    name = a.Technician.TechnicianName
 
                 //}).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToList(),
+                description = a.RequestDesciption,
                 priority = a.Priority,
                 request_status = a.RequestStatus,
                 create_date = a.CreateDate,
