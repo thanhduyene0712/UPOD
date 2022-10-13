@@ -372,6 +372,8 @@ namespace UPOD.REPOSITORIES.Models
                     .WithMany(p => p.MaintenanceReportServices)
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK_MaintenanceReportService_Service");
+
+                entity.Property(e => e.Status).HasMaxLength(255);
             });
 
             modelBuilder.Entity<MaintenanceSchedule>(entity =>
