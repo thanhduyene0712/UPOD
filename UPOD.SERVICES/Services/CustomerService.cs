@@ -16,7 +16,9 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
         Task<ObjectModelResponse> GetServiceByCustomerId(Guid id);
+        Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
         Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id);
+
     }
 
     public class CustomerService : ICustomerService
@@ -190,7 +192,24 @@ namespace UPOD.SERVICES.Services
                 Type = "Services"
             };
         }
-
+        public async Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id)
+        {
+            var agencies = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false).Select(a => new AgencyOfCustomerResponse
+            {
+               id = a.Id,
+               code = a.Code,
+               agency_name = a.AgencyName,
+               address = a.Address,
+               phone = a.Telephone,
+               manager_name = a.ManagerName,
+               
+            }).ToListAsync();
+            return new ResponseModel<AgencyOfCustomerResponse>(agencies!)
+            {
+                Type = "Agencies",
+                Total = agencies.Count,
+            };
+        }
         public async Task<ObjectModelResponse> CreateCustomer(CustomerRequest model)
         {
             var code_number = await GetLastCode();
