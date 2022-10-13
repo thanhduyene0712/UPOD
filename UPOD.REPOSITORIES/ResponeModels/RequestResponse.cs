@@ -20,6 +20,8 @@ namespace UPOD.REPOSITORIES.ResponeModels
         //public List <TechnicianViewResponse> technicican { get; set; } = null!;
         public int? priority { get; set; }
         public string? request_status { get; set; }
+
+        public string? description { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }  
     }
