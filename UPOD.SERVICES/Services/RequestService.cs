@@ -113,7 +113,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Requests"
             };
         }
-
+       
         public async Task<ResponseModel<DeviceResponse>> GetDeviceRequest(PaginationRequest model, Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
@@ -238,16 +238,6 @@ namespace UPOD.SERVICES.Services
                     service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                     description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                 },
-                //technicican = _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                //&& a.Technician!.AreaId.Equals(area!.Id)
-                //&& a.Technician.IsBusy == false
-                //&& a.Technician.IsDelete == false).Select(a => new TechnicianViewResponse
-                //{
-                //    id = a.TechnicianId,
-                //    code = a.Technician!.Code,
-                //    name = a.Technician.TechnicianName
-
-                //}).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToList(),
                 description = a.RequestDesciption,
                 priority = a.Priority,
                 request_status = a.RequestStatus,
