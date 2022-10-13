@@ -13,7 +13,7 @@ namespace UPOD.SERVICES.Enum
         REJECT,
         PREPARING,
         RESOLVING,
-        RESOLVED
+        RESOLVED,
     }
 
     public enum ReportStatus
@@ -26,7 +26,7 @@ namespace UPOD.SERVICES.Enum
     {
        SCHEDULED,
        NOTIFIED,
-       PROCESSING,
+       MAINTAINING,
        COMPLETE
     }
 }

@@ -9,6 +9,8 @@ namespace UPOD.REPOSITORIES.Models
         public Guid? MaintenanceReportId { get; set; }
         public Guid? ServiceId { get; set; }
 
+        public string? Status { get; set; }
+
         public virtual MaintenanceReport? MaintenanceReport { get; set; }
         public virtual Service? Service { get; set; }
     }
