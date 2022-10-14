@@ -18,11 +18,11 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_all_admins")]
-        public async Task<ActionResult<ResponseModel<AdminResponse>>> GetListAdmin([FromQuery] PaginationRequest model,[FromQuery] FilterRequest search)
+        public async Task<ActionResult<ResponseModel<AdminResponse>>> GetListAdmin([FromQuery] PaginationRequest model,[FromQuery] FilterRequest value)
         {
             try
             {
-                return await _admin_sv.GetListAdmin(model, search);
+                return await _admin_sv.GetListAdmin(model, value);
 
             }
             catch (Exception ex)
