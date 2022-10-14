@@ -82,7 +82,7 @@ namespace UPOD.SERVICES.Services
                         id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                    
+
                     },
                     agency = new AgencyViewResponse
                     {
@@ -113,7 +113,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Requests"
             };
         }
-       
+
         public async Task<ResponseModel<DeviceResponse>> GetDeviceRequest(PaginationRequest model, Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
@@ -163,43 +163,87 @@ namespace UPOD.SERVICES.Services
             var agency = await _context.Agencies.Where(a => a.Id.Equals(request!.AgencyId)).FirstOrDefaultAsync();
             var area = await _context.Areas.Where(a => a.Id.Equals(agency!.AreaId)).FirstOrDefaultAsync();
             var service = await _context.Services.Where(a => a.Id.Equals(request!.ServiceId)).FirstOrDefaultAsync();
-            var technicans = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+            var technicians = new List<TechnicianRequestResponse>();
+            var technicianDefault = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
             && a.Technician!.AreaId.Equals(area!.Id)
             && a.Technician.IsBusy == false
-            && a.Technician.IsDelete == false).Select(a => new TechnicianRequestResponse
+            && a.Technician.IsDelete == false
+            && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).FirstOrDefaultAsync();
+            if (technicianDefault != null)
             {
-                id = a.TechnicianId,
-                code = a.Technician!.Code,
-                area = new AreaViewResponse
+                technicians.Add(new TechnicianRequestResponse
                 {
-                    id = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Id).FirstOrDefault(),
-                    code = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Code).FirstOrDefault(),
-                    area_name = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.AreaName).FirstOrDefault(),
-                    description = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Description).FirstOrDefault(),
-                },
-                technician_name = a.Technician.TechnicianName,
-                account = new AccountViewResponse
-                {
-                    id = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Id).FirstOrDefault(),
-                    code = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Code).FirstOrDefault(),
-                    role_name = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Role!.RoleName).FirstOrDefault(),
-                    username = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Username).FirstOrDefault(),
-                    password = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Password).FirstOrDefault(),
-                },
-                telephone = a.Technician.Telephone,
-                email = a.Technician.Email,
-                gender = a.Technician.Gender,
-                address = a.Technician.Address,
-                rating_avg = a.Technician.RatingAvg,
-                is_busy = a.Technician.IsBusy,
-                is_delete = a.Technician.IsDelete,
-                create_date = a.Technician.CreateDate,
-                update_date = a.Technician.UpdateDate,
+                    id = technicianDefault.TechnicianId,
+                    code = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                    area = new AreaViewResponse
+                    {
+                        id = _context.Areas.Where(x => x.Id.Equals(technicianDefault.Technician!.AreaId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Areas.Where(x => x.Id.Equals(technicianDefault.Technician!.AreaId)).Select(x => x.Code).FirstOrDefault(),
+                        area_name = _context.Areas.Where(x => x.Id.Equals(technicianDefault.Technician!.AreaId)).Select(x => x.AreaName).FirstOrDefault(),
+                        description = _context.Areas.Where(x => x.Id.Equals(technicianDefault.Technician!.AreaId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    technician_name = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    account = new AccountViewResponse
+                    {
+                        id = _context.Accounts.Where(x => x.Id.Equals(technicianDefault.Technician!.AccountId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Accounts.Where(x => x.Id.Equals(technicianDefault.Technician!.AccountId)).Select(x => x.Code).FirstOrDefault(),
+                        role_name = _context.Accounts.Where(x => x.Id.Equals(technicianDefault.Technician!.AccountId)).Select(x => x.Role!.RoleName).FirstOrDefault(),
+                        username = _context.Accounts.Where(x => x.Id.Equals(technicianDefault.Technician!.AccountId)).Select(x => x.Username).FirstOrDefault(),
+                        password = _context.Accounts.Where(x => x.Id.Equals(technicianDefault.Technician!.AccountId)).Select(x => x.Password).FirstOrDefault(),
+                    },
+                    telephone = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                    email = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
+                    gender = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.Gender).FirstOrDefault(),
+                    address = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.Address).FirstOrDefault(),
+                    rating_avg = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.RatingAvg).FirstOrDefault(),
+                    is_busy = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.IsBusy).FirstOrDefault(),
+                    is_delete = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.IsDelete).FirstOrDefault(),
+                    create_date = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.CreateDate).FirstOrDefault(),
+                    update_date = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.UpdateDate).FirstOrDefault(),
 
-            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<TechnicianRequestResponse>(technicans)
+                });
+            }
+            else
             {
-                Total = technicans.Count,
+                technicians = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                && a.Technician!.AreaId.Equals(area!.Id)
+                && a.Technician.IsBusy == false
+                && a.Technician.IsDelete == false).Select(a => new TechnicianRequestResponse
+                {
+                    id = a.TechnicianId,
+                    code = a.Technician!.Code,
+                    area = new AreaViewResponse
+                    {
+                        id = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Code).FirstOrDefault(),
+                        area_name = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.AreaName).FirstOrDefault(),
+                        description = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    technician_name = a.Technician.TechnicianName,
+                    account = new AccountViewResponse
+                    {
+                        id = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Code).FirstOrDefault(),
+                        role_name = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Role!.RoleName).FirstOrDefault(),
+                        username = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Username).FirstOrDefault(),
+                        password = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Password).FirstOrDefault(),
+                    },
+                    telephone = a.Technician.Telephone,
+                    email = a.Technician.Email,
+                    gender = a.Technician.Gender,
+                    address = a.Technician.Address,
+                    rating_avg = a.Technician.RatingAvg,
+                    is_busy = a.Technician.IsBusy,
+                    is_delete = a.Technician.IsDelete,
+                    create_date = a.Technician.CreateDate,
+                    update_date = a.Technician.UpdateDate,
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+
+            }
+            return new ResponseModel<TechnicianRequestResponse>(technicians)
+            {
+                Total = technicians.Count,
                 Type = "Technicians"
             };
         }
