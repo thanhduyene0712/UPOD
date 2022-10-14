@@ -77,7 +77,7 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.CreateDate).HasMaxLength(250);
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Mail).HasMaxLength(250);
 
@@ -85,7 +85,7 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Telephone).HasMaxLength(250);
 
-                entity.Property(e => e.UpdateDate).HasMaxLength(250);
+                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Admins)
