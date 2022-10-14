@@ -8,6 +8,6 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class FilterRequest
     {
-        public string? filter_status { get; set; }
+        public string? search { get; set; }
     }
 }
