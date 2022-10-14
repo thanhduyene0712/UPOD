@@ -14,7 +14,7 @@ namespace UPOD.SERVICES.Services
 {
     public interface IAdminService
     {
-        Task<ResponseModel<AdminResponse>> GetListAdmin(PaginationRequest model, FilterRequest search);
+        Task<ResponseModel<AdminResponse>> GetListAdmin(PaginationRequest model, FilterRequest value);
         Task<ObjectModelResponse> CreateAdmin(AdminRequest model);
         Task<ObjectModelResponse> UpdateAdmin(Guid id, AdminRequest model);
         Task<ObjectModelResponse> DisableAdmin(Guid id);
@@ -28,30 +28,31 @@ namespace UPOD.SERVICES.Services
             _context = context;
         }
 
-        public async Task<ResponseModel<AdminResponse>> GetListAdmin(PaginationRequest model, FilterRequest search)
+        public async Task<ResponseModel<AdminResponse>> GetListAdmin(PaginationRequest model, FilterRequest value)
         {
             var admins = new List<AdminResponse>();
-            if (search.search == null)
+            if (value.search != null)
             {
-                admins = await _context.Admins.Where(a => a.IsDelete == false).Select(a => new AdminResponse
-                {
-                    id = a.Id,
-                    code = a.Code,
-                    name = a.Name,
-                    account_id = a.AccountId,
-                    create_date = a.CreateDate,
-                    is_delete = a.IsDelete,
-                    update_date = a.UpdateDate,
-                    mail = a.Mail,
-                    telephone = a.Telephone,
-                }).OrderByDescending(a => a.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                admins = await _context.Admins.Where(a => a.IsDelete == false
+                 && (a.Name!.Contains(value.search)
+                 || a.Mail!.Contains(value.search)
+                 || a.Telephone!.Contains(value.search)
+                 || a.Code!.Contains(value.search))).Select(a => new AdminResponse
+                 {
+                     id = a.Id,
+                     code = a.Code,
+                     name = a.Name,
+                     account_id = a.AccountId,
+                     create_date = a.CreateDate,
+                     is_delete = a.IsDelete,
+                     update_date = a.UpdateDate,
+                     mail = a.Mail,
+                     telephone = a.Telephone,
+                 }).OrderByDescending(a => a.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             else
             {
-                admins = await _context.Admins.Where(a => a.IsDelete == false
-                && (a.Name!.Contains(search.search)
-                || a.Mail!.Contains(search.search)
-                || a.Telephone!.Contains(search.search))).Select(a => new AdminResponse
+                admins = await _context.Admins.Where(a => a.IsDelete == false).Select(a => new AdminResponse
                 {
                     id = a.Id,
                     code = a.Code,
