@@ -36,6 +36,7 @@ namespace UPOD.SERVICES.Services
                 admins = await _context.Admins.Where(a => a.IsDelete == false).Select(a => new AdminResponse
                 {
                     id = a.Id,
+                    code = a.Code,
                     name = a.Name,
                     account_id = a.AccountId,
                     create_date = a.CreateDate,
