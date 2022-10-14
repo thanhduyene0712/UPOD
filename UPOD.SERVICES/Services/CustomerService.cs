@@ -32,7 +32,7 @@ namespace UPOD.SERVICES.Services
         {
 
             var requests = new List<RequestListResponse>();
-            if (status.filter_status == null)
+            if (status.search == null)
             {
                 requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new RequestListResponse
                 {
@@ -71,7 +71,10 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id) && a.RequestStatus!.Equals(status.filter_status)).Select(a => new RequestListResponse
+                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
+                && (a.RequestStatus!.Equals(status.search)
+                || a.RequestName!.Contains(status.search)
+                || a.Code!.Contains(status.search))).Select(a => new RequestListResponse
                 {
                     id = a.Id,
                     code = a.Code,

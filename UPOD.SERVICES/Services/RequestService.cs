@@ -33,7 +33,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ResponseModel<RequestListResponse>> GetListRequests(PaginationRequest model, FilterRequest status)
         {
             var requests = new List<RequestListResponse>();
-            if (status.filter_status == null)
+            if (status.search == null)
             {
                 requests = await _context.Requests.Where(a => a.IsDelete == false).Select(a => new RequestListResponse
                 {
@@ -72,7 +72,10 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                requests = await _context.Requests.Where(a => a.IsDelete == false && a.RequestStatus!.Equals(status.filter_status)).Select(a => new RequestListResponse
+                requests = await _context.Requests.Where(a => a.IsDelete == false 
+                && (a.RequestStatus!.Equals(status.search) 
+                || a.RequestName!.Contains(status.search)
+                || a.Code!.Contains(status.search))).Select(a => new RequestListResponse
                 {
                     id = a.Id,
                     code = a.Code,
