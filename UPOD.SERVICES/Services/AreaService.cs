@@ -63,11 +63,24 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ObjectModelResponse> CreateArea(AreaRequest model)
         {
+            var area_id = Guid.NewGuid();
+            while (true)
+            {
+                var area_dup = await _context.Areas.Where(x => x.Id.Equals(area_id)).FirstOrDefaultAsync();
+                if (area_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    area_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("AR", code_number + 1);
             var area = new Area
             {
-                Id = Guid.NewGuid(),
+                Id = area_id,
                 Code = code,
                 Description = model.description,
                 AreaName = model.area_name,
@@ -77,18 +90,6 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new AreaResponse();
-            var message = "blank";
-            var status = 500;
-            var area_id = await _context.Areas.Where(x => x.Id.Equals(area.Id)).FirstOrDefaultAsync();
-            if (area_id != null)
-            {
-                status = 400;
-                message = "AreaId is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
                 await _context.Areas.AddAsync(area);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
@@ -105,12 +106,11 @@ namespace UPOD.SERVICES.Services
                     };
                 }
 
-            }
+            
 
             return new ObjectModelResponse(data)
             {
-                Message = message,
-                Status = status,
+
                 Type = "Area"
             };
         }

@@ -75,11 +75,24 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ObjectModelResponse> CreateAdmin(AdminRequest model)
         {
+            var admin_id = Guid.NewGuid();
+            while (true)
+            {
+                var admin_dup = await _context.Admins.Where(x => x.Id.Equals(admin_id)).FirstOrDefaultAsync();
+                if (admin_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    admin_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("AD", code_number + 1);
             var admin = new Admin
             {
-                Id = Guid.NewGuid(),
+                Id = admin_id,
                 Code = code,
                 Name = model.name,
                 Mail = model.mail,

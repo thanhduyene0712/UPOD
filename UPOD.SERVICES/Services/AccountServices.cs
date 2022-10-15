@@ -194,11 +194,24 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ObjectModelResponse> CreateAccount(AccountRequest model)
         {
+            var account_id = Guid.NewGuid();
+            while (true)
+            {
+                var account_dup = await _context.Accounts.Where(x => x.Id.Equals(account_id)).FirstOrDefaultAsync();
+                if (account_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    account_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("ACC", code_number + 1);
             var account = new Account
             {
-                Id = Guid.NewGuid(),
+                Id = account_id,
                 Code = code,
                 RoleId = model.role_id,
                 Username = model.user_name,

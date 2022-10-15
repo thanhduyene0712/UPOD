@@ -215,11 +215,24 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> CreateCustomer(CustomerRequest model)
         {
+            var customer_id = Guid.NewGuid();
+            while (true)
+            {
+                var customer_dup = await _context.Customers.Where(x => x.Id.Equals(customer_id)).FirstOrDefaultAsync();
+                if (customer_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    customer_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("CU", code_number + 1);
             var customer = new Customer
             {
-                Id = Guid.NewGuid(),
+                Id = customer_id,
                 Code = code,
                 Name = model.name,
                 AccountId = model.account_id,

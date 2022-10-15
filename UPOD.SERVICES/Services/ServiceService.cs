@@ -68,11 +68,24 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> CreateService(ServiceRequest model)
         {
+            var service_id = Guid.NewGuid();
+            while (true)
+            {
+                var service_dup = await _context.Services.Where(x => x.Id.Equals(service_id)).FirstOrDefaultAsync();
+                if (service_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    service_id = Guid.NewGuid();
+                }
+            }
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("SE", num + 1);
             var service = new Service
             {
-                Id = Guid.NewGuid(),
+                Id = service_id,
                 Code = code,
                 ServiceName = model.service_name,
                 Description = model.description,

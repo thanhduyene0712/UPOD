@@ -58,11 +58,24 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> CreateGuideline(GuidelineRequest model)
         {
+            var guideline_id = Guid.NewGuid();
+            while (true)
+            {
+                var guideline_dup = await _context.Guidelines.Where(x => x.Id.Equals(guideline_id)).FirstOrDefaultAsync();
+                if (guideline_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    guideline_id = Guid.NewGuid();
+                }
+            }
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("GL", num + 1);
             var guideline = new Guideline
             {
-                Id = Guid.NewGuid(),
+                Id = guideline_id,
                 Code = code,
                 ServiceId = model.service_id,
                 GuidelineName = model.guideline_name,
@@ -73,18 +86,7 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new GuidelineResponse();
-            var message = "blank";
-            var status = 500;
-            var guideline_id = await _context.Guidelines.Where(x => x.Id.Equals(guideline.Id)).FirstOrDefaultAsync();
-            if (guideline_id != null)
-            {
-                status = 400;
-                message = "GuidelineId is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
+
                 await _context.Guidelines.AddAsync(guideline);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
@@ -108,12 +110,11 @@ namespace UPOD.SERVICES.Services
                     };
                 }
 
-            }
+            
 
             return new ObjectModelResponse(data)
             {
-                Message = message,
-                Status = status,
+
                 Type = "Guideline"
             };
         }

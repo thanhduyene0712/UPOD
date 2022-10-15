@@ -107,11 +107,24 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ObjectModelResponse> CreateDevice(DeviceRequest model)
         {
+            var device_id = Guid.NewGuid();
+            while (true)
+            {
+                var device_dup = await _context.Devices.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
+                if (device_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    device_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("DE", code_number + 1);
             var device = new Device
             {
-                Id = Guid.NewGuid(),
+                Id = device_id,
                 Code = code,
                 AgencyId = model.agency_id,
                 DeviceTypeId = model.devicetype_id,
@@ -130,18 +143,7 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new DeviceResponse();
-            var message = "blank";
-            var status = 500;
-            var device_id = await _context.Devices.Where(x => x.Id.Equals(device.Id)).FirstOrDefaultAsync();
-            if (device_id != null)
-            {
-                status = 400;
-                message = "DeviceId is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
+
                 await _context.Devices.AddAsync(device);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
@@ -179,12 +181,11 @@ namespace UPOD.SERVICES.Services
                     };
                 }
 
-            }
+            
 
             return new ObjectModelResponse(data)
             {
-                Message = message,
-                Status = status,
+
                 Type = "Device"
             };
         }

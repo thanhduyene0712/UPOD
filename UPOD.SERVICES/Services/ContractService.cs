@@ -157,11 +157,24 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> CreateContract(ContractRequest model)
         {
+            var contract_id = Guid.NewGuid();
+            while (true)
+            {
+                var contract_dup = await _context.Contracts.Where(x => x.Id.Equals(contract_id)).FirstOrDefaultAsync();
+                if (contract_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    contract_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("CON", code_number + 1);
             var contract = new Contract
             {
-                Id = Guid.NewGuid(),
+                Id = contract_id,
                 Code = code,
                 CustomerId = model.customer_id,
                 ContractName = model.contract_name,
@@ -181,9 +194,22 @@ namespace UPOD.SERVICES.Services
             };
             foreach (var item in model.service_id)
             {
+                var contract_service_id = Guid.NewGuid();
+                while (true)
+                {
+                    var contract_service_dup = await _context.ContractServices.Where(x => x.Id.Equals(contract_service_id)).FirstOrDefaultAsync();
+                    if (contract_service_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        contract_service_id = Guid.NewGuid();
+                    }
+                }
                 var contract_service = new ContractService
                 {
-                    Id = Guid.NewGuid(),
+                    Id = contract_service_id,
                     Code = null,
                     ContractId = contract.Id,
                     ServiceId = item,
@@ -206,11 +232,23 @@ namespace UPOD.SERVICES.Services
                 for (int i = 1; i <= model.frequency_maintain; i++)
                 {
                     maintenanceDate = maintenanceDate!.Value.AddDays(maintenanceTime!.Value);
-                    
+                    var maintenance_id = Guid.NewGuid();
+                    while (true)
+                    {
+                        var maintenance_dup = await _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenance_id)).FirstOrDefaultAsync();
+                        if (maintenance_dup == null)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            maintenance_id = Guid.NewGuid();
+                        }
+                    }
                     var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
                     var maintenanceSchedule = new MaintenanceSchedule
                     {
-                        Id = Guid.NewGuid(),
+                        Id = maintenance_id,
                         Code = code1,
                         AgencyId = item.Id,
                         CreateDate = DateTime.Now,
