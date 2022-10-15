@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -20,6 +21,8 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> DisableAccount(Guid id);
         Task<ObjectModelResponse> Login(LoginRequest model);
 
+        Task<ObjectModelResponse> ChangePassword(ChangePasswordRequest model, Guid id);
+
     }
 
     public class AccountService : IAccountService
@@ -31,6 +34,59 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
             _configuration = configuration;
+        }
+        public async Task<ObjectModelResponse> ChangePassword(ChangePasswordRequest model, Guid id)
+        {
+            var account = await _context.Accounts.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            var message = "blank";
+            var status = 500;
+            var data = new ChagnePasswordResponse();
+
+            if (account!.Password!.Equals(model.new_password) && model.new_password!.Equals(model.old_password))
+            {
+                message = "The new password must not be the same as the old password";
+                status = 400;
+            }
+            else if (model.old_password == null)
+            {
+                message = "Old password cannot be blank";
+                status = 400;
+            }
+            else if (model.new_password == null)
+            {
+                message = "New password cannot be blank";
+                status = 400;
+            }
+            else if (model.new_password != model.confirm_password)
+            {
+                message = "Confirmation password does not match";
+                status = 400;
+            }
+            else
+            {
+                account.Password = model.new_password;
+                account.UpdateDate = DateTime.Now;
+                _context.Accounts.Update(account);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    message = "Password has been changed";
+                    status = 200;
+                    data = new ChagnePasswordResponse
+                    {
+                        message = message,
+                    };
+
+                }
+
+            }
+
+            return new ObjectModelResponse(data!)
+            {
+                Type = "Change password",
+                Message = message,
+                Status = status
+            };
         }
         public async Task<ObjectModelResponse> Login(LoginRequest model)
         {
@@ -53,6 +109,7 @@ namespace UPOD.SERVICES.Services
                     {
                         id = _context.Technicians.Where(a => a.AccountId.Equals(user.Id)).Select(a => a.Id).FirstOrDefault(),
                         code = user.Code,
+                        account_id = user.Id,
                         role_id = user.RoleId,
                         role_name = _context.Roles.Where(a => a.Id.Equals(user.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
                         username = user.Username,
@@ -65,6 +122,7 @@ namespace UPOD.SERVICES.Services
                     {
                         id = _context.Customers.Where(a => a.AccountId.Equals(user.Id)).Select(a => a.Id).FirstOrDefault(),
                         code = user.Code,
+                        account_id = user.Id,
                         role_id = user.RoleId,
                         role_name = _context.Roles.Where(a => a.Id.Equals(user.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
                         username = user.Username,
@@ -77,6 +135,7 @@ namespace UPOD.SERVICES.Services
                     {
                         id = _context.Admins.Where(a => a.AccountId.Equals(user.Id)).Select(a => a.Id).FirstOrDefault(),
                         code = user.Code,
+                        account_id = user.Id,
                         role_id = user.RoleId,
                         role_name = _context.Roles.Where(a => a.Id.Equals(user.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
                         username = user.Username,

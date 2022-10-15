@@ -97,6 +97,20 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut]
+        [Route("change_password_by_account_id")]
+        public async Task<ActionResult<ObjectModelResponse>> ChangePassword(ChangePasswordRequest model, Guid id)
+        {
+            try
+            {
+                return await _account_sv.ChangePassword(model, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
 
         [HttpPut]
         [Route("disable_account_by_id")]
