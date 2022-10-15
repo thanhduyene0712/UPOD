@@ -194,7 +194,6 @@ namespace UPOD.SERVICES.Services
             var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
             request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
             request.EndTime = DateTime.Now;
-            request.UpdateDate = DateTime.Now;
             _context.Requests.Update(request);
             var list = new List<DevicesOfRequestResponse>();
             foreach (var item in model.ticket)
@@ -204,7 +203,7 @@ namespace UPOD.SERVICES.Services
                 var device_id = Guid.NewGuid();
                 while (true)
                 {
-                    var ticket_id = await _context.Technicians.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
+                    var ticket_id = await _context.Tickets.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
                     if (ticket_id == null)
                     {
                         break;
@@ -216,7 +215,7 @@ namespace UPOD.SERVICES.Services
                 }
                 var ticket = new Ticket
                 {
-                    Id = Guid.NewGuid(),
+                    Id = device_id,
                     Code = code,
                     RequestId = request.Id,
                     DeviceId = item.device_id,
@@ -248,9 +247,22 @@ namespace UPOD.SERVICES.Services
         {
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("TE", num + 1);
+            var technician_id = Guid.NewGuid();
+            while (true)
+            {
+                var technician_dup = await _context.Technicians.Where(x => x.Id.Equals(technician_id)).FirstOrDefaultAsync();
+                if (technician_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    technician_id = Guid.NewGuid();
+                }
+            }
             var technician = new Technician
             {
-                Id = Guid.NewGuid(),
+                Id = technician_id,
                 Code = code,
                 AreaId = model.area_id,
                 TechnicianName = model.technician_name,
@@ -267,9 +279,22 @@ namespace UPOD.SERVICES.Services
             };
             foreach (var item in model.service_id)
             {
+                var skill_id = Guid.NewGuid();
+                while (true)
+                {
+                    var skill_dup = await _context.Skills.Where(x => x.Id.Equals(skill_id)).FirstOrDefaultAsync();
+                    if (skill_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        skill_id = Guid.NewGuid();
+                    }
+                }
                 var skill = new Skill
                 {
-                    Id = Guid.NewGuid(),
+                    Id = skill_id,
                     TechnicianId = technician.Id,
                     ServiceId = item,
                     IsDelete = false,
@@ -278,51 +303,35 @@ namespace UPOD.SERVICES.Services
                 };
                 _context.Skills.Add(skill);
             }
-            var data = new TechnicianUpdateResponse();
-            var message = "blank";
-            var status = 500;
-            var technician_id = await _context.Technicians.Where(x => x.Id.Equals(technician.Id)).FirstOrDefaultAsync();
-            if (technician_id != null)
+            var data = new TechnicianUpdateResponse();      
+            await _context.Technicians.AddAsync(technician);
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
             {
-                status = 400;
-                message = "TechnicianId is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
-
-
-                await _context.Technicians.AddAsync(technician);
-                var rs = await _context.SaveChangesAsync();
-                if (rs > 0)
+                data = new TechnicianUpdateResponse()
                 {
-                    data = new TechnicianUpdateResponse()
-                    {
-                        id = technician!.Id,
-                        code = technician!.Code,
-                        area_id = technician.AreaId,
-                        technician_name = technician.TechnicianName,
-                        account_id = technician.AccountId,
-                        telephone = technician.Telephone,
-                        email = technician.Email,
-                        gender = technician.Gender,
-                        address = technician.Address,
-                        rating_avg = technician.RatingAvg,
-                        is_busy = technician.IsBusy,
-                        is_delete = technician.IsDelete,
-                        create_date = technician.CreateDate,
-                        update_date = technician.UpdateDate,
-                        service_id = _context.Skills.Where(a => a.TechnicianId.Equals(technician.Id)).Select(a => a.ServiceId).ToList(),
+                    id = technician!.Id,
+                    code = technician!.Code,
+                    area_id = technician.AreaId,
+                    technician_name = technician.TechnicianName,
+                    account_id = technician.AccountId,
+                    telephone = technician.Telephone,
+                    email = technician.Email,
+                    gender = technician.Gender,
+                    address = technician.Address,
+                    rating_avg = technician.RatingAvg,
+                    is_busy = technician.IsBusy,
+                    is_delete = technician.IsDelete,
+                    create_date = technician.CreateDate,
+                    update_date = technician.UpdateDate,
+                    service_id = _context.Skills.Where(a => a.TechnicianId.Equals(technician.Id)).Select(a => a.ServiceId).ToList(),
 
-                    };
-                }
+                };
             }
+
 
             return new ObjectModelResponse(data)
             {
-                Message = message,
-                Status = status,
                 Type = "Technician"
             };
         }

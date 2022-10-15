@@ -72,8 +72,8 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                requests = await _context.Requests.Where(a => a.IsDelete == false 
-                && (a.RequestStatus!.Equals(status.search) 
+                requests = await _context.Requests.Where(a => a.IsDelete == false
+                && (a.RequestStatus!.Equals(status.search)
                 || a.RequestName!.Contains(status.search)
                 || a.Code!.Contains(status.search))).Select(a => new RequestListResponse
                 {
@@ -305,7 +305,6 @@ namespace UPOD.SERVICES.Services
             var request = await _context.Requests.Where(a => a.Id.Equals(request_id)).FirstOrDefaultAsync();
             request!.CurrentTechnicianId = technician_id;
             request.RequestStatus = ProcessStatus.PREPARING.ToString();
-            _context.Requests.Update(request);
             var data = new MappingTechnicianResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
@@ -327,11 +326,24 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> CreateRequest(RequestRequest model)
         {
+            var request_id = Guid.NewGuid();
+            while (true)
+            {
+                var request_dup = await _context.Requests.Where(x => x.Id.Equals(request_id)).FirstOrDefaultAsync();
+                if (request_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    request_id = Guid.NewGuid();
+                }
+            }
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("RE", num + 1);
             var request = new Request
             {
-                Id = Guid.NewGuid(),
+                Id = request_id,
                 Code = code,
                 RequestName = model.request_name,
                 CustomerId = _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefault(),
@@ -356,49 +368,50 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new RequestCreateResponse();
-            var message = "blank";
-            var status = 500;
-            var id = await _context.Requests.Where(x => x.Id.Equals(request.Id)).FirstOrDefaultAsync();
-            if (id != null)
-            {
-                status = 400;
-                message = "Id is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
-                await _context.Requests.AddAsync(request);
-                var rs = await _context.SaveChangesAsync();
-                if (rs > 0)
-                {
-                    data = new RequestCreateResponse
-                    {
-                        id = request.Id,
-                        code = request.Code,
-                        request_name = request.RequestName,
-                        request_description = request.RequestDesciption,
-                        priority = request.Priority,
-                        agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
-                        service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
-                    };
-                }
 
+            await _context.Requests.AddAsync(request);
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new RequestCreateResponse
+                {
+                    id = request.Id,
+                    code = request.Code,
+                    request_name = request.RequestName,
+                    request_description = request.RequestDesciption,
+                    priority = request.Priority,
+                    agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                };
             }
+
+
             return new ObjectModelResponse(data)
             {
-                Message = message,
-                Status = status,
+
                 Type = "Request"
             };
         }
         public async Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model)
         {
+            var request_id = Guid.NewGuid();
+            while (true)
+            {
+                var request_dup = await _context.Requests.Where(x => x.Id.Equals(request_id)).FirstOrDefaultAsync();
+                if (request_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    request_id = Guid.NewGuid();
+                }
+            }
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("RE", num + 1);
             var request = new Request
             {
-                Id = Guid.NewGuid(),
+                Id = request_id,
                 Code = code,
                 RequestName = model.request_name,
                 CustomerId = _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefault(),
@@ -423,39 +436,27 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new RequestCreateResponse();
-            var message = "blank";
-            var status = 500;
-            var id = await _context.Requests.Where(x => x.Id.Equals(request.Id)).FirstOrDefaultAsync();
-            if (id != null)
+
+            await _context.Requests.AddAsync(request);
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
             {
-                status = 400;
-                message = "Id is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
-                await _context.Requests.AddAsync(request);
-                var rs = await _context.SaveChangesAsync();
-                if (rs > 0)
+                data = new RequestCreateResponse
                 {
-                    data = new RequestCreateResponse
-                    {
-                        id = request.Id,
-                        code = request.Code,
-                        request_name = request.RequestName,
-                        request_description = request.RequestDesciption,
-                        priority = request.Priority,
-                        agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
-                        service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
-                    };
-                }
+                    id = request.Id,
+                    code = request.Code,
+                    request_name = request.RequestName,
+                    request_description = request.RequestDesciption,
+                    priority = request.Priority,
+                    agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                };
+
 
             }
             return new ObjectModelResponse(data)
             {
-                Message = message,
-                Status = status,
+
                 Type = "Request"
             };
         }

@@ -26,18 +26,18 @@ var tokenValidationParams = new TokenValidationParameters
     ValidateIssuerSigningKey = true,
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secretkey"]))
 };
-builder.Services.AddSingleton(tokenValidationParams);
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt =>
-                {
-                    opt.SaveToken = true;
-                    opt.TokenValidationParameters = tokenValidationParams;
-                });
-builder.Services.AddMvc(opt =>
-{
-    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-    opt.Filters.Add(new AuthorizeFilter(policy));
-});
+//builder.Services.AddSingleton(tokenValidationParams);
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//                .AddJwtBearer(opt =>
+//                {
+//                    opt.SaveToken = true;
+//                    opt.TokenValidationParameters = tokenValidationParams;
+//                });
+//builder.Services.AddMvc(opt =>
+//{
+//    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+//    opt.Filters.Add(new AuthorizeFilter(policy));
+//});
 builder.Services.AddHttpContextAccessor();
 #endregion
 
@@ -100,8 +100,8 @@ builder.Services.ConfigureAutoMapper();
 builder.Services.ConfigureDI();
 builder.Services.ConfigureServiceWorkers();
 builder.Services.ConfigDataProtection();
-var port = Environment.GetEnvironmentVariable("PORT");
-builder.WebHost.UseUrls("http://*:" + port);
+//var port = Environment.GetEnvironmentVariable("PORT");
+//builder.WebHost.UseUrls("http://*:" + port);
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 
