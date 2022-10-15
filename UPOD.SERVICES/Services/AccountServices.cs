@@ -47,12 +47,12 @@ namespace UPOD.SERVICES.Services
                 message = "The new password must not be the same as the old password";
                 status = 400;
             }
-            else if (model.old_password == null)
+            else if (model.old_password == null || model.old_password == "")
             {
                 message = "Old password cannot be blank";
                 status = 400;
             }
-            else if (model.new_password == null)
+            else if (model.new_password == null || model.new_password == "")
             {
                 message = "New password cannot be blank";
                 status = 400;
@@ -60,6 +60,11 @@ namespace UPOD.SERVICES.Services
             else if (model.new_password != model.confirm_password)
             {
                 message = "Confirmation password does not match";
+                status = 400;
+            }
+            else if (account.Password! != model.old_password)
+            {
+                message = "Old password does not match";
                 status = 400;
             }
             else
