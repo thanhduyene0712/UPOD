@@ -140,11 +140,24 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ObjectModelResponse> CreateAgency(AgencyRequest model)
         {
+            var agency_id = Guid.NewGuid();
+            while (true)
+            {
+                var agency_dup = await _context.Agencies.Where(x => x.Id.Equals(agency_id)).FirstOrDefaultAsync();
+                if (agency_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    agency_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("AG", code_number + 1);
             var agency = new Agency
             {
-                Id = Guid.NewGuid(),
+                Id = agency_id,
                 Code = code,
                 CustomerId = model.customer_id,
                 AgencyName = model.agency_name,
@@ -159,18 +172,7 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new AgencyResponse();
-            var message = "blank";
-            var status = 500;
-            var agency_id = await _context.Agencies.Where(x => x.Id.Equals(agency.Id)).FirstOrDefaultAsync();
-            if (agency_id != null)
-            {
-                status = 400;
-                message = "AgencyId is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
+
                 await _context.Agencies.AddAsync(agency);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
@@ -215,12 +217,11 @@ namespace UPOD.SERVICES.Services
                         }).ToList(),
 
                     };
-                }
+                
             }
             return new ObjectModelResponse(data)
             {
-                Message = message,
-                Status = status,
+
                 Type = "Agency"
             };
         }

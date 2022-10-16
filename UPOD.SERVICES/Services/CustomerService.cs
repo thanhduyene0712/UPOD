@@ -16,6 +16,9 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
         Task<ObjectModelResponse> GetServiceByCustomerId(Guid id);
+        Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
+        Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id);
+
     }
 
     public class CustomerService : ICustomerService
@@ -24,6 +27,93 @@ namespace UPOD.SERVICES.Services
         public CustomerService(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id)
+        {
+
+            var requests = new List<RequestListResponse>();
+            if (status.search == null)
+            {
+                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new RequestListResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    request_name = a.RequestName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    agency = new AgencyViewResponse
+                    {
+                        id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                    },
+                    service = new ServiceViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    description = a.RequestDesciption,
+                    priority = a.Priority,
+                    request_status = a.RequestStatus,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
+
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+            else
+            {
+                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
+                && (a.RequestStatus!.Equals(status.search)
+                || a.RequestName!.Contains(status.search)
+                || a.Code!.Contains(status.search))).Select(a => new RequestListResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    request_name = a.RequestName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+
+                    },
+                    agency = new AgencyViewResponse
+                    {
+                        id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                    },
+                    service = new ServiceViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    description = a.RequestDesciption,
+                    priority = a.Priority,
+                    request_status = a.RequestStatus,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+
+            return new ResponseModel<RequestListResponse>(requests)
+            {
+                Total = requests.Count,
+                Type = "Requests"
+            };
         }
         public async Task<ResponseModel<CustomerResponse>> GetAll(PaginationRequest model)
         {
@@ -105,14 +195,44 @@ namespace UPOD.SERVICES.Services
                 Type = "Services"
             };
         }
-
+        public async Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id)
+        {
+            var agencies = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false).Select(a => new AgencyOfCustomerResponse
+            {
+               id = a.Id,
+               code = a.Code,
+               agency_name = a.AgencyName,
+               address = a.Address,
+               phone = a.Telephone,
+               manager_name = a.ManagerName,
+               
+            }).ToListAsync();
+            return new ResponseModel<AgencyOfCustomerResponse>(agencies!)
+            {
+                Type = "Agencies",
+                Total = agencies.Count,
+            };
+        }
         public async Task<ObjectModelResponse> CreateCustomer(CustomerRequest model)
         {
+            var customer_id = Guid.NewGuid();
+            while (true)
+            {
+                var customer_dup = await _context.Customers.Where(x => x.Id.Equals(customer_id)).FirstOrDefaultAsync();
+                if (customer_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    customer_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("CU", code_number + 1);
             var customer = new Customer
             {
-                Id = Guid.NewGuid(),
+                Id = customer_id,
                 Code = code,
                 Name = model.name,
                 AccountId = model.account_id,

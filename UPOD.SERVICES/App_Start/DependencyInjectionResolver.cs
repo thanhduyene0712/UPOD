@@ -21,6 +21,7 @@ namespace UPOP.SERVICES.App_Start
             services.AddScoped<IGuidelineService, GuidelineService>();
             services.AddScoped<ITechnicianService, TechnicianService>();
             services.AddScoped<IUserAccessor, UserAccessorService>();
+            services.AddScoped<IAdminService, AdminService>();
         }
     }
 }

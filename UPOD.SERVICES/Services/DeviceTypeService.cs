@@ -59,11 +59,24 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> CreateDeviceType(DeviceTypeRequest model)
         {
+            var devicetype_id = Guid.NewGuid();
+            while (true)
+            {
+                var devicetype_dup = await _context.DeviceTypes.Where(x => x.Id.Equals(devicetype_id)).FirstOrDefaultAsync();
+                if (devicetype_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    devicetype_id = Guid.NewGuid();
+                }
+            }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("DT", code_number + 1);
             var device_type = new DeviceType
             {
-                Id = Guid.NewGuid(),
+                Id = devicetype_id,
                 Code = code,
                 ServiceId = model.service_id,
                 DeviceTypeName = model.device_type_name,
@@ -74,18 +87,7 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new DeviceTypeResponse();
-            var message = "blank";
-            var status = 500;
-            var device_type_id = await _context.DeviceTypes.Where(x => x.Id.Equals(device_type.Id)).FirstOrDefaultAsync();
-            if (device_type_id != null)
-            {
-                status = 400;
-                message = "DeviceTypeId is already exists!";
-            }
-            else
-            {
-                message = "Successfully";
-                status = 201;
+
                 await _context.DeviceTypes.AddAsync(device_type);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
@@ -110,12 +112,10 @@ namespace UPOD.SERVICES.Services
                     };
                 }
 
-            }
+            
 
             return new ObjectModelResponse(data)
             {
-                Message = message,
-                Status = status,
                 Type = "DeviceType"
             };
         }

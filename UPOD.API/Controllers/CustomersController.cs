@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseViewModel;
 using UPOD.SERVICES.Services;
 
 namespace UPOD.API.Controllers
@@ -43,6 +44,34 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpGet]
+        [Route("get_agencies_by_customer_id")]
+        public async Task<ActionResult<ResponseModel<AgencyOfCustomerResponse>>> GetAgenciesByCustomerId(Guid id)
+        {
+            try
+            {
+                return await _customer_sv.GetAgenciesByCustomerId(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpGet]
+        [Route("get_requests_by_customer_id")]
+        public async Task<ActionResult<ResponseModel<RequestListResponse>>> GetListRequestsByCustomerId([FromQuery] PaginationRequest model, [FromQuery] FilterRequest status, Guid id)
+        {
+            try
+            {
+                return await _customer_sv.GetListRequestsByCustomerId(model, status, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("get_services_by_customer_id")]
         public async Task<ActionResult<ObjectModelResponse>> GetServiceByCustomerId(Guid id)
         {
@@ -55,7 +84,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPost]
         [Route("create_customer")]
         public async Task<ActionResult<ObjectModelResponse>> CreateCustomer(CustomerRequest model)

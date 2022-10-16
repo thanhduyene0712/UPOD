@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UPOD.REPOSITORIES.RequestModels
+namespace UPOD.REPOSITORIES.ResponeModels
 {
-    public class FilterRequest
+    public class ChagnePasswordResponse
     {
-        public string? search { get; set; }
+        public string? message { get; set; }
     }
 }
