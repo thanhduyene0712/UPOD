@@ -17,7 +17,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<AdminResponse>> GetListAdmin(PaginationRequest model, FilterRequest value);
         Task<ObjectModelResponse> CreateAdmin(AdminRequest model);
         Task<ObjectModelResponse> UpdateAdmin(Guid id, AdminRequest model);
-        Task<ObjectModelResponse> DisableAdmin(Guid id);
+        Task<ObjectModelResponse> DisableAdmin(Guid id); 
     }
 
     public class AdminService : IAdminService

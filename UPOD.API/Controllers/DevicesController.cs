@@ -18,7 +18,7 @@ namespace UPOD.API.Controllers
         }
 
         [HttpGet]
-        [Route("get_list_device")]
+        [Route("get_list_devices")]
         public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevices([FromQuery] PaginationRequest model)
         {
             try
@@ -30,7 +30,20 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("get_list_devices_by_agency_id")]
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevicesAgency([FromQuery]PaginationRequest model, Guid id)
 
+        {
+            try
+            {
+                return await _device_sv.GetListDevicesAgency(model, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet]
         [Route("get_device_details_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> GetDetailsDevice(Guid id)
