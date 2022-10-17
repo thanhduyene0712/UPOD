@@ -1,4 +1,4 @@
-﻿using UPOD.REPOSITORIES.ResponeModels;
+﻿using UPOD.REPOSITORIES.ResponseModels;
 
 namespace UPOD.REPOSITORIES.ResponseViewModel
 {

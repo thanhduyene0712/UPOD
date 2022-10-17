@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Reso.Core.Utilities;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
-using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseModels;
 using IContractServiceService = UPOD.SERVICES.Services.IContractServiceService;
 
 namespace UPOD.API.Controllers

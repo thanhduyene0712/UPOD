@@ -10,18 +10,20 @@ namespace UPOP.SERVICES.App_Start
         {
             //services.InitializerDI();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<ICustomerService, CustomerService>();
-            services.AddScoped<IServiceService, ServiceService>();
+            services.AddScoped<ICustomerService, CustomerServices>();
+            services.AddScoped<IServiceService, ServiceServices>();
             services.AddScoped<IContractServiceService, ContractServiceService>();
-            services.AddScoped<IRequestService, RequestService>();
-            services.AddScoped<IDeviceService, DeviceService>();
-            services.AddScoped<IDeviceTypeService, DeviceTypeService>();
-            services.AddScoped<IAgencyService, AgencyService>();
-            services.AddScoped<IAreaService, AreaService>();
-            services.AddScoped<IGuidelineService, GuidelineService>();
-            services.AddScoped<ITechnicianService, TechnicianService>();
-            services.AddScoped<IUserAccessor, UserAccessorService>();
-            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IRequestService, RequestServices>();
+            services.AddScoped<IDeviceService, DeviceServices>();
+            services.AddScoped<IDeviceTypeService, DeviceTypeServices>();
+            services.AddScoped<IAgencyService, AgencyServices>();
+            services.AddScoped<IAreaService, AreaServices>();
+            services.AddScoped<IGuidelineService, GuidelineServices>();
+            services.AddScoped<ITechnicianService, TechnicianServices>();
+            services.AddScoped<IUserAccessor, UserAccessorServices>();
+            services.AddScoped<IAdminService, AdminServices>();
+            services.AddScoped<IMaintenanceScheduleService, MaintenanceScheduleServices>();
+
         }
     }
 }

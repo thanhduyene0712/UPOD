@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using UPOD.REPOSITORIES.RequestModels;
-using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseModels;
 using IGuidelineService = UPOD.SERVICES.Services.IGuidelineService;
 
 namespace UPOD.API.Controllers
@@ -18,7 +18,7 @@ namespace UPOD.API.Controllers
         }
 
         [HttpGet]
-        [Route("get_list_guideline")]
+        [Route("get_list_guidelines")]
         public async Task<ActionResult<ResponseModel<GuidelineResponse>>> GetListGuidelines([FromQuery] PaginationRequest model)
         {
             try

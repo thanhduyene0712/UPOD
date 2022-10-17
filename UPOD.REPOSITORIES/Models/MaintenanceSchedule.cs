@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace UPOD.REPOSITORIES.Models
+﻿namespace UPOD.REPOSITORIES.Models
 {
     public partial class MaintenanceSchedule
     {

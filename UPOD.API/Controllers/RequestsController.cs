@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Reso.Core.Utilities;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
-using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Services;
 using IRequestService = UPOD.SERVICES.Services.IRequestService;
