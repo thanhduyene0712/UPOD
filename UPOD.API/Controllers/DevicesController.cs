@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using UPOD.REPOSITORIES.RequestModels;
-using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseModels;
 using IDeviceService = UPOD.SERVICES.Services.IDeviceService;
 
 namespace UPOD.API.Controllers
@@ -19,11 +19,11 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_devices")]
-        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevices([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevices([FromQuery] PaginationRequest model,[FromQuery] FilterRequest value)
         {
             try
             {
-                return await _device_sv.GetListDevices(model);
+                return await _device_sv.GetListDevices(model, value);
             }
             catch (Exception ex)
             {

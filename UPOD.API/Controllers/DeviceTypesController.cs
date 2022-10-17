@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UPOD.REPOSITORIES.RequestModels;
-using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.SERVICES.Services;
 
 namespace UPOD.API.Controllers

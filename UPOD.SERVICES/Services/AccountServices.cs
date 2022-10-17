@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
-using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services

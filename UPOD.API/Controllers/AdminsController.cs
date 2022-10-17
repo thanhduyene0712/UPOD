@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UPOD.REPOSITORIES.RequestModels;
-using UPOD.REPOSITORIES.ResponeModels;
+using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.SERVICES.Services;
 
 namespace UPOD.API.Controllers
@@ -18,11 +18,11 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_all_admins")]
-        public async Task<ActionResult<ResponseModel<AdminResponse>>> GetListAdmin([FromQuery] PaginationRequest model,[FromQuery] FilterRequest value)
+        public async Task<ActionResult<ResponseModel<AdminResponse>>> GetListAdmins([FromQuery] PaginationRequest model,[FromQuery] FilterRequest value)
         {
             try
             {
-                return await _admin_sv.GetListAdmin(model, value);
+                return await _admin_sv.GetListAdmins(model, value);
 
             }
             catch (Exception ex)
