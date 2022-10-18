@@ -27,6 +27,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<DeviceTypeResponse>> GetListDeviceTypes(PaginationRequest model)
         {
+            var total = await _context.DeviceTypes.Where(a => a.IsDelete == false).ToListAsync();
             var DeviceTypes = await _context.DeviceTypes.Where(a => a.IsDelete == false).Select(a => new DeviceTypeResponse
             {
                 id = a.Id,
@@ -48,7 +49,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<DeviceTypeResponse>(DeviceTypes)
             {
-                Total = DeviceTypes.Count,
+                Total = total.Count,
                 Type = "DeviceTypes"
             };
         }

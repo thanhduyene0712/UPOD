@@ -27,6 +27,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<GuidelineResponse>> GetListGuidelines(PaginationRequest model)
         {
+            var total = await _context.Guidelines.Where(a => a.IsDelete == false).ToListAsync();
             var guidelines = await _context.Guidelines.Where(a => a.IsDelete == false).Select(a => new GuidelineResponse
             {
                 id = a.Id,
@@ -47,7 +48,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<GuidelineResponse>(guidelines)
             {
-                Total = guidelines.Count,
+                Total = total.Count,
                 Type = "Guidelines"
             };
         }

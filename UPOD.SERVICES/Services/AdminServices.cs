@@ -12,6 +12,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateAdmin(AdminRequest model);
         Task<ObjectModelResponse> UpdateAdmin(Guid id, AdminRequest model);
         Task<ObjectModelResponse> DisableAdmin(Guid id);
+        Task<ObjectModelResponse> GetDetailsAdmin(Guid id);
     }
 
     public class AdminServices : IAdminService
@@ -24,9 +25,15 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<AdminResponse>> GetListAdmins(PaginationRequest model, FilterRequest value)
         {
+            var total = await _context.Admins.Where(a => a.IsDelete == false).ToListAsync();
             var admins = new List<AdminResponse>();
             if (value.search != null)
             {
+                total = await _context.Admins.Where(a => a.IsDelete == false
+                 && (a.Name!.Contains(value.search)
+                 || a.Mail!.Contains(value.search)
+                 || a.Telephone!.Contains(value.search)
+                 || a.Code!.Contains(value.search))).ToListAsync();
                 admins = await _context.Admins.Where(a => a.IsDelete == false
                  && (a.Name!.Contains(value.search)
                  || a.Mail!.Contains(value.search)
@@ -46,6 +53,7 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                total = await _context.Admins.Where(a => a.IsDelete == false).ToListAsync();
                 admins = await _context.Admins.Where(a => a.IsDelete == false).Select(a => new AdminResponse
                 {
                     id = a.Id,
@@ -62,11 +70,30 @@ namespace UPOD.SERVICES.Services
 
             return new ResponseModel<AdminResponse>(admins)
             {
-                Total = admins.Count,
+                Total = total.Count,
                 Type = "Admins"
             };
         }
-
+        public async Task<ObjectModelResponse> GetDetailsAdmin(Guid id)
+        {
+            var admin = await _context.Admins.Where(a=>a.Id.Equals(id)).Select(a => new AdminResponse
+                 {
+                     id = a.Id,
+                     code = a.Code,
+                     name = a.Name,
+                     account_id = a.AccountId,
+                     create_date = a.CreateDate,
+                     is_delete = a.IsDelete,
+                     update_date = a.UpdateDate,
+                     mail = a.Mail,
+                     telephone = a.Telephone,
+                 }).FirstOrDefaultAsync();
+           
+            return new ObjectModelResponse(admin!)
+            {
+                Type = "Admin"
+            };
+        }
         public async Task<ObjectModelResponse> CreateAdmin(AdminRequest model)
         {
             var admin_id = Guid.NewGuid();

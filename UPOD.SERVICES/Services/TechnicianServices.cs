@@ -32,6 +32,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id)
         {
+            var total = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).ToListAsync();
             var device_of_request = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).Select(a => new DevicesOfRequestResponse
             {
                 id = a.Device!.Id,
@@ -40,13 +41,14 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<DevicesOfRequestResponse>(device_of_request)
             {
-                Total = device_of_request.Count,
+                Total = total.Count,
                 Type = "Devices"
             };
         }
         public async Task<ResponseModel<TechnicianResponse>> GetListTechnicians(PaginationRequest model)
         {
-            var technicians = await _context.Technicians.Where(a => a.IsDelete == false).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).Select(a => new TechnicianResponse
+            var total = await _context.Technicians.Where(a => a.IsDelete == false).ToListAsync();
+            var technicians = await _context.Technicians.Where(a => a.IsDelete == false).Select(a => new TechnicianResponse
             {
                 id = a.Id,
                 code = a.Code,
@@ -82,18 +84,18 @@ namespace UPOD.SERVICES.Services
                     service_name = a.Service.ServiceName,
                     description = a.Service.Description,
                 }).ToList(),
-            }).OrderByDescending(x => x.update_date).ToListAsync();
+            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
 
             return new ResponseModel<TechnicianResponse>(technicians)
             {
-                Total = technicians.Count,
+                Total = total.Count,
                 Type = "Technicians"
             };
         }
         public async Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id)
         {
-            var request = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id))
-                .Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).Select(a => new RequestResponse
+            var total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).ToListAsync();
+            var request = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -124,11 +126,11 @@ namespace UPOD.SERVICES.Services
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
 
-                }).OrderByDescending(x => x.update_date).ToListAsync();
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
 
             return new ResponseModel<RequestResponse>(request)
             {
-                Total = request.Count,
+                Total = total.Count,
                 Type = "Request"
             };
         }

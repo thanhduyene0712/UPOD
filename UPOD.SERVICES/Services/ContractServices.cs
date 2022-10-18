@@ -76,6 +76,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<ContractResponse>> GetAll(PaginationRequest model)
         {
+            var total = await _context.Contracts.Where(a => a.IsDelete == false).ToListAsync();
             var contracts = await _context.Contracts.Where(a => a.IsDelete == false).Select(a => new ContractResponse
             {
                 id = a.Id,
@@ -111,7 +112,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<ContractResponse>(contracts)
             {
-                Total = contracts.Count,
+                Total = total.Count,
                 Type = "Contracts"
             };
         }
