@@ -29,9 +29,11 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<DeviceResponse>> GetListDevices(PaginationRequest model, FilterRequest value)
         {
+            var total = await _context.Devices.Where(a => a.IsDelete == false).ToListAsync();
             var devices = new List<DeviceResponse>();
             if (value.search == null)
             {
+                total = await _context.Devices.Where(a => a.IsDelete == false).ToListAsync();
                 devices = await _context.Devices.Where(a => a.IsDelete == false).Select(a => new DeviceResponse
                 {
                     id = a.Id,
@@ -67,6 +69,9 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                total = await _context.Devices.Where(a => a.IsDelete == false
+                && (a.Code!.Contains(value.search)
+                || a.DeviceName!.Contains(value.search))).ToListAsync();
                 devices = await _context.Devices.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search)
                 || a.DeviceName!.Contains(value.search))).Select(a => new DeviceResponse
@@ -105,12 +110,13 @@ namespace UPOD.SERVICES.Services
 
             return new ResponseModel<DeviceResponse>(devices)
             {
-                Total = devices.Count,
+                Total = total.Count,
                 Type = "Devices"
             };
         }
         public async Task<ResponseModel<DeviceResponse>> GetListDevicesAgency(PaginationRequest model, Guid id)
         {
+            var total = await _context.Devices.Where(a => a.IsDelete == false && a.AgencyId.Equals(id)).ToListAsync();
             var devices = await _context.Devices.Where(a => a.IsDelete == false && a.AgencyId.Equals(id)).Select(a => new DeviceResponse
             {
                 id = a.Id,
@@ -145,7 +151,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<DeviceResponse>(devices)
             {
-                Total = devices.Count,
+                Total = total.Count,
                 Type = "Devices"
             };
         }

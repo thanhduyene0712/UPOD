@@ -32,9 +32,11 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<RequestListResponse>> GetListRequests(PaginationRequest model, FilterRequest status)
         {
+            var total = await _context.Requests.Where(a => a.IsDelete == false).ToListAsync();
             var requests = new List<RequestListResponse>();
             if (status.search == null)
             {
+                total = await _context.Requests.Where(a => a.IsDelete == false).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false).Select(a => new RequestListResponse
                 {
                     id = a.Id,
@@ -72,6 +74,10 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                total = await _context.Requests.Where(a => a.IsDelete == false
+                && (a.RequestStatus!.Equals(status.search)
+                || a.RequestName!.Contains(status.search)
+                || a.Code!.Contains(status.search))).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false
                 && (a.RequestStatus!.Equals(status.search)
                 || a.RequestName!.Contains(status.search)
@@ -112,7 +118,7 @@ namespace UPOD.SERVICES.Services
 
             return new ResponseModel<RequestListResponse>(requests)
             {
-                Total = requests.Count,
+                Total = total.Count,
                 Type = "Requests"
             };
         }
@@ -121,6 +127,7 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var agency = await _context.Agencies.Where(a => a.Id.Equals(request!.AgencyId) && a.IsDelete == false).FirstOrDefaultAsync();
+            var total = await _context.Devices.Where(a => a.AgencyId.Equals(agency!.Id) && a.IsDelete == false).ToListAsync();
             var device = await _context.Devices.Where(a => a.AgencyId.Equals(agency!.Id) && a.IsDelete == false).Select(a => new DeviceResponse
             {
                 id = a.Id,
@@ -155,7 +162,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<DeviceResponse>(device)
             {
-                Total = device.Count,
+                Total = total.Count,
                 Type = "Devices"
             };
         }
@@ -167,6 +174,11 @@ namespace UPOD.SERVICES.Services
             var area = await _context.Areas.Where(a => a.Id.Equals(agency!.AreaId)).FirstOrDefaultAsync();
             var service = await _context.Services.Where(a => a.Id.Equals(request!.ServiceId)).FirstOrDefaultAsync();
             var technicians = new List<TechnicianRequestResponse>();
+            var total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+            && a.Technician!.AreaId.Equals(area!.Id)
+            && a.Technician.IsBusy == false
+            && a.Technician.IsDelete == false
+            && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).ToListAsync();
             var technicianDefault = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
             && a.Technician!.AreaId.Equals(area!.Id)
             && a.Technician.IsBusy == false
@@ -208,6 +220,10 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                && a.Technician!.AreaId.Equals(area!.Id)
+                && a.Technician.IsBusy == false
+                && a.Technician.IsDelete == false).ToListAsync();
                 technicians = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
                 && a.Technician!.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
@@ -246,7 +262,7 @@ namespace UPOD.SERVICES.Services
             }
             return new ResponseModel<TechnicianRequestResponse>(technicians)
             {
-                Total = technicians.Count,
+                Total = total.Count,
                 Type = "Technicians"
             };
         }

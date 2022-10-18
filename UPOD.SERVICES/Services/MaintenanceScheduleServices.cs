@@ -32,9 +32,14 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedules(PaginationRequest model, FilterRequest value)
         {
+            var total = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false).ToListAsync();
             var maintenanceSchedules = new List<MaintenanceScheduleResponse>();
             if (value.search != null)
             {
+                total = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false
+                 && (a.Name!.Contains(value.search)
+                 || a.Status!.Equals(value.search)
+                 || a.Code!.Contains(value.search))).ToListAsync();
                 maintenanceSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false
                  && (a.Name!.Contains(value.search)
                  || a.Status!.Equals(value.search)
@@ -68,6 +73,7 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                total = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false).ToListAsync();
                 maintenanceSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false).Select(a => new MaintenanceScheduleResponse
                 {
                     id = a.Id,
@@ -99,13 +105,14 @@ namespace UPOD.SERVICES.Services
 
             return new ResponseModel<MaintenanceScheduleResponse>(maintenanceSchedules)
             {
-                Total = maintenanceSchedules.Count,
+                Total = total.Count,
                 Type = "MaintenanceSchedules"
             };
 
         }
         public async Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedulesTechnician(PaginationRequest model, Guid id)
         {
+            var total = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.TechnicianId.Equals(id)).ToListAsync();
             var maintenanceSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.TechnicianId.Equals(id)).Select(a => new MaintenanceScheduleResponse
             {
                 id = a.Id,
@@ -135,12 +142,13 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(a => a.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<MaintenanceScheduleResponse>(maintenanceSchedules)
             {
-                Total = maintenanceSchedules.Count,
+                Total = total.Count,
                 Type = "MaintenanceSchedules"
             };
         }
         public async Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedulesAgency(PaginationRequest model, Guid id)
         {
+            var total = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.AgencyId.Equals(id)).ToListAsync();
             var maintenanceSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.AgencyId.Equals(id)).Select(a => new MaintenanceScheduleResponse
             {
                 id = a.Id,
@@ -170,7 +178,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(a => a.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<MaintenanceScheduleResponse>(maintenanceSchedules)
             {
-                Total = maintenanceSchedules.Count,
+                Total = total.Count,
                 Type = "MaintenanceSchedules"
             };
         }

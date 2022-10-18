@@ -210,6 +210,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model)
         {
+            var total = await _context.Accounts.Where(a => a.IsDelete == false).ToListAsync();
             var accounts = await _context.Accounts.Where(a => a.IsDelete == false).Select(p => new AccountResponse
             {
                 id = p.Id,
@@ -228,7 +229,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AccountResponse>(accounts)
             {
-                Total = accounts.Count,
+                Total = total.Count,
                 Type = "Accounts"
             };
         }
@@ -252,7 +253,7 @@ namespace UPOD.SERVICES.Services
             }).FirstOrDefaultAsync();
             return new ObjectModelResponse(account!)
             {
-                Type = "Accounts"
+                Type = "Account"
             };
         }
 

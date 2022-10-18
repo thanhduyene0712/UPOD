@@ -15,7 +15,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> GetCustomerDetails(Guid id);
         Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
-        Task<ObjectModelResponse> GetServiceByCustomerId(Guid id);
+        Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id);
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
         Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id);
 
@@ -30,10 +30,11 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id)
         {
-
+            var total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
             var requests = new List<RequestListResponse>();
             if (status.search == null)
             {
+                total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new RequestListResponse
                 {
                     id = a.Id,
@@ -71,6 +72,10 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
+                && (a.RequestStatus!.Equals(status.search)
+                || a.RequestName!.Contains(status.search)
+                || a.Code!.Contains(status.search))).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
                 && (a.RequestStatus!.Equals(status.search)
                 || a.RequestName!.Contains(status.search)
@@ -111,12 +116,13 @@ namespace UPOD.SERVICES.Services
 
             return new ResponseModel<RequestListResponse>(requests)
             {
-                Total = requests.Count,
+                Total = total.Count,
                 Type = "Requests"
             };
         }
         public async Task<ResponseModel<CustomerResponse>> GetAll(PaginationRequest model)
         {
+            var total = await _context.Customers.Where(a => a.IsDelete == false).ToListAsync();
             var customers = await _context.Customers.Where(a => a.IsDelete == false).Select(a => new CustomerResponse
             {
                 id = a.Id,
@@ -142,7 +148,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<CustomerResponse>(customers)
             {
-                Total = customers.Count,
+                Total = total.Count,
                 Type = "Customers"
             };
         }
@@ -177,40 +183,42 @@ namespace UPOD.SERVICES.Services
             };
         }
 
-        public async Task<ObjectModelResponse> GetServiceByCustomerId(Guid id)
+        public async Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id)
         {
-            var service = await _context.Customers.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new ListServiceResponse
-            {
-                service = _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(a.Id) && x.Contract.IsDelete == false
+
+            var services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
                 && x.Contract.StartDate <= DateTime.Now && x.Contract.EndDate >= DateTime.Now).Select(x => new ServiceViewResponse
                 {
                     id = x.ServiceId,
                     code = x.Service!.Code,
                     service_name = x.Service!.ServiceName,
                     description = x.Service!.Description,
-                }).Distinct().ToList(),
-            }).FirstOrDefaultAsync();
-            return new ObjectModelResponse(service!)
+                }).Distinct().ToListAsync();
+            var total = _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
+                && x.Contract.StartDate <= DateTime.Now && x.Contract.EndDate >= DateTime.Now).Distinct().ToList();
+            return new ResponseModel<ServiceViewResponse>(services)
             {
+                Total = total.Count,
                 Type = "Services"
             };
         }
         public async Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id)
         {
+            var total = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false).ToListAsync();
             var agencies = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false).Select(a => new AgencyOfCustomerResponse
             {
-               id = a.Id,
-               code = a.Code,
-               agency_name = a.AgencyName,
-               address = a.Address,
-               phone = a.Telephone,
-               manager_name = a.ManagerName,
-               
+                id = a.Id,
+                code = a.Code,
+                agency_name = a.AgencyName,
+                address = a.Address,
+                phone = a.Telephone,
+                manager_name = a.ManagerName,
+
             }).ToListAsync();
             return new ResponseModel<AgencyOfCustomerResponse>(agencies!)
             {
                 Type = "Agencies",
-                Total = agencies.Count,
+                Total = total.Count,
             };
         }
         public async Task<ObjectModelResponse> CreateCustomer(CustomerRequest model)

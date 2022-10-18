@@ -44,6 +44,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model)
         {
+            var total = await _context.Services.Where(a => a.IsDelete == false).ToListAsync();
             var services = await _context.Services.Where(a => a.IsDelete == false).Select(a => new ServiceResponse
             {
                 id = a.Id,
@@ -57,7 +58,7 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<ServiceResponse>(services)
             {
-                Total = services.Count,
+                Total = total.Count,
                 Type = "Services"
             };
         }

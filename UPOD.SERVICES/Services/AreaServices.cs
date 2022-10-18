@@ -28,6 +28,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<AreaResponse>> GetListAreas(PaginationRequest model)
         {
+            var total = await _context.Areas.Where(a => a.IsDelete == false).ToListAsync();
             var areas = await _context.Areas.Where(a => a.IsDelete == false).Select(a => new AreaResponse
             {
                 id = a.Id,
@@ -41,12 +42,13 @@ namespace UPOD.SERVICES.Services
             }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<AreaResponse>(areas)
             {
-                Total = areas.Count,
+                Total = total.Count,
                 Type = "Areas"
             };
         }
         public async Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id)
         {
+            var total = await _context.Technicians.Where(a => a.IsDelete == false && a.AreaId.Equals(id)).ToListAsync();
             var technician = await _context.Technicians.Where(a => a.IsDelete == false && a.AreaId.Equals(id)).Select(a => new TechnicianViewResponse
             {
                 id = a.Id,
@@ -56,7 +58,7 @@ namespace UPOD.SERVICES.Services
             }).OrderBy(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<TechnicianViewResponse>(technician)
             {
-                Total = technician.Count,
+                Total = total.Count,
                 Type = "Technicians"
             };
         }
