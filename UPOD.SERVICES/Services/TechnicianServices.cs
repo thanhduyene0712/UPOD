@@ -243,9 +243,11 @@ namespace UPOD.SERVICES.Services
 
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            technician!.IsBusy = false;
             request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
             request.EndTime = DateTime.Now;
             _context.Requests.Update(request);
+            _context.Technicians.Update(technician);
             var list = new List<DevicesOfRequestResponse>();
             foreach (var item in model.ticket)
             {

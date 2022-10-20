@@ -337,9 +337,13 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> MappingTechnicianRequest(Guid request_id, Guid technician_id)
         {
-            var request = await _context.Requests.Where(a => a.Id.Equals(request_id)).FirstOrDefaultAsync();
+            var request = await _context.Requests.Where(a => a.Id.Equals(request_id) && a.IsDelete == false).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(a => a.Id.Equals(technician_id) && a.IsDelete == false).FirstOrDefaultAsync();
+            technician!.IsBusy = true;
             request!.CurrentTechnicianId = technician_id;
             request.RequestStatus = ProcessStatus.PREPARING.ToString();
+            _context.Requests.Update(request);
+            _context.Technicians.Update(technician);
             var data = new MappingTechnicianResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
@@ -349,7 +353,6 @@ namespace UPOD.SERVICES.Services
                     id = request_id,
                     technician_id = technician_id,
                     request_status = request.RequestStatus,
-                    start_time = request.StartTime
                 };
             }
 
