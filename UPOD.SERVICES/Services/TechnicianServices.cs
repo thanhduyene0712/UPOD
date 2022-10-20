@@ -37,8 +37,11 @@ namespace UPOD.SERVICES.Services
             {
                 id = a.Device!.Id,
                 code = a.Device.Code,
-                name = a.Device.DeviceName
-            }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                name = a.Device.DeviceName,
+                solution = a.Solution,
+                description = a.Description
+
+            }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).Distinct().ToListAsync();
             return new ResponseModel<DevicesOfRequestResponse>(device_of_request)
             {
                 Total = total.Count,
