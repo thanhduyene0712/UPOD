@@ -82,11 +82,11 @@ namespace UPOD.SERVICES.Services
             else
             {
                 total = await _context.Requests.Where(a => a.IsDelete == false
-                && (a.RequestStatus!.Equals(status.search)
+                && (a.RequestStatus!.Contains(status.search)
                 || a.RequestName!.Contains(status.search)
                 || a.Code!.Contains(status.search))).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false
-                && (a.RequestStatus!.Equals(status.search)
+                && (a.RequestStatus!.Contains(status.search)
                 || a.RequestName!.Contains(status.search)
                 || a.Code!.Contains(status.search))).Select(a => new RequestListResponse
                 {

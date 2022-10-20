@@ -137,9 +137,13 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
+                && (a.RequestName!.Contains(value.search)
+                || a.RequestStatus!.Contains(value.search)
+                || a.Code!.Contains(value.search))).ToListAsync();
                 request = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
                 && (a.RequestName!.Contains(value.search)
-                || a.RequestStatus!.Equals(value.search)
+                || a.RequestStatus!.Contains(value.search)
                 || a.Code!.Contains(value.search))).Select(a => new RequestResponse
                 {
                     id = a.Id,

@@ -45,7 +45,7 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_list_requests_by_id_technician")]
-        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsOfTechnician([FromQuery] PaginationRequest model, Guid id, FilterRequest value)
+        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsOfTechnician([FromQuery] PaginationRequest model, Guid id,[FromQuery] FilterRequest value)
         {
             try
             {
