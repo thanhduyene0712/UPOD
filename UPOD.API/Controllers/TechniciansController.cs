@@ -57,7 +57,7 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpGet]
-        [Route("get_list_ticket_by_request_id")]
+        [Route("get_ticket_by_request_id")]
         public async Task<ActionResult<ResponseModel<DevicesOfRequestResponse>>> GetDevicesByRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
         {
             try

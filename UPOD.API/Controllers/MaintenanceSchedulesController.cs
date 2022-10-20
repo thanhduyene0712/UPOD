@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
+using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Services;
 
 namespace UPOD.API.Controllers
 {
     [ApiController]
-    [Route("api/guidelines")]
+    [Route("api/maintenance_schedules")]
     public partial class MaintenanceSchedulesController : ControllerBase
     {
 
@@ -14,6 +17,28 @@ namespace UPOD.API.Controllers
         public MaintenanceSchedulesController(IMaintenanceScheduleService maintenanceSchedule_sv)
         {
             _maintenanceSchedule_sv = maintenanceSchedule_sv;
+        }
+        
+        [HttpPut]
+        [Route("notifications")]
+        public async Task<ActionResult> Notifications()
+        {
+            try
+            {
+                var list = await _maintenanceSchedule_sv.GetMaintenanceSchedulesNotify();
+                foreach (var item in list)
+                {
+                    //send notifications
+                    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.MAINTAINING, item.Value);
+                }
+                var timeShedule = DateTime.SpecifyKind(DateTime.Now.AddHours(12), DateTimeKind.Utc);
+                BackgroundJob.Schedule(() => Notifications(), timeShedule);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
