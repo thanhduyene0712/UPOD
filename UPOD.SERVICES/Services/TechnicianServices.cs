@@ -18,7 +18,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model);
         Task<ObjectModelResponse> DisableTechnician(Guid id);
         Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model);
-        Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id);
+        Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterRequest value);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> ResolvingRequest(Guid id);
     }
@@ -95,10 +95,14 @@ namespace UPOD.SERVICES.Services
                 Type = "Technicians"
             };
         }
-        public async Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id)
+        public async Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterRequest value)
         {
             var total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).ToListAsync();
-            var request = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).Select(a => new RequestResponse
+            var request = new List<RequestResponse>();
+            if (value.search == null)
+            {
+                total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).ToListAsync();
+                request = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -130,7 +134,45 @@ namespace UPOD.SERVICES.Services
                     update_date = a.UpdateDate,
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+            else
+            {
+                request = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
+                && (a.RequestName!.Contains(value.search)
+                || a.RequestStatus!.Equals(value.search)
+                || a.Code!.Contains(value.search))).Select(a => new RequestResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    request_name = a.RequestName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    agency = new AgencyViewResponse
+                    {
+                        id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                    },
+                    service = new ServiceViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    priority = a.Priority,
+                    request_status = a.RequestStatus,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
 
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
             return new ResponseModel<RequestResponse>(request)
             {
                 Total = total.Count,
@@ -308,7 +350,7 @@ namespace UPOD.SERVICES.Services
                 };
                 _context.Skills.Add(skill);
             }
-            var data = new TechnicianUpdateResponse();      
+            var data = new TechnicianUpdateResponse();
             await _context.Technicians.AddAsync(technician);
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
