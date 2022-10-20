@@ -567,6 +567,8 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Solution).HasMaxLength(250);
 
+                entity.Property(e => e.Img).HasMaxLength(250);
+
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Device)

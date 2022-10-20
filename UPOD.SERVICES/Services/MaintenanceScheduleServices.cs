@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
+using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Services;
 
 namespace UPOD.SERVICES.Services
@@ -20,6 +22,8 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedulesAgency(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> UpdateMaintenanceSchedule(Guid id, MaintenanceScheduleRequest model);
         Task<ObjectModelResponse> DisableMaintenanceSchedule(Guid id);
+        Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotify();
+        Task SetStatus(ScheduleStatus status, Guid scheduleId);
     }
 
     public class MaintenanceScheduleServices : IMaintenanceScheduleService
@@ -29,7 +33,16 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-
+        public async Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotify()
+        {
+            var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime! >= DateTime.Now && a.MaintainTime <= DateTime.Now.AddDays(1)) && a.IsDelete == false).ToListAsync();
+            var rs = new Dictionary<Guid, Guid>();
+            foreach (var item in todaySchedules)
+            {
+                rs.Add(item.TechnicianId!.Value, item.Id);
+            }
+            return rs;
+        }
         public async Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedules(PaginationRequest model, FilterRequest value)
         {
             var total = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false).ToListAsync();
@@ -267,6 +280,13 @@ namespace UPOD.SERVICES.Services
             {
                 Type = "MaintenanceSchedule"
             };
+        }
+
+        public async Task SetStatus(ScheduleStatus status, Guid scheduleId)
+        {
+            var maintainStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(scheduleId) && a.IsDelete == false).FirstOrDefaultAsync();
+            maintainStatus!.Status = status.ToString();
+            await _context.SaveChangesAsync();
         }
     }
 }

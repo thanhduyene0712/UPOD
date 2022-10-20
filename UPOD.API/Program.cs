@@ -1,3 +1,5 @@
+
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -8,6 +10,7 @@ using Reso.Core.Extension;
 using System.Text;
 using System.Text.Json.Serialization;
 using UPOD.REPOSITORIES.Models;
+using UPOD.SERVICES.App_Start;
 using UPOD.SERVICES.Handlers;
 using UPOP.SERVICES.App_Start;
 
@@ -100,8 +103,13 @@ builder.Services.ConfigureAutoMapper();
 builder.Services.ConfigureDI();
 builder.Services.ConfigureServiceWorkers();
 builder.Services.ConfigDataProtection();
+
 var port = Environment.GetEnvironmentVariable("PORT");
 builder.WebHost.UseUrls("http://*:" + port);
+#region hangfire_schedule
+builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+#endregion
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 
@@ -113,6 +121,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseSwagger();
 
+#region hangfire_schedule
+app.UseHangfireDashboard("/hangfire_schedule", new DashboardOptions
+{
+    DashboardTitle = "Auto update schedule jobs",
+    Authorization = new[]
+                {
+                    new HangfireAuthorizationFilter("admin")
+                }
+});
+#endregion
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();

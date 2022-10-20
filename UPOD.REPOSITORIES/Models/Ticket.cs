@@ -15,7 +15,7 @@ namespace UPOD.REPOSITORIES.Models
         public Guid? CreateBy { get; set; }
         public string? Solution { get; set; }
         public string? Code { get; set; }
-
+        public string? Img { get; set; }
         public virtual Device? Device { get; set; }
         public virtual Request? Request { get; set; }
     }

@@ -6,7 +6,7 @@ using UPOD.SERVICES.Services;
 namespace UPOD.API.Controllers
 {
     [ApiController]
-    [Route("api/dervice_types")]
+    [Route("api/device_types")]
     public partial class DeviceTypesController : ControllerBase
     {
 

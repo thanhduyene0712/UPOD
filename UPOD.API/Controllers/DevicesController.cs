@@ -7,7 +7,7 @@ using IDeviceService = UPOD.SERVICES.Services.IDeviceService;
 namespace UPOD.API.Controllers
 {
     [ApiController]
-    [Route("api/dervices")]
+    [Route("api/devices")]
     public partial class DevicesController : ControllerBase
     {
 
