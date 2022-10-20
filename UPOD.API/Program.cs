@@ -104,8 +104,8 @@ builder.Services.ConfigureDI();
 builder.Services.ConfigureServiceWorkers();
 builder.Services.ConfigDataProtection();
 
-var port = Environment.GetEnvironmentVariable("PORT");
-builder.WebHost.UseUrls("http://*:" + port);
+//var port = Environment.GetEnvironmentVariable("PORT");
+//builder.WebHost.UseUrls("http://*:" + port);
 #region hangfire_schedule
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddHangfireServer();
