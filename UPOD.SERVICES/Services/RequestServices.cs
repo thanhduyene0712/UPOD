@@ -21,6 +21,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> MappingTechnicianRequest(Guid request_id, Guid technician_id);
         Task<ResponseModel<DeviceResponse>> GetDeviceRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model);
+        Task<ObjectModelResponse> RejectRequest(Guid id, RejectRequest value);
     }
     public class RequestServices : IRequestService
     {
@@ -68,6 +69,12 @@ namespace UPOD.SERVICES.Services
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    }
 
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
@@ -112,6 +119,12 @@ namespace UPOD.SERVICES.Services
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    }
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -306,6 +319,12 @@ namespace UPOD.SERVICES.Services
                 request_status = a.RequestStatus,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
+                technicican = new TechnicianViewResponse
+                {
+                    id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                    code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                }
             }).FirstOrDefaultAsync();
 
 
@@ -545,9 +564,8 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> DisableRequest(Guid id)
         {
-            var request = await _context.Requests.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             request!.IsDelete = true;
-
             _context.Requests.Update(request);
             var data = new RequestDisableResponse();
             var rs = await _context.SaveChangesAsync();
@@ -566,6 +584,31 @@ namespace UPOD.SERVICES.Services
                 Type = "Request"
             };
         }
+        public async Task<ObjectModelResponse> RejectRequest(Guid id, RejectRequest value)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            request!.RequestStatus = ProcessStatus.REJECT.ToString();
+            request!.ReasonReject = value.reason;
 
+            _context.Requests.Update(request);
+            var data = new RejectResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new RejectResponse
+                {
+                    id = request.Id,
+                    code = request.Code,
+                    name = request.RequestName!,
+                    status = request.RequestStatus,
+                };
+            }
+
+            return new ObjectModelResponse(data)
+            {
+                Status = 201,
+                Type = "Request"
+            };
+        }
     }
 }

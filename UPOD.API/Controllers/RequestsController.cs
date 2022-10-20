@@ -120,6 +120,19 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPut]
+        [Route("reject_request_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> RejectRequest(Guid id,[FromQuery] RejectRequest value)
+        {
+            try
+            {
+                return await _request_sv.RejectRequest(id, value);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
         [Route("mapping_technician_to_request_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> MappingTechnicianRequest(Guid request_id, Guid technician_id)
         {
