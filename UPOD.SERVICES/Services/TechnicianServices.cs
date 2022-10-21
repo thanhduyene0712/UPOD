@@ -39,8 +39,8 @@ namespace UPOD.SERVICES.Services
                 code = a.Device.Code,
                 name = a.Device.DeviceName,
                 solution = a.Solution,
-                description = a.Description
-
+                description = a.Description,
+                create_date = a.UpdateDate,
             }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).Distinct().ToListAsync();
             return new ResponseModel<DevicesOfRequestResponse>(device_of_request)
             {
