@@ -21,6 +21,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterRequest value);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> ResolvingRequest(Guid id);
+        Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, TicketRequest model);
     }
 
     public class TechnicianServices : ITechnicianService
@@ -35,7 +36,8 @@ namespace UPOD.SERVICES.Services
             var total = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).ToListAsync();
             var device_of_request = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).Select(a => new DevicesOfRequestResponse
             {
-                id = a.Device!.Id,
+                ticket_id = a.Id,
+                device_id = a.Device!.Id,
                 code = a.Device.Code,
                 name = a.Device.DeviceName,
                 solution = a.Solution,
@@ -282,7 +284,8 @@ namespace UPOD.SERVICES.Services
                 await _context.Tickets.AddAsync(ticket);
                 list.Add(new DevicesOfRequestResponse
                 {
-                    id = ticket.DeviceId,
+                    ticket_id = ticket.Id,
+                    device_id = ticket.DeviceId,
                     code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
                     name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
 
@@ -294,6 +297,32 @@ namespace UPOD.SERVICES.Services
             {
                 Total = list.Count,
                 Type = "Devices"
+            };
+        }
+        public async Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, TicketRequest model)
+        {
+
+            var ticket = await _context.Tickets.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            ticket!.DeviceId = model.device_id;
+            ticket!.Solution = model.solution;
+            ticket!.Description = model.description;
+            ticket!.UpdateDate = DateTime.Now;
+            var rs = await _context.SaveChangesAsync();
+            var data = new TicketViewResponse();
+            if (rs > 0)
+            {
+                data = new TicketViewResponse
+                {
+                    id = ticket.Id,
+                    device_id = ticket.DeviceId,
+                    code = ticket.Code,
+                    description = ticket.Description,
+                    solution = ticket.Solution
+                };
+            }
+            return new ObjectModelResponse(data!)
+            {
+                Type = "Device"
             };
         }
         public async Task<ObjectModelResponse> CreateTechnician(TechnicianRequest model)

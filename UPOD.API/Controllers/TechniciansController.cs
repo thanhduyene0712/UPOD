@@ -45,7 +45,7 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_list_requests_by_id_technician")]
-        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsOfTechnician([FromQuery] PaginationRequest model, Guid id,[FromQuery] FilterRequest value)
+        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsOfTechnician([FromQuery] PaginationRequest model, Guid id, [FromQuery] FilterRequest value)
         {
             try
             {
@@ -90,6 +90,20 @@ namespace UPOD.API.Controllers
             try
             {
                 return await _technician_sv.CreateTicket(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("update_device_of_ticket_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> UpdateDeviceTicket(Guid id, TicketRequest model)
+        {
+            try
+            {
+                return await _technician_sv.UpdateDeviceTicket(id, model);
             }
             catch (Exception ex)
             {

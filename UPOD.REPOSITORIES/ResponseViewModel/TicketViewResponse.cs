@@ -4,16 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UPOD.REPOSITORIES.ResponseModels
+namespace UPOD.REPOSITORIES.ResponseViewModel
 {
-    public  class DevicesOfRequestResponse
+    public class TicketViewResponse
     {
-        public Guid? ticket_id { get; set; }
+        public Guid id { get; set; }
         public Guid? device_id { get; set; }
         public string? code { get; set; }
-        public string? name { get; set; }
-        public string? solution { get; set; }
         public string? description { get; set; }
-        public DateTime? create_date { get; set; }
+        public string? solution { get; set; }
     }
 }
