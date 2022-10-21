@@ -22,6 +22,8 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<DeviceResponse>> GetDeviceRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model);
         Task<ObjectModelResponse> RejectRequest(Guid id, RejectRequest value);
+        Task<ObjectModelResponse> ReOpenRequest(Guid id);
+        Task<ObjectModelResponse> CancelRequest(Guid id);
     }
     public class RequestServices : IRequestService
     {
@@ -562,6 +564,60 @@ namespace UPOD.SERVICES.Services
             {
                 Message = message,
                 Status = status,
+                Type = "Request"
+            };
+        }
+
+        public async Task<ObjectModelResponse> ReOpenRequest(Guid id)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false && a.RequestStatus!.Equals("RESOLVED")).FirstOrDefaultAsync();
+            request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
+            request!.UpdateDate = DateTime.Now;
+            _context.Requests.Update(request);
+            var data = new ResolvingRequestResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new ResolvingRequestResponse
+                {
+                    id = request.Id,
+                    code = request.Code,
+                    name = request.RequestName,
+                    status = request.RequestStatus,
+                    start_time = request.StartTime,
+                };
+            }
+
+            return new ObjectModelResponse(data)
+            {
+                Status = 201,
+                Type = "Request"
+            };
+        }
+        public async Task<ObjectModelResponse> CancelRequest(Guid id)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false 
+            && (a.RequestStatus!.Equals("PREPARING") || a.RequestStatus!.Equals("PENDING"))).FirstOrDefaultAsync();
+            request!.RequestStatus = ProcessStatus.CANCEL.ToString();
+            request!.UpdateDate = DateTime.Now;
+            _context.Requests.Update(request);
+            var data = new ResolvingRequestResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new ResolvingRequestResponse
+                {
+                    id = request.Id,
+                    code = request.Code,
+                    name = request.RequestName,
+                    status = request.RequestStatus,
+                    start_time = request.StartTime,
+                };
+            }
+
+            return new ObjectModelResponse(data)
+            {
+                Status = 201,
                 Type = "Request"
             };
         }

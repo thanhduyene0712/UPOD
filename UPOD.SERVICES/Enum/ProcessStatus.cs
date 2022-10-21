@@ -14,6 +14,7 @@ namespace UPOD.SERVICES.Enum
         PREPARING,
         RESOLVING,
         RESOLVED,
+        CANCEL
     }
 
     public enum ReportStatus
