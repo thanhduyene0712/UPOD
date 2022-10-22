@@ -623,7 +623,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> DisableRequest(Guid id)
         {
-            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            var request = await _context.Requests.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             request!.IsDelete = true;
             _context.Requests.Update(request);
             var data = new RequestDisableResponse();

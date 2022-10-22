@@ -208,7 +208,7 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ObjectModelResponse> DisableAdmin(Guid id)
         {
-            var admin = await _context.Admins.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            var admin = await _context.Admins.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             admin!.IsDelete = true;
             admin.UpdateDate = DateTime.Now;
             var data = new AdminResponse();
