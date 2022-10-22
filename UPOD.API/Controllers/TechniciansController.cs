@@ -111,6 +111,20 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPut]
+        [Route("disable_device_of_ticket_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> DisableDeviceOfTicket(Guid id)
+        {
+            try
+            {
+                return await _technician_sv.DisableDeviceOfTicket(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpPut]
         [Route("resolving_request_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> ResolvingRequest(Guid id)
         {

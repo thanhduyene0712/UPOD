@@ -22,6 +22,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> ResolvingRequest(Guid id);
         Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, TicketRequest model);
+        Task<ObjectModelResponse> DisableDeviceOfTicket(Guid id);
     }
 
     public class TechnicianServices : ITechnicianService
@@ -459,6 +460,32 @@ namespace UPOD.SERVICES.Services
             {
                 Status = 201,
                 Type = "Technician"
+            };
+        }
+        public async Task<ObjectModelResponse> DisableDeviceOfTicket(Guid id)
+        {
+            var ticket = await _context.Tickets.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
+            ticket!.IsDelete = true;
+            ticket.UpdateDate = DateTime.Now;
+            var data = new TicketViewResponse();
+            _context.Tickets.Update(ticket);
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new TicketViewResponse
+                {
+                    id = ticket!.Id,
+                    device_id = ticket!.DeviceId,
+                    code = _context.Devices.Where(a => a.Id.Equals(ticket!.DeviceId)).Select(a => a.Code).FirstOrDefault(),
+                    solution = ticket.Solution,
+                    description = ticket.Description
+                };
+            }
+
+            return new ObjectModelResponse(data)
+            {
+                Status = 201,
+                Type = "Device"
             };
         }
         public async Task<ObjectModelResponse> ResolvingRequest(Guid id)
