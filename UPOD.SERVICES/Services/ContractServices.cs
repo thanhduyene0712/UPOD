@@ -28,7 +28,7 @@ namespace UPOD.SERVICES.Services
         {
             var contract = await _context.Contracts.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             contract!.IsDelete = true;
-            contract.UpdateDate = DateTime.Now;
+            contract.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Contracts.Update(contract);
             var data = new ContractResponse();
             var rs = await _context.SaveChangesAsync();
@@ -182,8 +182,8 @@ namespace UPOD.SERVICES.Services
                 StartDate = model.start_date,
                 EndDate = model.end_date,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
                 ContractPrice = model.contract_price,
                 Priority = model.priority,
                 Img = model.img,
@@ -217,7 +217,7 @@ namespace UPOD.SERVICES.Services
                     StartDate = contract.StartDate,
                     EndDate = contract.EndDate,
                     IsDelete = false,
-                    CreateDate = DateTime.Now,
+                    CreateDate = DateTime.UtcNow.AddHours(7),
                     UpdateDate = null,
                 };
                 _context.ContractServices.Add(contract_service);
@@ -252,8 +252,8 @@ namespace UPOD.SERVICES.Services
                         Id = maintenance_id,
                         Code = code1,
                         AgencyId = item.Id,
-                        CreateDate = DateTime.Now,
-                        UpdateDate = DateTime.Now,
+                        CreateDate = DateTime.UtcNow.AddHours(7),
+                        UpdateDate = DateTime.UtcNow.AddHours(7),
                         IsDelete = false,
                         Name = "MaintenanceAgency: " + item.AgencyName + ", time " + i,
                         Status = Enum.ScheduleStatus.SCHEDULED.ToString(),

@@ -228,8 +228,8 @@ namespace UPOD.SERVICES.Services
                 SettingDate = model.setting_date,
                 Other = model.other,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7)
 
             };
             var data = new DeviceResponse();
@@ -285,7 +285,7 @@ namespace UPOD.SERVICES.Services
         {
             var device = await _context.Devices.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             device!.IsDelete = true;
-            device.UpdateDate = DateTime.Now;
+            device.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Devices.Update(device);
             var data = new DeviceResponse();
             var rs = await _context.SaveChangesAsync();
@@ -349,7 +349,7 @@ namespace UPOD.SERVICES.Services
                 Other = model.other,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now
+                UpdateDate = DateTime.UtcNow.AddHours(7)
 
             }).FirstOrDefaultAsync();
             _context.Devices.Update(device!);

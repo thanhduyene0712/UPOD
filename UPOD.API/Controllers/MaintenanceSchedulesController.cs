@@ -25,13 +25,19 @@ namespace UPOD.API.Controllers
         {
             try
             {
-                var list = await _maintenanceSchedule_sv.GetMaintenanceSchedulesNotify();
-                foreach (var item in list)
+                var listSchedule = await _maintenanceSchedule_sv.GetMaintenanceSchedulesNotify();
+                var listScheduleMissing = await _maintenanceSchedule_sv.GetMaintenanceSchedulesNotifyMissing();
+                foreach (var item in listSchedule)
                 {
                     //send notifications
                     await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.MAINTAINING, item.Value);
                 }
-                var timeShedule = DateTime.SpecifyKind(DateTime.Now.AddHours(12), DateTimeKind.Utc);
+                foreach (var item in listScheduleMissing)
+                {
+                    //send notifications
+                    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.MISSING, item.Value);
+                }
+                var timeShedule = DateTime.SpecifyKind(DateTime.UtcNow.AddHours(12), DateTimeKind.Utc);
                 BackgroundJob.Schedule(() => Notifications(), timeShedule);
                 return Ok();
             }

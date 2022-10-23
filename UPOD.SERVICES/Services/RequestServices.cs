@@ -393,8 +393,8 @@ namespace UPOD.SERVICES.Services
                 RequestStatus = ProcessStatus.PENDING.ToString(),
                 ReasonReject = null,
                 Priority = model.priority,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
                 Token = null,
                 Img = null,
                 ExceptionSource = null,
@@ -461,8 +461,8 @@ namespace UPOD.SERVICES.Services
                 RequestStatus = ProcessStatus.PENDING.ToString(),
                 ReasonReject = null,
                 Priority = model.priority,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
                 Token = null,
                 Img = null,
                 ExceptionSource = null,
@@ -520,7 +520,7 @@ namespace UPOD.SERVICES.Services
                 RequestStatus = x.RequestStatus,
                 Priority = model.priority,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now,
+                UpdateDate = DateTime.UtcNow.AddHours(7),
                 Token = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Token).FirstOrDefault(),
                 Img = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.Img).FirstOrDefault(),
                 ExceptionSource = _context.Requests.Where(a => a.Id.Equals(id)).Select(x => x.ExceptionSource).FirstOrDefault(),
@@ -572,7 +572,7 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false && a.RequestStatus!.Equals("RESOLVED")).FirstOrDefaultAsync();
             request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
-            request!.UpdateDate = DateTime.Now;
+            request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
             var data = new ResolvingRequestResponse();
             var rs = await _context.SaveChangesAsync();
@@ -599,7 +599,7 @@ namespace UPOD.SERVICES.Services
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false 
             && (a.RequestStatus!.Equals("PREPARING") || a.RequestStatus!.Equals("PENDING"))).FirstOrDefaultAsync();
             request!.RequestStatus = ProcessStatus.CANCEL.ToString();
-            request!.UpdateDate = DateTime.Now;
+            request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
             var data = new ResolvingRequestResponse();
             var rs = await _context.SaveChangesAsync();

@@ -91,8 +91,8 @@ namespace UPOD.SERVICES.Services
                 ServiceName = model.service_name,
                 Description = model.description,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
 
             };
             var data = new ServiceResponse();
@@ -138,7 +138,7 @@ namespace UPOD.SERVICES.Services
                 Description = model.description,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now,
+                UpdateDate =DateTime.UtcNow.AddHours(7),
             }).FirstOrDefaultAsync();
             var data = new ServiceResponse();
             _context.Services.Update(service!);
@@ -168,7 +168,7 @@ namespace UPOD.SERVICES.Services
         {
             var service = await _context.Services.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             service!.IsDelete = true;
-            service.UpdateDate = DateTime.Now;
+            service.UpdateDate = DateTime.UtcNow.AddHours(7);
             var data = new ServiceResponse();
             _context.Services.Update(service);
             var rs = await _context.SaveChangesAsync();

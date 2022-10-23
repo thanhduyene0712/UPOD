@@ -83,8 +83,8 @@ namespace UPOD.SERVICES.Services
                 DeviceTypeName = model.device_type_name,
                 Description = model.description,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7)
 
             };
             var data = new DeviceTypeResponse();
@@ -126,7 +126,7 @@ namespace UPOD.SERVICES.Services
         {
             var device_type = await _context.DeviceTypes.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             device_type!.IsDelete = true;
-            device_type.UpdateDate = DateTime.Now;
+            device_type.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.DeviceTypes.Update(device_type);
             var data = new DeviceTypeResponse();
             var rs = await _context.SaveChangesAsync();
@@ -168,7 +168,7 @@ namespace UPOD.SERVICES.Services
                 Description = model.description,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now
+                UpdateDate = DateTime.UtcNow.AddHours(7)
             }).FirstOrDefaultAsync();
             var data = new DeviceTypeResponse();
             _context.DeviceTypes.Update(device_type!);

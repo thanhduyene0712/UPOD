@@ -187,7 +187,7 @@ namespace UPOD.SERVICES.Services
         {
 
             var services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
-                && x.Contract.StartDate <= DateTime.Now && x.Contract.EndDate >= DateTime.Now).Select(x => new ServiceViewResponse
+                && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Select(x => new ServiceViewResponse
                 {
                     id = x.ServiceId,
                     code = x.Service!.Code,
@@ -195,7 +195,7 @@ namespace UPOD.SERVICES.Services
                     description = x.Service!.Description,
                 }).Distinct().ToListAsync();
             var total = _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
-                && x.Contract.StartDate <= DateTime.Now && x.Contract.EndDate >= DateTime.Now).Distinct().ToList();
+                && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Distinct().ToList();
             return new ResponseModel<ServiceViewResponse>(services)
             {
                 Total = total.Count,
@@ -248,8 +248,8 @@ namespace UPOD.SERVICES.Services
                 Mail = model.mail,
                 Address = model.address,
                 Phone = model.phone,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
 
             };
             var message = "blank";
@@ -306,7 +306,7 @@ namespace UPOD.SERVICES.Services
         {
             var customer = await _context.Customers.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             customer!.IsDelete = true;
-            customer.UpdateDate = DateTime.Now;
+            customer.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Customers.Update(customer);
             var rs = await _context.SaveChangesAsync();
 
@@ -359,7 +359,7 @@ namespace UPOD.SERVICES.Services
                 Phone = model.phone,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now,
+                UpdateDate = DateTime.UtcNow.AddHours(7),
 
             }).FirstOrDefaultAsync();
             _context.Customers.Update(customer!);

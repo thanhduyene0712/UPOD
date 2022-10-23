@@ -82,8 +82,8 @@ namespace UPOD.SERVICES.Services
                 GuidelineName = model.guideline_name,
                 Guideline1 = model.guideline_des,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7)
 
             };
             var data = new GuidelineResponse();
@@ -125,7 +125,7 @@ namespace UPOD.SERVICES.Services
         {
             var guideline = await _context.Guidelines.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             guideline!.IsDelete = true;
-            guideline.UpdateDate = DateTime.Now;
+            guideline.UpdateDate = DateTime.UtcNow.AddHours(7);
             var data = new GuidelineResponse();
             _context.Guidelines.Update(guideline);
             var rs = await _context.SaveChangesAsync();
@@ -168,7 +168,7 @@ namespace UPOD.SERVICES.Services
                 Guideline1 = model.guideline_des,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now
+                UpdateDate = DateTime.UtcNow.AddHours(7)
             }).FirstOrDefaultAsync();
             var data = new GuidelineResponse();
 
