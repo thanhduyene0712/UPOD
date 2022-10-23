@@ -87,8 +87,8 @@ namespace UPOD.SERVICES.Services
                 Description = model.description,
                 AreaName = model.area_name,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7)
 
             };
             var data = new AreaResponse();
@@ -122,7 +122,7 @@ namespace UPOD.SERVICES.Services
         {
             var area = await _context.Areas.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             area!.IsDelete = true;
-            area.UpdateDate = DateTime.Now;
+            area.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Areas.Update(area);
             var data = new AreaResponse();
             var rs = await _context.SaveChangesAsync();
@@ -156,7 +156,7 @@ namespace UPOD.SERVICES.Services
                 Description = model.description,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now
+                UpdateDate = DateTime.UtcNow.AddHours(7)
             }).FirstOrDefaultAsync();
             _context.Areas.Update(area!);
             var data = new AreaResponse();

@@ -119,8 +119,8 @@ namespace UPOD.SERVICES.Services
                 Mail = model.mail,
                 Telephone = model.telephone,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
                 AccountId = model.account_id,
             };
 
@@ -177,7 +177,7 @@ namespace UPOD.SERVICES.Services
                 Telephone = model.telephone,
                 IsDelete = a.IsDelete,
                 CreateDate = a.CreateDate,
-                UpdateDate = DateTime.Now,
+                UpdateDate = DateTime.UtcNow.AddHours(7),
                 AccountId = model.account_id,
             }).FirstOrDefaultAsync();
             var data = new AdminResponse();
@@ -210,7 +210,7 @@ namespace UPOD.SERVICES.Services
         {
             var admin = await _context.Admins.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             admin!.IsDelete = true;
-            admin.UpdateDate = DateTime.Now;
+            admin.UpdateDate = DateTime.UtcNow.AddHours(7);
             var data = new AdminResponse();
             _context.Admins.Update(admin!);
             var rs = await _context.SaveChangesAsync();

@@ -248,7 +248,7 @@ namespace UPOD.SERVICES.Services
             var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
             technician!.IsBusy = false;
             request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
-            request.EndTime = DateTime.Now;
+            request.EndTime = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
             _context.Technicians.Update(technician);
             var list = new List<DevicesOfRequestResponse>();
@@ -279,8 +279,8 @@ namespace UPOD.SERVICES.Services
                     Solution = item.solution,
                     IsDelete = false,
                     CreateBy = technician!.Id,
-                    CreateDate = DateTime.Now,
-                    UpdateDate = DateTime.Now
+                    CreateDate = DateTime.UtcNow.AddHours(7),
+                    UpdateDate = DateTime.UtcNow.AddHours(7)
                 };
                 await _context.Tickets.AddAsync(ticket);
                 list.Add(new DevicesOfRequestResponse
@@ -307,7 +307,7 @@ namespace UPOD.SERVICES.Services
             ticket!.DeviceId = model.device_id;
             ticket!.Solution = model.solution;
             ticket!.Description = model.description;
-            ticket!.UpdateDate = DateTime.Now;
+            ticket!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var rs = await _context.SaveChangesAsync();
             var data = new TicketViewResponse();
             if (rs > 0)
@@ -357,8 +357,8 @@ namespace UPOD.SERVICES.Services
                 RatingAvg = model.rating_avg,
                 IsBusy = false,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7)
             };
             foreach (var item in model.service_id)
             {
@@ -381,8 +381,8 @@ namespace UPOD.SERVICES.Services
                     TechnicianId = technician.Id,
                     ServiceId = item,
                     IsDelete = false,
-                    CreateDate = DateTime.Now,
-                    UpdateDate = DateTime.Now,
+                    CreateDate = DateTime.UtcNow.AddHours(7),
+                    UpdateDate = DateTime.UtcNow.AddHours(7),
                 };
                 _context.Skills.Add(skill);
             }
@@ -424,7 +424,7 @@ namespace UPOD.SERVICES.Services
         {
             var technician = await _context.Technicians.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             technician!.IsDelete = true;
-            technician.UpdateDate = DateTime.Now;
+            technician.UpdateDate = DateTime.UtcNow.AddHours(7);
             var data = new TechnicianUpdateResponse();
             _context.Technicians.Update(technician);
             var technician_default = await _context.Agencies.Where(a => a.TechnicianId.Equals(id)).ToListAsync();
@@ -466,7 +466,7 @@ namespace UPOD.SERVICES.Services
         {
             var ticket = await _context.Tickets.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             ticket!.IsDelete = true;
-            ticket.UpdateDate = DateTime.Now;
+            ticket.UpdateDate = DateTime.UtcNow.AddHours(7);
             var data = new TicketViewResponse();
             _context.Tickets.Update(ticket);
             var rs = await _context.SaveChangesAsync();
@@ -492,7 +492,7 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(x => x.Id.Equals(id) && x.IsDelete == false).FirstOrDefaultAsync();
             request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
-            request.StartTime = DateTime.Now;
+            request.StartTime = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
             var data = new ResolvingRequestResponse();
             var rs = await _context.SaveChangesAsync();
@@ -531,7 +531,7 @@ namespace UPOD.SERVICES.Services
                 IsBusy = x.IsBusy,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now
+                UpdateDate = DateTime.UtcNow.AddHours(7)
             }).FirstOrDefaultAsync();
             var skill_remove = await _context.Skills.Where(a => a.TechnicianId.Equals(id)).ToListAsync();
             foreach (var item in skill_remove)
@@ -547,7 +547,7 @@ namespace UPOD.SERVICES.Services
                     ServiceId = item,
                     IsDelete = false,
                     CreateDate = technician.CreateDate,
-                    UpdateDate = DateTime.Now,
+                    UpdateDate = DateTime.UtcNow.AddHours(7),
                 };
                 _context.Skills.Add(skill);
             }

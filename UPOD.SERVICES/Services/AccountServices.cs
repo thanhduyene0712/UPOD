@@ -70,7 +70,7 @@ namespace UPOD.SERVICES.Services
             else
             {
                 account.Password = model.new_password;
-                account.UpdateDate = DateTime.Now;
+                account.UpdateDate = DateTime.UtcNow.AddHours(7);
                 _context.Accounts.Update(account);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
@@ -184,7 +184,7 @@ namespace UPOD.SERVICES.Services
         {
             var account = await _context.Accounts.Where(a => a.Id.Equals(id)).Include(a => a.Role).FirstOrDefaultAsync();
             account!.IsDelete = true;
-            account.UpdateDate = DateTime.Now;
+            account.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Accounts.Update(account);
             await _context.SaveChangesAsync();
             var model = new AccountResponse
@@ -282,8 +282,8 @@ namespace UPOD.SERVICES.Services
                 Username = model.user_name,
                 Password = model.password,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
             };
             var data = new AccountResponse();
             var message = "blank";
@@ -338,7 +338,7 @@ namespace UPOD.SERVICES.Services
                 Password = model.password,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now,
+                UpdateDate = DateTime.UtcNow.AddHours(7),
             }).FirstOrDefaultAsync();
             _context.Accounts.Update(account!);
             var data = new AccountResponse();

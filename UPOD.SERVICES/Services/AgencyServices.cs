@@ -169,8 +169,8 @@ namespace UPOD.SERVICES.Services
                 Address = model.address,
                 Telephone = model.telephone,
                 IsDelete = false,
-                CreateDate = DateTime.Now,
-                UpdateDate = DateTime.Now
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7)
 
             };
             var data = new AgencyResponse();
@@ -233,7 +233,7 @@ namespace UPOD.SERVICES.Services
         {
             var agency = await _context.Agencies.Where(x => x.Id.Equals(id)).Include(x => x.Customer).Include(x => x.Area).FirstOrDefaultAsync();
             agency!.IsDelete = true;
-            agency.UpdateDate = DateTime.Now;
+            agency.UpdateDate = DateTime.UtcNow.AddHours(7);
             var data = new AgencyResponse();
             _context.Agencies.Update(agency);
             var rs = await _context.SaveChangesAsync();
@@ -299,7 +299,7 @@ namespace UPOD.SERVICES.Services
                 Telephone = model.telephone,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate = DateTime.Now
+                UpdateDate = DateTime.UtcNow.AddHours(7)
             }).FirstOrDefaultAsync();
 
             _context.Agencies.Update(agency!);

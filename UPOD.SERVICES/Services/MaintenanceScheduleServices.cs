@@ -24,6 +24,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> DisableMaintenanceSchedule(Guid id);
         Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotify();
         Task SetStatus(ScheduleStatus status, Guid scheduleId);
+        Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotifyMissing();
     }
 
     public class MaintenanceScheduleServices : IMaintenanceScheduleService
@@ -35,12 +36,35 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotify()
         {
-            var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime! >= DateTime.Now && a.MaintainTime <= DateTime.Now.AddDays(1)) && a.IsDelete == false).ToListAsync();
+
+            var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime!.Value.Date == DateTime.UtcNow.AddHours(7).Date) && a.IsDelete == false).ToListAsync();
             var rs = new Dictionary<Guid, Guid>();
             foreach (var item in todaySchedules)
             {
                 rs.Add(item.TechnicianId!.Value, item.Id);
             }
+            return rs;
+        }
+        public async Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotifyMissing()
+        {
+            var maintainSchedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false).ToListAsync();
+            var rs = new Dictionary<Guid, Guid>();
+            foreach (var item in maintainSchedule)
+            {
+                var missingDate = DateTime.UtcNow.AddHours(7) - item.MaintainTime;
+                var date = missingDate!.Value.Days;
+                if (date >= 5)
+                {
+                    var missingSchedules = await _context.MaintenanceSchedules.Where(a => a.Status!.Equals("MAINTAINING") && a.IsDelete == false).ToListAsync();
+
+                    foreach (var item1 in missingSchedules)
+                    {
+                        rs.Add(item.TechnicianId!.Value, item.Id);
+                    }
+                }
+            }
+
+
             return rs;
         }
         public async Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedules(PaginationRequest model, FilterRequest value)
@@ -200,7 +224,7 @@ namespace UPOD.SERVICES.Services
             var maintenanceSchedule = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             maintenanceSchedule!.Description = model.description;
             maintenanceSchedule!.MaintainTime = model.maintain_time;
-            maintenanceSchedule.UpdateDate = DateTime.Now;
+            maintenanceSchedule.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.MaintenanceSchedules.Update(maintenanceSchedule);
             var data = new MaintenanceScheduleResponse();
             var rs = await _context.SaveChangesAsync();
