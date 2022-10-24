@@ -55,7 +55,7 @@ namespace UPOD.SERVICES.Services
                 var date = missingDate!.Value.Days;
                 if (date >= 5)
                 {
-                    var missingSchedules = await _context.MaintenanceSchedules.Where(a => a.Status!.Equals("MAINTAINING") && a.IsDelete == false).ToListAsync();
+                    var missingSchedules = await _context.MaintenanceSchedules.Where(a => a.Status!.Equals("NOTIFIED") && a.IsDelete == false).ToListAsync();
 
                     foreach (var item1 in missingSchedules)
                     {

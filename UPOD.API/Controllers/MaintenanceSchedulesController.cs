@@ -30,7 +30,7 @@ namespace UPOD.API.Controllers
                 foreach (var item in listSchedule)
                 {
                     //send notifications
-                    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.MAINTAINING, item.Value);
+                    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.NOTIFIED, item.Value);
                 }
                 foreach (var item in listScheduleMissing)
                 {
