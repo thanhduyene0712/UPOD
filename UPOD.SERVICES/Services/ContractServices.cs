@@ -218,7 +218,7 @@ namespace UPOD.SERVICES.Services
                     EndDate = contract.EndDate,
                     IsDelete = false,
                     CreateDate = DateTime.UtcNow.AddHours(7),
-                    UpdateDate = null,
+                    UpdateDate = DateTime.UtcNow.AddHours(7),
                 };
                 _context.ContractServices.Add(contract_service);
             }
@@ -259,6 +259,8 @@ namespace UPOD.SERVICES.Services
                         Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
                         TechnicianId = item.TechnicianId,
                         MaintainTime = maintenanceDate,
+                        StartDate = null,
+                        EndDate = null,
 
                     };
                     await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);

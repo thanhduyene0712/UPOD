@@ -375,7 +375,7 @@ namespace UPOD.REPOSITORIES.Models
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK_MaintenanceReportService_Service");
 
-                entity.Property(e => e.Status).HasMaxLength(255);
+                entity.Property(e => e.Description).HasMaxLength(255);
             });
 
             modelBuilder.Entity<MaintenanceSchedule>(entity =>
@@ -387,6 +387,10 @@ namespace UPOD.REPOSITORIES.Models
                 entity.Property(e => e.Code).HasMaxLength(255);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.MaintainTime).HasColumnType("datetime");
 

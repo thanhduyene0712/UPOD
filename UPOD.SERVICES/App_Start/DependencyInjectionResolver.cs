@@ -23,7 +23,7 @@ namespace UPOP.SERVICES.App_Start
             services.AddScoped<IUserAccessor, UserAccessorServices>();
             services.AddScoped<IAdminService, AdminServices>();
             services.AddScoped<IMaintenanceScheduleService, MaintenanceScheduleServices>();
-
+            services.AddScoped<IMaintenanceReportService, MaintenanceReportServices>();
         }
     }
 }
