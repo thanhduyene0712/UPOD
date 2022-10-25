@@ -597,8 +597,8 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> CancelRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false 
-            && (a.RequestStatus!.Equals("PREPARING") || a.RequestStatus!.Equals("PENDING"))).FirstOrDefaultAsync();
-            request!.RequestStatus = ProcessStatus.CANCEL.ToString();
+            && (a.RequestStatus!.Equals("PREPARING"))).FirstOrDefaultAsync();
+            request!.RequestStatus = ProcessStatus.CANCELED.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
             var data = new ResolvingRequestResponse();
@@ -646,7 +646,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> RejectRequest(Guid id, RejectRequest value)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
-            request!.RequestStatus = ProcessStatus.REJECT.ToString();
+            request!.RequestStatus = ProcessStatus.REJECTED.ToString();
             request!.ReasonReject = value.reason;
 
             _context.Requests.Update(request);

@@ -10,11 +10,11 @@ namespace UPOD.SERVICES.Enum
     public enum ProcessStatus
     {
         PENDING,
-        REJECT,
+        REJECTED,
         PREPARING,
         RESOLVING,
         RESOLVED,
-        CANCEL
+        CANCELED
     }
 
     public enum ReportStatus
