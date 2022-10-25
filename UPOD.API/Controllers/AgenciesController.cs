@@ -19,11 +19,25 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_agencies")]
-        public async Task<ActionResult<ResponseModel<AgencyResponse>>> GetListAgencies([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<AgencyResponse>>> GetListAgencies([FromQuery] PaginationRequest model, [FromQuery] FilterRequest value)
         {
             try
             {
-                return await _agency_sv.GetListAgencies(model);
+                return await _agency_sv.GetListAgencies(model, value);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
+        [Route("get_list_agencies_by_technician_id")]
+        public async Task<ActionResult<ResponseModel<AgencyResponse>>> GetListAgenciesByTechnician([FromQuery] PaginationRequest model, Guid id, [FromQuery] FilterRequest value)
+
+        {
+            try
+            {
+                return await _agency_sv.GetListAgenciesByTechnician(model, id, value);
             }
             catch (Exception ex)
             {
