@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedulesTechnician(PaginationRequest model, Guid id);
         Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedulesAgency(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> UpdateMaintenanceSchedule(Guid id, MaintenanceScheduleRequest model);
+        Task<ObjectModelResponse> MaintainingSchedule(Guid id);
         Task<ObjectModelResponse> DisableMaintenanceSchedule(Guid id);
         Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotify();
         Task SetStatus(ScheduleStatus status, Guid scheduleId);
@@ -33,6 +35,53 @@ namespace UPOD.SERVICES.Services
         public MaintenanceScheduleServices(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ObjectModelResponse> MaintainingSchedule(Guid id)
+        {
+            var maintenanceSchedule = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(a => a.Id.Equals(maintenanceSchedule!.TechnicianId) && a.IsDelete == false).FirstOrDefaultAsync();
+            technician!.IsBusy = true;
+            maintenanceSchedule!.Status = ScheduleStatus.MAINTAINING.ToString();
+            _context.MaintenanceSchedules.Update(maintenanceSchedule);
+            _context.Technicians.Update(technician);
+            var data = new MaintenanceScheduleResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new MaintenanceScheduleResponse
+                {
+                    id = maintenanceSchedule.Id,
+                    code = maintenanceSchedule.Code,
+                    name = maintenanceSchedule.Name,
+                    description = maintenanceSchedule.Description,
+                    is_delete = maintenanceSchedule.IsDelete,
+                    create_date = maintenanceSchedule.CreateDate,
+                    update_date = maintenanceSchedule.UpdateDate,
+                    maintain_time = maintenanceSchedule.MaintainTime,
+                    status = maintenanceSchedule.Status,
+                    technician = new TechnicianViewResponse
+                    {
+                        id = maintenanceSchedule.TechnicianId,
+                        name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+
+                    },
+                    agency = new AgencyViewResponse
+                    {
+                        id = maintenanceSchedule.AgencyId,
+                        code = _context.Agencies.Where(x => x.Id.Equals(maintenanceSchedule.AgencyId)).Select(a => a.Code).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(maintenanceSchedule.AgencyId)).Select(a => a.AgencyName).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(maintenanceSchedule.AgencyId)).Select(a => a.Address).FirstOrDefault(),
+                        phone = _context.Agencies.Where(x => x.Id.Equals(maintenanceSchedule.AgencyId)).Select(a => a.Telephone).FirstOrDefault()
+                    }
+                };
+            }
+
+            return new ObjectModelResponse(data)
+            {
+                Status = 201,
+                Type = "MaintenanceSchedule"
+            };
         }
         public async Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotify()
         {
