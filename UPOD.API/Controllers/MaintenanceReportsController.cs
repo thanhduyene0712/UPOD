@@ -55,19 +55,19 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost]
-        [Route("create_maintenance_report_service")]
-        public async Task<ActionResult<ResponseModel<MaintenanceReportServiceResponse>>> CreateMaintenanceReportService(Guid id, ListMaintenanceReportServiceRequest model)
-        {
-            try
-            {
-                return await _maintenance_report_sv.CreateMaintenanceReportService(id, model);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpPost]
+        //[Route("create_maintenance_report_service")]
+        //public async Task<ActionResult<ResponseModel<MaintenanceReportServiceResponse>>> CreateMaintenanceReportService(Guid id, ListMaintenanceReportServiceRequest model)
+        //{
+        //    try
+        //    {
+        //        return await _maintenance_report_sv.CreateMaintenanceReportService(id, model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
         //[HttpPut]
         //[Route("update_guideline_by_id")]
         //public async Task<ActionResult<ObjectModelResponse>> UpdateDervice(Guid id, GuidelineRequest model)

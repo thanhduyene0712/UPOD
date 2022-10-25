@@ -8,7 +8,7 @@ namespace UPOD.REPOSITORIES.RequestModels
 {
     public class ListMaintenanceReportServiceRequest
     {
-        public List<MaintenanceReportServiceRequest> maintenance_report_service { get; set; }
+        public List<MaintenanceReportServiceRequest> service { get; set; }
     }
     public class MaintenanceReportServiceRequest
     {

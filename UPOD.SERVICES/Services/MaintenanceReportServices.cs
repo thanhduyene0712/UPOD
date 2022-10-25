@@ -21,9 +21,6 @@ namespace UPOD.SERVICES.Services
     {
         Task<ResponseModel<MaintenanceReportResponse>> GetListMaintenanceReports(PaginationRequest model, FilterRequest value);
         Task<ObjectModelResponse> CreateMaintenanceReport(MaintenanceReportRequest model);
-        Task<ResponseModel<MaintenanceReportServiceResponse>> CreateMaintenanceReportService(Guid id, ListMaintenanceReportServiceRequest model);
-        //Task<ObjectModelResponse> UpdateMaintenanceReport(Guid id, MaintenanceReportRequest model);
-        //Task<ObjectModelResponse> DisableMaintenanceReport(Guid id);
         Task<ObjectModelResponse> GetDetailsMaintenanceReport(Guid id);
     }
 
@@ -208,6 +205,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> CreateMaintenanceReport(MaintenanceReportRequest model)
         {
+            var data = new MaintenanceReportResponse();
             var maintenanceReport_id = Guid.NewGuid();
             while (true)
             {
@@ -239,11 +237,51 @@ namespace UPOD.SERVICES.Services
                 MaintenanceScheduleId = model.maintenance_schedule_id,
                 Status = ReportStatus.NO_PROBLEM.ToString(),
             };
-            var maintenanceScheduleStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).FirstOrDefaultAsync();
-            maintenanceScheduleStatus!.Status = ScheduleStatus.COMPLETED.ToString();
-            var data = new MaintenanceReportResponse();
-
-            await _context.MaintenanceReports.AddAsync(maintenanceReport);
+            if(model.service.Count == 0)
+            {
+                var maintenanceScheduleStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).FirstOrDefaultAsync();
+                maintenanceScheduleStatus!.Status = ScheduleStatus.COMPLETED.ToString();
+                var technician = await _context.Technicians.Where(x => x.Id.Equals(maintenanceReport!.CreateBy)).FirstOrDefaultAsync();
+                await _context.MaintenanceReports.AddAsync(maintenanceReport);
+                technician!.IsBusy = false;
+                _context.Technicians.Update(technician);
+            }
+            else
+            {
+                var maintenanceScheduleStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).FirstOrDefaultAsync();
+                maintenanceScheduleStatus!.Status = ScheduleStatus.COMPLETED.ToString();
+                await _context.MaintenanceReports.AddAsync(maintenanceReport);
+                var technician = await _context.Technicians.Where(x => x.Id.Equals(maintenanceReport!.CreateBy)).FirstOrDefaultAsync();
+                maintenanceReport!.Status = ReportStatus.PROBLEM.ToString();
+                technician!.IsBusy = false;
+                _context.Technicians.Update(technician);
+                foreach (var item in model.service)
+                {
+                    var maintenanceReportService_id = Guid.NewGuid();
+                    while (true)
+                    {
+                        var maintenanceReportService_dup = await _context.MaintenanceReportServices.Where(x => x.Id.Equals(maintenanceReportService_id)).FirstOrDefaultAsync();
+                        if (maintenanceReportService_dup == null)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            maintenanceReportService_id = Guid.NewGuid();
+                        }
+                    }
+                    var maintenanceReportService = new MaintenanceReportService
+                    {
+                        Id = maintenanceReportService_id,
+                        Description = item.Description,
+                        MaintenanceReportId = maintenanceReport.Id,
+                        ServiceId = item.service_id,
+                    };
+                    await _context.MaintenanceReportServices.AddAsync(maintenanceReportService);
+                    //await _context.SaveChangesAsync();
+                }
+            }
+            
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
             {
@@ -297,58 +335,10 @@ namespace UPOD.SERVICES.Services
             }
             return new ObjectModelResponse(data)
             {
-
                 Type = "MaintenanceReport"
             };
         }
-        public async Task<ResponseModel<MaintenanceReportServiceResponse>> CreateMaintenanceReportService(Guid id, ListMaintenanceReportServiceRequest model)
-        {
-            var maintenanceReport = await _context.MaintenanceReports.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
-            var technician = await _context.Technicians.Where(x => x.Id.Equals(maintenanceReport!.CreateBy)).FirstOrDefaultAsync();
-            maintenanceReport!.Status = ReportStatus.PROBLEM.ToString();
-            technician!.IsBusy = false;
-            _context.MaintenanceReports.Update(maintenanceReport);
-            _context.Technicians.Update(technician);
-            var list = new List<MaintenanceReportServiceResponse>();
-            foreach (var item in model.maintenance_report_service)
-            {
-                var maintenanceReportService_id = Guid.NewGuid();
-                while (true)
-                {
-                    var maintenanceReportService_dup = await _context.MaintenanceReportServices.Where(x => x.Id.Equals(maintenanceReportService_id)).FirstOrDefaultAsync();
-                    if (maintenanceReportService_dup == null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        maintenanceReportService_id = Guid.NewGuid();
-                    }
-                }
-                var maintenanceReportService = new MaintenanceReportService
-                {
-                    Id = maintenanceReportService_id,
-                    Description = item.Description,
-                    MaintenanceReportId = maintenanceReport.Id,
-                    ServiceId = item.service_id,
-                };
-                await _context.MaintenanceReportServices.AddAsync(maintenanceReportService);
-                list.Add(new MaintenanceReportServiceResponse
-                {
-                    id = maintenanceReportService.Id,
-                    maintenance_report_id = maintenanceReportService.MaintenanceReportId,
-                    service_id = maintenanceReportService.ServiceId,
-                    description = maintenanceReportService.Description
-                });
-                await _context.SaveChangesAsync();
-            }
-            return new ResponseModel<MaintenanceReportServiceResponse>(list!)
-            {
-                Total = list.Count,
-                Type = "MaintenanceReportServices"
-            };
-
-        }
+       
 
         private async Task<int> GetLastCode()
         {
