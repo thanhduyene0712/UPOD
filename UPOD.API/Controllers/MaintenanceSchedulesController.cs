@@ -87,6 +87,20 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPut]
+        [Route("maintaining_maintenance_schedule_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> MaintainingSchedule(Guid id)
+
+        {
+            try
+            {
+                return await _maintenanceSchedule_sv.MaintainingSchedule(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
         [Route("update_maintenance_schedule_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> UpdateMaintenanceSchedule(Guid id, MaintenanceScheduleRequest model)
         {
