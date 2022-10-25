@@ -31,13 +31,27 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpGet]
+        [Route("get_list_devices_by_device_type_id")]
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevicesByDeviceType([FromQuery] PaginationRequest model, [FromQuery] FilterRequest value, Guid id)
+        {
+            try
+            {
+                return await _device_sv.GetListDevicesByDeviceType(model, value, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpGet]
         [Route("get_list_devices_by_agency_id")]
-        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevicesAgency([FromQuery]PaginationRequest model, Guid id)
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevicesAgency([FromQuery]PaginationRequest model, Guid id, [FromQuery] FilterRequest value)
 
         {
             try
             {
-                return await _device_sv.GetListDevicesAgency(model, id);
+                return await _device_sv.GetListDevicesAgency(model, id, value);
             }
             catch (Exception ex)
             {
