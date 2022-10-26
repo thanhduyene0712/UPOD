@@ -27,7 +27,7 @@ namespace UPOD.SERVICES.Enum
     public enum ScheduleStatus
     {
        SCHEDULED,
-       MISSING,
+       MISSED,
        MAINTAINING, 
        COMPLETED,
        NOTIFIED,
