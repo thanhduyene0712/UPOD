@@ -35,7 +35,7 @@ namespace UPOD.API.Controllers
                 foreach (var item in listScheduleMissing)
                 {
                     //send notifications
-                    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.MISSING, item.Value);
+                    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.MISSED, item.Value);
                 }
                 var timeShedule = DateTime.SpecifyKind(DateTime.UtcNow.AddHours(12), DateTimeKind.Utc);
                 BackgroundJob.Schedule(() => Notifications(), timeShedule);
