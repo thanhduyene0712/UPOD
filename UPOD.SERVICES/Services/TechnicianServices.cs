@@ -21,6 +21,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterRequest value);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> ResolvingRequest(Guid id);
+        Task<ObjectModelResponse> ConfirmRequest(Guid id);
         Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, TicketRequest model);
         Task<ObjectModelResponse> DisableDeviceOfTicket(Guid id);
     }
@@ -96,6 +97,32 @@ namespace UPOD.SERVICES.Services
             {
                 Total = total.Count,
                 Type = "Technicians"
+            };
+        }
+        public async Task<ObjectModelResponse> ConfirmRequest(Guid id)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false && a.RequestStatus!.Equals("EDITING")).FirstOrDefaultAsync();
+            request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
+            request!.UpdateDate = DateTime.UtcNow.AddHours(7);
+            _context.Requests.Update(request);
+            var data = new ResolvingRequestResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new ResolvingRequestResponse
+                {
+                    id = request.Id,
+                    code = request.Code,
+                    name = request.RequestName,
+                    status = request.RequestStatus,
+                    start_time = request.StartTime,
+                };
+            }
+
+            return new ObjectModelResponse(data)
+            {
+                Status = 201,
+                Type = "Request"
             };
         }
         public async Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterRequest value)

@@ -123,6 +123,19 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut]
+        [Route("confirm_request_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> ConfirmRequest(Guid id)
+        {
+            try
+            {
+                return await _technician_sv.ConfirmRequest(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         
         [HttpPut]
         [Route("resolving_request_by_id")]

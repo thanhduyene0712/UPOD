@@ -571,7 +571,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> ReOpenRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false && a.RequestStatus!.Equals("RESOLVED")).FirstOrDefaultAsync();
-            request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
+            request!.RequestStatus = ProcessStatus.EDITING.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
             var data = new ResolvingRequestResponse();
@@ -594,6 +594,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Request"
             };
         }
+       
         public async Task<ObjectModelResponse> CancelRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false 
