@@ -66,6 +66,7 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    reason = a.ReasonReject,
                     description = a.RequestDesciption,
                     priority = a.Priority,
                     request_status = a.RequestStatus,
@@ -116,6 +117,7 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    reason = a.ReasonReject,
                     description = a.RequestDesciption,
                     priority = a.Priority,
                     request_status = a.RequestStatus,
@@ -405,7 +407,6 @@ namespace UPOD.SERVICES.Services
                 StartTime = null,
                 EndTime = null,
                 AdminId = null,
-
             };
             var data = new RequestCreateResponse();
 
