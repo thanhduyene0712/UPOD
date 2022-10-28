@@ -501,7 +501,7 @@ namespace UPOD.SERVICES.Services
             var code = CodeHelper.GeneratorCode("RE", num + 1);
             var customer_id = await _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefaultAsync();
             var contract = _context.Contracts.Where(a => a.CustomerId.Equals(customer_id)).ToList();
-            var contract_id = Guid.Parse("00000000-0000-0000-0000-000000000000");
+            Guid? contract_id = null;
             foreach (var item in contract)
             {
                 contract_id = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id) && a.ServiceId.Equals(model.service_id)).Select(a => a.Id).FirstOrDefaultAsync();
@@ -576,10 +576,10 @@ namespace UPOD.SERVICES.Services
             var code = CodeHelper.GeneratorCode("RE", num + 1);
             var customer_id = await _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefaultAsync();
             var contract = _context.Contracts.Where(a => a.CustomerId.Equals(customer_id)).ToList();
-            var contract_id = Guid.Parse("00000000-0000-0000-0000-000000000000");
+            Guid? contract_id = null;
             foreach (var item in contract)
             {
-                contract_id = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id) && a.ServiceId.Equals(model.service_id)).Select(a => a.Id).FirstOrDefaultAsync();
+                contract_id = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id) && a.ServiceId.Equals(model.service_id)).Select(a => a.ContractId).FirstOrDefaultAsync();
             }
             var request = new Request
             {
