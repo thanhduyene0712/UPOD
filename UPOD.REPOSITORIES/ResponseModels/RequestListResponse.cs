@@ -18,6 +18,7 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public DateTime? update_date { get; set; }
         public int? priority { get; set; }
         public string? reason { get; set; }
+        public ContractViewResponse contract { get; set; } = null!;
         public CustomerViewResponse customer { get; set; } = null!;
         public AgencyViewResponse agency { get; set; } = null!;
         public ServiceViewResponse service { get; set; } = null!;

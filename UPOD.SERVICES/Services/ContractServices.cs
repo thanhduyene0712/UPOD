@@ -56,7 +56,6 @@ namespace UPOD.SERVICES.Services
                     description = contract.Description,
                     attachment = contract.Attachment,
                     img = contract.Img,
-                    frequency_maintain = contract.FrequencyMaintain,
                     service = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
@@ -99,7 +98,6 @@ namespace UPOD.SERVICES.Services
                 priority = a.Priority,
                 description = a.Description,
                 attachment = a.Attachment,
-                frequency_maintain = a.FrequencyMaintain,
                 img = a.Img,
                 service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                 {
@@ -141,7 +139,6 @@ namespace UPOD.SERVICES.Services
                 priority = a.Priority,
                 description = a.Description,
                 attachment = a.Attachment,
-                frequency_maintain = a.FrequencyMaintain,
                 img = a.Img,
                 service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                 {
@@ -191,9 +188,8 @@ namespace UPOD.SERVICES.Services
                 Description = model.description!,
                 TerminalTime = null,
                 TerminalContent = null,
-                FrequencyMaintain = model.frequency_maintain
             };
-            foreach (var item in model.service_id)
+            foreach (var item in model.service)
             {
                 var contract_service_id = Guid.NewGuid();
                 while (true)
@@ -211,9 +207,9 @@ namespace UPOD.SERVICES.Services
                 var contract_service = new ContractService
                 {
                     Id = contract_service_id,
-                    Code = null,
+                    FrequencyMaintain = item.frequency_maintain,
                     ContractId = contract.Id,
-                    ServiceId = item,
+                    ServiceId = item.service_id,
                     StartDate = contract.StartDate,
                     EndDate = contract.EndDate,
                     IsDelete = false,
@@ -224,48 +220,54 @@ namespace UPOD.SERVICES.Services
             }
             var lastTime = model.end_date - model.start_date;
             var lastDay = lastTime!.Value.Days - 15;
-            var maintenanceTime = lastDay / model.frequency_maintain;
             var listAgency = await _context.Agencies.Where(a => a.CustomerId.Equals(model.customer_id) && a.IsDelete == false).ToListAsync();
-            var code_number1 = await GetLastCode();
-            foreach (var item in listAgency)
+            var code_number1 = await GetLastCode1();
+            foreach (var itemService in model.service)
             {
-                var maintenanceDate = model.start_date;
-                for (int i = 1; i <= model.frequency_maintain; i++)
-                {
-                    maintenanceDate = maintenanceDate!.Value.AddDays(maintenanceTime!.Value);
-                    var maintenance_id = Guid.NewGuid();
-                    while (true)
-                    {
-                        var maintenance_dup = await _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenance_id)).FirstOrDefaultAsync();
-                        if (maintenance_dup == null)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            maintenance_id = Guid.NewGuid();
-                        }
-                    }
-                    var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
-                    var maintenanceSchedule = new MaintenanceSchedule
-                    {
-                        Id = maintenance_id,
-                        Code = code1,
-                        AgencyId = item.Id,
-                        CreateDate = DateTime.UtcNow.AddHours(7),
-                        UpdateDate = DateTime.UtcNow.AddHours(7),
-                        IsDelete = false,
-                        Name = "MaintenanceAgency: " + item.AgencyName + ", time " + i,
-                        Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
-                        TechnicianId = item.TechnicianId,
-                        MaintainTime = maintenanceDate,
-                        StartDate = null,
-                        EndDate = null,
+                var maintenanceTime = lastDay / itemService.frequency_maintain;
 
-                    };
-                    await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
+                foreach (var item in listAgency)
+                {
+                    var maintenanceDate = model.start_date;
+                    for (int i = 1; i <= itemService.frequency_maintain; i++)
+                    {
+                        maintenanceDate = maintenanceDate!.Value.AddDays(maintenanceTime!.Value);
+                        var maintenance_id = Guid.NewGuid();
+                        while (true)
+                        {
+                            var maintenance_dup = await _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenance_id)).FirstOrDefaultAsync();
+                            if (maintenance_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                maintenance_id = Guid.NewGuid();
+                            }
+                        }
+                        var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
+                        var service = await _context.Services.Where(a => a.Id.Equals(itemService.service_id) && a.IsDelete == false).FirstOrDefaultAsync();
+                        var maintenanceSchedule = new MaintenanceSchedule
+                        {
+                            Id = maintenance_id,
+                            Code = code1,
+                            AgencyId = item.Id,
+                            CreateDate = DateTime.UtcNow.AddHours(7),
+                            UpdateDate = DateTime.UtcNow.AddHours(7),
+                            IsDelete = false,
+                            Name = "MaintenanceAgency: " + item.AgencyName + ", Service: " + service!.ServiceName + ", time " + i,
+                            Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
+                            TechnicianId = item.TechnicianId,
+                            MaintainTime = maintenanceDate,
+                            StartDate = null,
+                            EndDate = null,
+                            ServiceId = itemService.service_id
+                        };
+                        await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
+                    }
                 }
             }
+
             var data = new ContractResponse();
             var message = "blank";
             var status = 500;
@@ -306,7 +308,6 @@ namespace UPOD.SERVICES.Services
                         description = contract.Description,
                         attachment = contract.Attachment,
                         img = contract.Img,
-                        frequency_maintain = contract.FrequencyMaintain,
                         service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                         {
                             id = x.ServiceId,

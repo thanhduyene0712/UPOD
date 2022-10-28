@@ -20,6 +20,7 @@
         public Guid? TechnicianId { get; set; }
         public Guid? AgencyId { get; set; }
         public string? Status { get; set; }
+        public Guid? ServiceId { get; set; }
 
         public virtual Agency? Agency { get; set; }
         public virtual Technician? Technician { get; set; }

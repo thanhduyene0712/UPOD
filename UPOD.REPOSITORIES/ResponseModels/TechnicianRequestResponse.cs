@@ -12,8 +12,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public Guid? id { get; set; }
         public string? code { get; set; }
         public string? technician_name { get; set; }
-        public AreaViewResponse area { get; set; } = null!;
-        public AccountViewResponse account { get; set; } = null!;
         public string? telephone { get; set; }
         public string? email { get; set; }
         public int? gender { get; set; }
@@ -23,5 +21,7 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
+        public AreaViewResponse area { get; set; } = null!;
+        public AccountViewResponse account { get; set; } = null!;
     }
 }
