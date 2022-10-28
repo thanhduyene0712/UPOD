@@ -196,6 +196,7 @@ namespace UPOD.SERVICES.Services
             && a.Technician.IsBusy == false
             && a.Technician.IsDelete == false
             && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).ToListAsync();
+
             var technicianDefault = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
             && a.Technician!.AreaId.Equals(area!.Id)
             && a.Technician.IsBusy == false
@@ -241,7 +242,48 @@ namespace UPOD.SERVICES.Services
                 && a.Technician!.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).ToListAsync();
-                technicians = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                if (total!.Count <= 0)
+                {
+                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                && a.Technician!.IsBusy == false
+                && a.Technician.IsDelete == false).ToListAsync();
+                    technicians = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                && a.Technician!.IsBusy == false
+                && a.Technician.IsDelete == false).Select(a => new TechnicianRequestResponse
+                {
+                    id = a.TechnicianId,
+                    code = a.Technician!.Code,
+                    area = new AreaViewResponse
+                    {
+                        id = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Code).FirstOrDefault(),
+                        area_name = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.AreaName).FirstOrDefault(),
+                        description = _context.Areas.Where(x => x.Id.Equals(a.Technician.AreaId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    technician_name = a.Technician.TechnicianName,
+                    account = new AccountViewResponse
+                    {
+                        id = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Code).FirstOrDefault(),
+                        role_name = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Role!.RoleName).FirstOrDefault(),
+                        username = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Username).FirstOrDefault(),
+                        password = _context.Accounts.Where(x => x.Id.Equals(a.Technician.AccountId)).Select(x => x.Password).FirstOrDefault(),
+                    },
+                    telephone = a.Technician.Telephone,
+                    email = a.Technician.Email,
+                    gender = a.Technician.Gender,
+                    address = a.Technician.Address,
+                    rating_avg = a.Technician.RatingAvg,
+                    is_busy = a.Technician.IsBusy,
+                    is_delete = a.Technician.IsDelete,
+                    create_date = a.Technician.CreateDate,
+                    update_date = a.Technician.UpdateDate,
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                }
+                else
+                {
+                    technicians = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
                 && a.Technician!.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).Select(a => new TechnicianRequestResponse
@@ -275,6 +317,8 @@ namespace UPOD.SERVICES.Services
                     update_date = a.Technician.UpdateDate,
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                }
+
 
             }
             return new ResponseModel<TechnicianRequestResponse>(technicians)

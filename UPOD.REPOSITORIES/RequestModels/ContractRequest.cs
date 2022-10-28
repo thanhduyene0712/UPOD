@@ -17,8 +17,7 @@ namespace UPOD.REPOSITORIES.RequestModels
         public string? attachment { get; set; }
         public string? img { get; set; }
         public string? description { get; set; }
-        public int? frequency_maintain { get; set; }
-        public List<Guid> service_id { get; set; } = null!;
+        public List<ServiceFrequencyRequest> service { get; set; } = null!;
 
     }
 }

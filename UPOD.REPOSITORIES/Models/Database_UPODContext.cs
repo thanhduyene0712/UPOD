@@ -188,7 +188,6 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Code).HasMaxLength(255);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
