@@ -32,6 +32,8 @@ namespace UPOD.REPOSITORIES.Models
         public string? Token { get; set; }
         public string? Code { get; set; }
         public Guid? AdminId { get; set; }
+        public Guid? ContractId { get; set; }
+
 
         public virtual Admin? Admin { get; set; }
         public virtual Agency? Agency { get; set; }
