@@ -81,9 +81,9 @@ namespace UPOD.SERVICES.Services
                     },
                     contract = new ContractViewResponse
                     {
-                        id = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Contract!.Code).FirstOrDefault(),
-                        name = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Contract!.ContractName).FirstOrDefault(),
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     }
 
 
@@ -126,9 +126,9 @@ namespace UPOD.SERVICES.Services
                     },
                     contract = new ContractViewResponse
                     {
-                        id = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Contract!.Code).FirstOrDefault(),
-                        name = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Contract!.ContractName).FirstOrDefault(),
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     },
                     reason = a.ReasonReject,
                     description = a.RequestDesciption,
@@ -389,9 +389,9 @@ namespace UPOD.SERVICES.Services
                     },
                     contract = new ContractViewResponse
                     {
-                        id = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Contract!.Code).FirstOrDefault(),
-                        name = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Contract!.ContractName).FirstOrDefault(),
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     }
                 }).FirstOrDefaultAsync();
             }
@@ -439,9 +439,9 @@ namespace UPOD.SERVICES.Services
                     },
                     contract = new ContractViewResponse
                     {
-                        id = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Contract!.Code).FirstOrDefault(),
-                        name = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId)).Select(a => a.Contract!.ContractName).FirstOrDefault(),
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     }
                 }).FirstOrDefaultAsync();
             }
