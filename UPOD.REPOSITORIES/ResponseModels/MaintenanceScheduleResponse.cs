@@ -12,8 +12,9 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
         public string? code { get; set; }
-        public TechnicianViewResponse technician { get; set; } = null!;
-        public AgencyViewResponse agency { get; set; } = null!;
         public string? status { get; set; }
+        public TechnicianViewResponse technician { get; set; }
+        public ServiceViewResponse service { get; set; } = null!;
+        public AgencyViewResponse agency { get; set; } = null!;
     }
 }

@@ -8,6 +8,8 @@ namespace UPOD.REPOSITORIES.Models
         public Contract()
         {
             ContractServices = new HashSet<ContractService>();
+            MaintenanceSchedules = new HashSet<MaintenanceSchedule>();
+            Requests = new HashSet<Request>();
         }
 
         public Guid Id { get; set; }
@@ -29,5 +31,7 @@ namespace UPOD.REPOSITORIES.Models
 
         public virtual Customer? Customer { get; set; }
         public virtual ICollection<ContractService> ContractServices { get; set; }
+        public virtual ICollection<MaintenanceSchedule> MaintenanceSchedules { get; set; }
+        public virtual ICollection<Request> Requests { get; set; }
     }
 }

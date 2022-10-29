@@ -77,7 +77,7 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Code).HasMaxLength(255);
+                entity.Property(e => e.Code).HasMaxLength(250);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -188,7 +188,6 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
@@ -214,17 +213,17 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
+                entity.Property(e => e.Address).HasMaxLength(255);
+
                 entity.Property(e => e.Code).HasMaxLength(255);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Description).HasMaxLength(250);
 
-                entity.Property(e => e.Name).HasMaxLength(250);
-
-                entity.Property(e => e.Address).HasMaxLength(255);
-
                 entity.Property(e => e.Mail).HasMaxLength(255);
+
+                entity.Property(e => e.Name).HasMaxLength(250);
 
                 entity.Property(e => e.Phone).HasMaxLength(255);
 
@@ -330,10 +329,14 @@ namespace UPOD.REPOSITORIES.Models
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Code).HasMaxLength(255);
-                entity.Property(e => e.Status).HasMaxLength(255);
-                entity.Property(e => e.Description).HasMaxLength(255);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).HasMaxLength(255);
+
+                entity.Property(e => e.Name).HasMaxLength(255);
+
+                entity.Property(e => e.Status).HasMaxLength(255);
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
@@ -364,17 +367,17 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
+                entity.Property(e => e.Description).HasMaxLength(255);
+
                 entity.HasOne(d => d.MaintenanceReport)
                     .WithMany(p => p.MaintenanceReportServices)
                     .HasForeignKey(d => d.MaintenanceReportId)
-                    .HasConstraintName("FK_MaintenanceReportService_MaintenanceReport");
+                    .HasConstraintName("FK_MaintenanceReportService_MaintenanceReport1");
 
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.MaintenanceReportServices)
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK_MaintenanceReportService_Service");
-
-                entity.Property(e => e.Description).HasMaxLength(255);
             });
 
             modelBuilder.Entity<MaintenanceSchedule>(entity =>
@@ -387,13 +390,13 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
-
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.MaintainTime).HasColumnType("datetime");
 
                 entity.Property(e => e.Name).HasMaxLength(250);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Status).HasMaxLength(255);
 
@@ -403,6 +406,11 @@ namespace UPOD.REPOSITORIES.Models
                     .WithMany(p => p.MaintenanceSchedules)
                     .HasForeignKey(d => d.AgencyId)
                     .HasConstraintName("FK_MaintenanceSchedule_Agency");
+
+                entity.HasOne(d => d.Contract)
+                    .WithMany(p => p.MaintenanceSchedules)
+                    .HasForeignKey(d => d.ContractId)
+                    .HasConstraintName("FK_MaintenanceSchedule_Contract");
 
                 entity.HasOne(d => d.Technician)
                     .WithMany(p => p.MaintenanceSchedules)
@@ -448,6 +456,11 @@ namespace UPOD.REPOSITORIES.Models
                     .HasForeignKey(d => d.AgencyId)
                     .HasConstraintName("FK_Request_Agency");
 
+                entity.HasOne(d => d.Contract)
+                    .WithMany(p => p.Requests)
+                    .HasForeignKey(d => d.ContractId)
+                    .HasConstraintName("FK_Request_Contract");
+
                 entity.HasOne(d => d.CurrentTechnician)
                     .WithMany(p => p.Requests)
                     .HasForeignKey(d => d.CurrentTechnicianId)
@@ -463,8 +476,6 @@ namespace UPOD.REPOSITORIES.Models
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("FK_Request_Service");
             });
-
-            
 
             modelBuilder.Entity<Role>(entity =>
             {
@@ -568,9 +579,9 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Solution).HasMaxLength(250);
+                entity.Property(e => e.Img).HasMaxLength(255);
 
-                entity.Property(e => e.Img).HasMaxLength(250);
+                entity.Property(e => e.Solution).HasMaxLength(250);
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 

@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <Compile Remove="Generations\**" />
+    <Compile Remove="sModels\**" />
     <EmbeddedResource Remove="Generations\**" />
+    <EmbeddedResource Remove="sModels\**" />
     <None Remove="Generations\**" />
+    <None Remove="sModels\**" />
   </ItemGroup>
 
   <ItemGroup>

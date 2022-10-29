@@ -34,9 +34,9 @@ namespace UPOD.REPOSITORIES.Models
         public Guid? AdminId { get; set; }
         public Guid? ContractId { get; set; }
 
-
         public virtual Admin? Admin { get; set; }
         public virtual Agency? Agency { get; set; }
+        public virtual Contract? Contract { get; set; }
         public virtual Technician? CurrentTechnician { get; set; }
         public virtual Customer? Customer { get; set; }
         public virtual Service? Service { get; set; }

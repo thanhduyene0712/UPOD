@@ -23,7 +23,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? attachment { get; set; }
         public string? img { get; set; }
         public string? description { get; set; }
-        public int? frequency_maintain { get; set; }
         public List<ServiceViewResponse> service { get; set; } = null!;
     }
 }

@@ -250,6 +250,7 @@ namespace UPOD.SERVICES.Services
             {
                 var maintenanceScheduleStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).FirstOrDefaultAsync();
                 maintenanceScheduleStatus!.Status = ScheduleStatus.COMPLETED.ToString();
+                maintenanceScheduleStatus!.EndDate = DateTime.UtcNow.AddHours(7);
                 await _context.MaintenanceReports.AddAsync(maintenanceReport);
                 var technician = await _context.Technicians.Where(x => x.Id.Equals(maintenanceReport!.CreateBy)).FirstOrDefaultAsync();
                 maintenanceReport!.Status = ReportStatus.PROBLEM.ToString();
