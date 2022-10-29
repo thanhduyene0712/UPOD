@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Dynamic.Core;
 using System.Security.Claims;
 using System.Text;
 using UPOD.REPOSITORIES.Models;
@@ -20,7 +21,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateAccount(AccountRequest model);
         Task<ObjectModelResponse> DisableAccount(Guid id);
         Task<ObjectModelResponse> Login(LoginRequest model);
-
+        Task<ResponseModel<RoleResponse>> GetAllRoles(PaginationRequest model);
         Task<ObjectModelResponse> ChangePassword(ChangePasswordRequest model, Guid id);
 
     }
@@ -34,6 +35,24 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
             _configuration = configuration;
+        }
+        public async Task<ResponseModel<RoleResponse>> GetAllRoles(PaginationRequest model)
+        {
+            var total = await _context.Roles.Where(a => a.IsDelete == false).ToListAsync();
+            var roles = await _context.Roles.Where(a => a.IsDelete == false).Select(a => new RoleResponse
+            {
+
+                id = a.Id,
+                code = a.Code,
+                role_name = a.RoleName
+                
+            }).OrderBy(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            return new ResponseModel<RoleResponse>(roles)
+            {
+                Total = total.Count,
+                Type = "Roles"
+
+            };
         }
         public async Task<ObjectModelResponse> ChangePassword(ChangePasswordRequest model, Guid id)
         {
