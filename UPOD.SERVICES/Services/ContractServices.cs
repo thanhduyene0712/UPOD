@@ -105,6 +105,7 @@ namespace UPOD.SERVICES.Services
                     code = x.Service!.Code,
                     service_name = x.Service!.ServiceName,
                     description = x.Service!.Description,
+                    frequency_maintain = x.FrequencyMaintain,
                 }).ToList()
 
             }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
@@ -146,6 +147,7 @@ namespace UPOD.SERVICES.Services
                     code = x.Service!.Code,
                     service_name = x.Service!.ServiceName,
                     description = x.Service!.Description,
+                    frequency_maintain = x.FrequencyMaintain,
                 }).ToList(),
             }).FirstOrDefaultAsync();
             return new ObjectModelResponse(contract!)
@@ -261,7 +263,9 @@ namespace UPOD.SERVICES.Services
                             MaintainTime = maintenanceDate,
                             StartDate = null,
                             EndDate = null,
-                            ServiceId = itemService.service_id
+                            ServiceId = itemService.service_id,
+                            ContractId = contract.Id
+
                         };
                         await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
                     }
