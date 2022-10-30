@@ -84,7 +84,20 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpGet]
+        [Route("get_services_not_in_contract_customer")]
+        public async Task<ActionResult<ResponseModel<ServiceNotInContractViewResponse>>> GetServiceNotInContractCustomerId(Guid id)
+        {
+            try
+            {
+                return await _customer_sv.GetServiceNotInContractCustomerId(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
         [HttpPost]
         [Route("create_customer")]
         public async Task<ActionResult<ObjectModelResponse>> CreateCustomer(CustomerRequest model)
