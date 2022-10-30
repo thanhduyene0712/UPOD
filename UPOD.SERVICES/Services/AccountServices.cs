@@ -307,7 +307,7 @@ namespace UPOD.SERVICES.Services
             var data = new AccountResponse();
             var message = "blank";
             var status = 500;
-            var username = await _context.Accounts.Where(x => x.Username!.Equals(account.Username) && account.IsDelete == true).FirstOrDefaultAsync();
+            var username = await _context.Accounts.Where(x => x.Username!.Equals(account.Username) && x.IsDelete == false).FirstOrDefaultAsync();
             if (username != null)
             {
                 status = 400;
