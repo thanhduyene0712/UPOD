@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Numerics;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
@@ -18,7 +19,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id);
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
         Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id);
-
+        Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
     }
 
     public class CustomerServices : ICustomerService
@@ -197,6 +198,41 @@ namespace UPOD.SERVICES.Services
             var total = _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
                 && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Distinct().ToList();
             return new ResponseModel<ServiceViewResponse>(services)
+            {
+                Total = total.Count,
+                Type = "Services"
+            };
+        }
+        public async Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id)
+        {
+
+            var services_in_contract = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
+                && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Select(a => new ServiceNotInContractViewResponse
+                {
+                    id = a.ServiceId,
+                    service_name = a.Service!.ServiceName,
+                    code = a.Service!.Code,
+                }).Distinct().ToListAsync();
+            var list_services = await _context.Services.Where(x => x.IsDelete == false).Select(a => new ServiceNotInContractViewResponse
+            {
+                id = a.Id,
+                service_name = a.ServiceName,
+                code = a.Code,
+            }).Distinct().ToListAsync();
+            var sv = new List<ServiceNotInContractViewResponse>();
+            var rs = list_services.Except(services_in_contract).ToList();
+            var listService = new List<ServiceNotInContractViewResponse>();
+            foreach (var service in rs)
+            {
+                listService.Add(new ServiceNotInContractViewResponse
+                {
+                    id = service.id,
+                    code = service.code,
+                    service_name = service.service_name,
+                });
+            }
+            var total = rs;
+            return new ResponseModel<ServiceNotInContractViewResponse>(listService)
             {
                 Total = total.Count,
                 Type = "Services"
