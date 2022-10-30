@@ -545,11 +545,10 @@ namespace UPOD.SERVICES.Services
                     request_name = request.RequestName,
                     request_description = request.RequestDesciption,
                     priority = request.Priority,
+                    phone = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                     service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
                 };
-
-
             }
             return new ObjectModelResponse(data)
             {
