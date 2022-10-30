@@ -455,11 +455,48 @@ namespace UPOD.SERVICES.Services
             var data = new TechnicianUpdateResponse();
             _context.Technicians.Update(technician);
             var technician_default = await _context.Agencies.Where(a => a.TechnicianId.Equals(id)).ToListAsync();
-            foreach (var item in technician_default)
+            var message = "Susscessfull";
+            var status = 200;
+            var technician_request = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(id) && a.RequestStatus!.Equals("EDITING")).ToListAsync();
+            if (technician_request.Count > 0)
             {
-                item.TechnicianId = null;
-                _context.Agencies.Update(item);
+                foreach (var item in technician_request)
+                {
+                    technician!.IsDelete = false;
+                    message = "You can't delete this technician";
+                    _context.Requests.Update(item);
+                    status = 400;
+                }
             }
+            else
+            {
+                var technician_agency = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(id) && a.RequestStatus != "EDITING").ToListAsync();
+                foreach (var item in technician_agency)
+                {
+                    status = 200;
+                    if (item.RequestStatus!.Equals("PREPARING") || item.RequestStatus!.Equals("RESOLVING"))
+                    {
+                        item.CurrentTechnicianId = null;
+                        item.RequestStatus = ProcessStatus.PENDING.ToString();
+                        _context.Requests.Update(item);
+                        foreach (var item1 in technician_default)
+                        {
+                            item1.TechnicianId = null;
+                            _context.Agencies.Update(item1);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item1 in technician_default)
+                        {
+                            item1.TechnicianId = null;
+                            _context.Agencies.Update(item1);
+                        }
+                    }
+                }
+            }
+
+
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
             {
@@ -485,7 +522,8 @@ namespace UPOD.SERVICES.Services
 
             return new ObjectModelResponse(data)
             {
-                Status = 201,
+                Message = message,
+                Status = status,
                 Type = "Technician"
             };
         }
