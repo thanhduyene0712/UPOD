@@ -107,7 +107,7 @@ namespace UPOD.SERVICES.Services
             else
             {
                 message = "Successfully";
-                status = 201;
+                status = 200;
                 await _context.Services.AddAsync(service);
                 await _context.SaveChangesAsync();
                 data = new ServiceResponse

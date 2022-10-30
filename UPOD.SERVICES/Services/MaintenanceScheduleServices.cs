@@ -368,6 +368,7 @@ namespace UPOD.SERVICES.Services
             }
             return new ObjectModelResponse(data)
             {
+                Status = 201,
                 Type = "MaintenanceSchedule"
             };
         }
@@ -419,6 +420,7 @@ namespace UPOD.SERVICES.Services
             }
             return new ObjectModelResponse(data)
             {
+                Status = 201,
                 Type = "MaintenanceSchedule"
             };
         }

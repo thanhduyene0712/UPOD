@@ -237,7 +237,7 @@ namespace UPOD.SERVICES.Services
                 MaintenanceScheduleId = model.maintenance_schedule_id,
                 Status = ReportStatus.NO_PROBLEM.ToString(),
             };
-            if(model.service.Count == 0)
+            if (model.service.Count == 0)
             {
                 var maintenanceScheduleStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).FirstOrDefaultAsync();
                 maintenanceScheduleStatus!.Status = ScheduleStatus.COMPLETED.ToString();
@@ -282,7 +282,7 @@ namespace UPOD.SERVICES.Services
                     //await _context.SaveChangesAsync();
                 }
             }
-            
+
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
             {
@@ -339,7 +339,7 @@ namespace UPOD.SERVICES.Services
                 Type = "MaintenanceReport"
             };
         }
-       
+
 
         private async Task<int> GetLastCode()
         {

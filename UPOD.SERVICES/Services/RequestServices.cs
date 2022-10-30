@@ -553,7 +553,6 @@ namespace UPOD.SERVICES.Services
 
             return new ObjectModelResponse(data)
             {
-
                 Type = "Request"
             };
         }
@@ -628,7 +627,6 @@ namespace UPOD.SERVICES.Services
             }
             return new ObjectModelResponse(data)
             {
-
                 Type = "Request"
             };
         }
