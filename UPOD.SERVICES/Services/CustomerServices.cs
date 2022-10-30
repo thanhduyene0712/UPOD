@@ -250,7 +250,7 @@ namespace UPOD.SERVICES.Services
                 Phone = model.phone,
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7),
-
+                IsDelete = false
             };
             var message = "blank";
             var status = 500;
