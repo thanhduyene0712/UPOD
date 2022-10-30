@@ -247,7 +247,7 @@ namespace UPOD.SERVICES.Services
                 update_date = a.UpdateDate,
                 service = _context.Skills.Where(x => x.TechnicianId.Equals(a.Id)).Select(a => new ServiceViewResponse
                 {
-                    id = a.TechnicianId,
+                    id = a.ServiceId,
                     code = a.Service!.Code,
                     service_name = a.Service.ServiceName,
                     description = a.Service.Description,
