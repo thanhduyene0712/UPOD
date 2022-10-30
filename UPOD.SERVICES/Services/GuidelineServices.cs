@@ -88,34 +88,33 @@ namespace UPOD.SERVICES.Services
             };
             var data = new GuidelineResponse();
 
-                await _context.Guidelines.AddAsync(guideline);
-                var rs = await _context.SaveChangesAsync();
-                if (rs > 0)
+            await _context.Guidelines.AddAsync(guideline);
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new GuidelineResponse
                 {
-                    data = new GuidelineResponse
+                    id = guideline.Id,
+                    code = guideline.Code,
+                    service = new ServiceViewResponse
                     {
-                        id = guideline.Id,
-                        code = guideline.Code,
-                        service = new ServiceViewResponse
-                        {
-                            id = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                            code = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                            service_name = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                            description = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                        },
-                        guideline_des = guideline.Guideline1,
-                        guideline_name = guideline.GuidelineName,
-                        is_delete = guideline.IsDelete,
-                        create_date = guideline.CreateDate,
-                        update_date = guideline.UpdateDate
-                    };
-                }
+                        id = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                        description = _context.Services.Where(x => x.Id.Equals(guideline.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    guideline_des = guideline.Guideline1,
+                    guideline_name = guideline.GuidelineName,
+                    is_delete = guideline.IsDelete,
+                    create_date = guideline.CreateDate,
+                    update_date = guideline.UpdateDate
+                };
+            }
 
-            
+
 
             return new ObjectModelResponse(data)
             {
-
                 Type = "Guideline"
             };
         }

@@ -136,7 +136,7 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                status = 201;
+                status = 200;
                 message = "Successfully";
                 await _context.Admins.AddAsync(admin);
                 var rs = await _context.SaveChangesAsync();

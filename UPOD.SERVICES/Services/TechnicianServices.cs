@@ -350,6 +350,7 @@ namespace UPOD.SERVICES.Services
             }
             return new ObjectModelResponse(data!)
             {
+                Status = 201,
                 Type = "Device"
             };
         }
@@ -456,7 +457,7 @@ namespace UPOD.SERVICES.Services
             _context.Technicians.Update(technician);
             var technician_default = await _context.Agencies.Where(a => a.TechnicianId.Equals(id)).ToListAsync();
             var message = "Susscessfull";
-            var status = 200;
+            var status = 201;
             var technician_request = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(id) && a.RequestStatus!.Equals("EDITING")).ToListAsync();
             if (technician_request.Count > 0)
             {
@@ -473,7 +474,7 @@ namespace UPOD.SERVICES.Services
                 var technician_agency = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(id) && a.RequestStatus != "EDITING").ToListAsync();
                 foreach (var item in technician_agency)
                 {
-                    status = 200;
+                    status = 201;
                     if (item.RequestStatus!.Equals("PREPARING") || item.RequestStatus!.Equals("RESOLVING"))
                     {
                         item.CurrentTechnicianId = null;

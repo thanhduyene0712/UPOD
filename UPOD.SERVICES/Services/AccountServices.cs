@@ -95,7 +95,7 @@ namespace UPOD.SERVICES.Services
                 if (rs > 0)
                 {
                     message = "Password has been changed";
-                    status = 200;
+                    status = 201;
                     data = new ChagnePasswordResponse
                     {
                         message = message,
@@ -223,6 +223,7 @@ namespace UPOD.SERVICES.Services
             };
             return new ObjectModelResponse(model)
             {
+                Status = 201,
                 Type = "Account",
             };
         }
@@ -317,7 +318,7 @@ namespace UPOD.SERVICES.Services
             {
 
                 message = "Successfully";
-                status = 201;
+                status = 200;
                 _context.Accounts.Add(account);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)

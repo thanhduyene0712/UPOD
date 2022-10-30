@@ -264,7 +264,7 @@ namespace UPOD.SERVICES.Services
             else
             {
                 message = "Successfully";
-                status = 201;
+                status = 200;
                 await _context.Customers.AddAsync(customer);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)

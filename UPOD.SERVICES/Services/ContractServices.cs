@@ -69,6 +69,7 @@ namespace UPOD.SERVICES.Services
 
             return new ObjectModelResponse(data)
             {
+                Status = 201,
                 Type = "Contract"
             };
         }
@@ -284,7 +285,7 @@ namespace UPOD.SERVICES.Services
             else
             {
                 message = "Successfully";
-                status = 201;
+                status = 200;
                 await _context.Contracts.AddAsync(contract);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
