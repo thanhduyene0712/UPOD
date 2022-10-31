@@ -388,6 +388,8 @@ namespace UPOD.SERVICES.Services
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7)
             };
+            var account_asign = await _context.Accounts.Where(a => a.Id.Equals(model.account_id)).FirstOrDefaultAsync();
+            account_asign!.IsAssign = true;
             foreach (var item in model.service_id)
             {
                 var skill_id = Guid.NewGuid();

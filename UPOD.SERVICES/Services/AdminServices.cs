@@ -123,7 +123,8 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = DateTime.UtcNow.AddHours(7),
                 AccountId = model.account_id,
             };
-
+            var account_asign = await _context.Accounts.Where(a => a.Id.Equals(model.account_id)).FirstOrDefaultAsync();
+            account_asign!.IsAssign = true;
             var data = new AdminResponse();
             var message = "blank";
             var status = 500;

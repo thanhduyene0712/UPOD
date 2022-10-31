@@ -58,6 +58,24 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpGet]
+        [Route("get_all_accounts_is_not_assign")]
+        public async Task<ActionResult<ResponseModel<AccountResponse>>> GetAllAccountIsNotAssign([FromQuery] PaginationRequest model)
+        {
+            //var accountRole = _userAccessor.GetRoleId();
+            //if (accountRole != Guid.Parse("dd3cb3b4-84fe-432e-bb06-2d8aecaa640d"))
+            //{
+            //    return BadRequest("Don't have permission!");
+            //}
+            try
+            {
+                return await _account_sv.GetAllAccountIsNotAssign(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
         [Route("get_all_roles")]
         public async Task<ActionResult<ResponseModel<RoleResponse>>> GetAllRoles([FromQuery] PaginationRequest model)
         {

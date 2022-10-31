@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Linq.Dynamic.Core;
 using System.Numerics;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
@@ -288,6 +289,8 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = DateTime.UtcNow.AddHours(7),
                 IsDelete = false
             };
+            var account_asign = await _context.Accounts.Where(a => a.Id.Equals(model.account_id)).FirstOrDefaultAsync();
+            account_asign!.IsAssign = true;
             var message = "blank";
             var status = 500;
             var data = new CustomerResponse();
