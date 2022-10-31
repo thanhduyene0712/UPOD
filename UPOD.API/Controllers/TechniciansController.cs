@@ -96,7 +96,19 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpPost]
+        [Route("add_device_by_id_request")]
+        public async Task<ActionResult<ResponseModel<DevicesOfRequestResponse>>> AddTicket(Guid id, ListTicketRequest model)
+        {
+            try
+            {
+                return await _technician_sv.AddTicket(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPut]
         [Route("update_device_of_ticket_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> UpdateDeviceTicket(Guid id, TicketRequest model)
