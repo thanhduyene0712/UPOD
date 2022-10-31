@@ -97,7 +97,7 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPost]
-        [Route("add_device_by_id_request")]
+        [Route("add_device_for_ticket_by_id_request")]
         public async Task<ActionResult<ResponseModel<DevicesOfRequestResponse>>> AddTicket(Guid id, ListTicketRequest model)
         {
             try
