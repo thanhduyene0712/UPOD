@@ -18,6 +18,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model);
         Task<ObjectModelResponse> DisableTechnician(Guid id);
         Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model);
+        Task<ResponseModel<DevicesOfRequestResponse>> AddTicket(Guid id, ListTicketRequest model);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterRequest value);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> ResolvingRequest(Guid id);
@@ -102,6 +103,8 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> ConfirmRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false && a.RequestStatus!.Equals("EDITING")).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            technician!.IsBusy = false;
             request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
@@ -301,6 +304,60 @@ namespace UPOD.SERVICES.Services
                     Id = device_id,
                     Code = code,
                     RequestId = request.Id,
+                    DeviceId = item.device_id,
+                    Description = item.description,
+                    Solution = item.solution,
+                    IsDelete = false,
+                    CreateBy = technician!.Id,
+                    CreateDate = DateTime.UtcNow.AddHours(7),
+                    UpdateDate = DateTime.UtcNow.AddHours(7)
+                };
+                await _context.Tickets.AddAsync(ticket);
+                list.Add(new DevicesOfRequestResponse
+                {
+                    ticket_id = ticket.Id,
+                    device_id = ticket.DeviceId,
+                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
+
+                });
+                await _context.SaveChangesAsync();
+
+            }
+            return new ResponseModel<DevicesOfRequestResponse>(list)
+            {
+                Total = list.Count,
+                Type = "Devices"
+            };
+        }
+        public async Task<ResponseModel<DevicesOfRequestResponse>> AddTicket(Guid id, ListTicketRequest model)
+        {
+
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            var list = new List<DevicesOfRequestResponse>();
+            foreach (var item in model.ticket)
+            {
+                var num = await GetLastCode1();
+                var code = CodeHelper.GeneratorCode("TI", num + 1);
+                var device_id = Guid.NewGuid();
+                while (true)
+                {
+                    var ticket_id = await _context.Tickets.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
+                    if (ticket_id == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        device_id = Guid.NewGuid();
+                    }
+                }
+                var ticket = new Ticket
+                {
+                    Id = device_id,
+                    Code = code,
+                    RequestId = request!.Id,
                     DeviceId = item.device_id,
                     Description = item.description,
                     Solution = item.solution,
@@ -559,9 +616,12 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> ResolvingRequest(Guid id)
         {
             var request = await _context.Requests.Where(x => x.Id.Equals(id) && x.IsDelete == false).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            technician!.IsBusy = true;
             request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
             request.StartTime = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
+            _context.Technicians.Update(technician);
             var data = new ResolvingRequestResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
