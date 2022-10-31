@@ -103,6 +103,8 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> ConfirmRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false && a.RequestStatus!.Equals("EDITING")).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            technician!.IsBusy = false;
             request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
@@ -333,8 +335,6 @@ namespace UPOD.SERVICES.Services
 
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
-            technician!.IsBusy = false;
-            _context.Technicians.Update(technician);
             var list = new List<DevicesOfRequestResponse>();
             foreach (var item in model.ticket)
             {
@@ -616,9 +616,12 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> ResolvingRequest(Guid id)
         {
             var request = await _context.Requests.Where(x => x.Id.Equals(id) && x.IsDelete == false).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            technician!.IsBusy = true;
             request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
             request.StartTime = DateTime.UtcNow.AddHours(7);
             _context.Requests.Update(request);
+            _context.Technicians.Update(technician);
             var data = new ResolvingRequestResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
