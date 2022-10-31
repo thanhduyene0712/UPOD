@@ -46,7 +46,7 @@ namespace UPOD.SERVICES.Services
                 id = a.Id,
                 code = a.Code,
                 role_name = a.RoleName
-                
+
             }).OrderBy(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<RoleResponse>(roles)
             {
@@ -219,6 +219,7 @@ namespace UPOD.SERVICES.Services
                 },
                 username = account.Username,
                 is_delete = account.IsDelete,
+                is_assign = account.IsAssign,
                 create_date = account.CreateDate,
                 update_date = account.UpdateDate,
             };
@@ -242,6 +243,7 @@ namespace UPOD.SERVICES.Services
                     role_name = p.Role.RoleName,
                 },
                 username = p.Username,
+                is_assign = p.IsAssign,
                 is_delete = p.IsDelete,
                 create_date = p.CreateDate,
                 update_date = p.UpdateDate,
@@ -267,6 +269,7 @@ namespace UPOD.SERVICES.Services
                     role_name = p.Role.RoleName,
                 },
                 username = p.Username,
+                is_assign = p.IsAssign,
                 is_delete = p.IsDelete,
                 create_date = p.CreateDate,
                 update_date = p.UpdateDate,
@@ -291,6 +294,7 @@ namespace UPOD.SERVICES.Services
                     role_name = p.Role.RoleName,
                 },
                 username = p.Username,
+                is_assign = p.IsAssign,
                 is_delete = p.IsDelete,
                 create_date = p.CreateDate,
                 update_date = p.UpdateDate,
@@ -382,6 +386,7 @@ namespace UPOD.SERVICES.Services
                 RoleId = model.role_id,
                 Username = x.Username,
                 Password = model.password,
+                IsAssign = x.IsAssign,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.UtcNow.AddHours(7),
