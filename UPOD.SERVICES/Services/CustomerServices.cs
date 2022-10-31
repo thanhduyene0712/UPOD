@@ -21,6 +21,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
         Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id);
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
+        Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, Guid id);
     }
 
     public class CustomerServices : ICustomerService
@@ -29,6 +30,47 @@ namespace UPOD.SERVICES.Services
         public CustomerServices(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, Guid id)
+        {
+            var total = await _context.Contracts.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
+            var contracts = await _context.Contracts.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new ContractResponse
+            {
+                id = a.Id,
+                code = a.Code,
+                contract_name = a.ContractName,
+                customer = new CustomerViewResponse
+                {
+                    id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                    name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                    description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+
+                },
+                start_date = a.StartDate,
+                end_date = a.EndDate,
+                is_delete = a.IsDelete,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
+                contract_price = a.ContractPrice,
+                description = a.Description,
+                attachment = a.Attachment,
+                img = a.Img,
+                service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
+                {
+                    id = x.ServiceId,
+                    code = x.Service!.Code,
+                    service_name = x.Service!.ServiceName,
+                    description = x.Service!.Description,
+                    frequency_maintain = x.FrequencyMaintain,
+                }).ToList()
+
+            }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            return new ResponseModel<ContractResponse>(contracts)
+            {
+                Total = total.Count,
+                Type = "Contracts"
+            };
         }
         public async Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id)
         {

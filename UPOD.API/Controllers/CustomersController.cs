@@ -56,7 +56,20 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+        [HttpGet]
+        [Route("get_contracts_by_customer_id")]
+        public async Task<ActionResult<ResponseModel<ContractResponse>>> GetAllContractByCustomer([FromQuery] PaginationRequest model, Guid id)
+        {
+            try
+            {
+                return await _customer_sv.GetAllContractByCustomer(model, id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Route("get_requests_by_customer_id")]
         public async Task<ActionResult<ResponseModel<RequestListResponse>>> GetListRequestsByCustomerId([FromQuery] PaginationRequest model, [FromQuery] FilterRequest status, Guid id)
@@ -97,7 +110,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPost]
         [Route("create_customer")]
         public async Task<ActionResult<ObjectModelResponse>> CreateCustomer(CustomerRequest model)
