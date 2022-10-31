@@ -19,7 +19,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
-        public int? priority { get; set; }
         public string? attachment { get; set; }
         public string? img { get; set; }
         public string? description { get; set; }

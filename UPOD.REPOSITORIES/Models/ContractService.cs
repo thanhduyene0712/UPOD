@@ -14,7 +14,6 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public int? FrequencyMaintain { get; set; }
-
         public virtual Contract? Contract { get; set; }
         public virtual Service? Service { get; set; }
     }

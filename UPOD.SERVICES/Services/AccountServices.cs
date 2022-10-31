@@ -23,6 +23,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> Login(LoginRequest model);
         Task<ResponseModel<RoleResponse>> GetAllRoles(PaginationRequest model);
         Task<ObjectModelResponse> ChangePassword(ChangePasswordRequest model, Guid id);
+        Task<ResponseModel<AccountResponse>> GetAllAccountIsNotAssign(PaginationRequest model);
 
     }
 
@@ -227,7 +228,31 @@ namespace UPOD.SERVICES.Services
                 Type = "Account",
             };
         }
+        public async Task<ResponseModel<AccountResponse>> GetAllAccountIsNotAssign(PaginationRequest model)
+        {
+            var total = await _context.Accounts.Where(a => a.IsDelete == false && a.IsAssign == false).ToListAsync();
+            var accounts = await _context.Accounts.Where(a => a.IsDelete == false && a.IsAssign == false).Select(p => new AccountResponse
+            {
+                id = p.Id,
+                code = p.Code,
+                role = new RoleResponse
+                {
+                    id = p.Role!.Id,
+                    code = p.Role.Code,
+                    role_name = p.Role.RoleName,
+                },
+                username = p.Username,
+                is_delete = p.IsDelete,
+                create_date = p.CreateDate,
+                update_date = p.UpdateDate,
 
+            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            return new ResponseModel<AccountResponse>(accounts)
+            {
+                Total = total.Count,
+                Type = "Accounts"
+            };
+        }
         public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model)
         {
             var total = await _context.Accounts.Where(a => a.IsDelete == false).ToListAsync();
@@ -304,6 +329,7 @@ namespace UPOD.SERVICES.Services
                 IsDelete = false,
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7),
+                IsAssign = false,
             };
             var data = new AccountResponse();
             var message = "blank";

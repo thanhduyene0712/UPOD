@@ -22,7 +22,6 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? UpdateDate { get; set; }
         public double? ContractPrice { get; set; }
         public DateTime? TerminalTime { get; set; }
-        public int? Priority { get; set; }
         public string? Attachment { get; set; }
         public string? Img { get; set; }
         public string? Description { get; set; }
