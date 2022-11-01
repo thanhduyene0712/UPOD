@@ -96,17 +96,17 @@ namespace UPOD.SERVICES.Services
                 var contract_name = await _context.Contracts.Where(a => a.ContractName!.Contains(status.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 var service_name = await _context.Services.Where(a => a.ServiceName!.Contains(status.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Requests.Where(a => a.IsDelete == false
-                && (a.RequestStatus!.Contains(status.search)
-                || a.RequestName!.Contains(status.search)
-                || a.Code!.Contains(status.search)
+                && (a.RequestStatus!.Contains(status.search.Trim())
+                || a.RequestName!.Contains(status.search.Trim())
+                || a.Code!.Contains(status.search.Trim())
                 || a.AgencyId!.Equals(agency_name)
                 || a.CustomerId!.Equals(customer_name)
                 || a.ContractId!.Equals(contract_name)
                 || a.ServiceId!.Equals(service_name))).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false
-                && (a.RequestStatus!.Contains(status.search)
-                || a.RequestName!.Contains(status.search)
-                || a.Code!.Contains(status.search)
+                && (a.RequestStatus!.Contains(status.search.Trim())
+                || a.RequestName!.Contains(status.search.Trim())
+                || a.Code!.Contains(status.search.Trim())
                 || a.AgencyId!.Equals(agency_name)
                 || a.CustomerId!.Equals(customer_name)
                 || a.ContractId!.Equals(contract_name)
