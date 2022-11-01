@@ -11,8 +11,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
     {
         public Guid id { get; set; }
         public string? code { get; set; }
-        public AgencyViewResponse agency { get; set; } = null!;
-        public DeviceTypeViewResponse devicetype { get; set; } = null!;
         public string? device_name { get; set; }
         public DateTime? guaranty_start_date { get; set; }
         public DateTime? guaranty_end_date { get; set; }
@@ -25,5 +23,8 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
+        public TechnicianViewResponse technician { get; set; } = null!;
+        public AgencyViewResponse agency { get; set; } = null!;
+        public DeviceTypeViewResponse devicetype { get; set; } = null!;
     }
 }

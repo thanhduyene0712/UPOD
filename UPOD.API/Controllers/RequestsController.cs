@@ -36,7 +36,19 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpGet]
+        [Route("get_list_requests_of_agency")]
+        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsOfAgency([FromQuery] PaginationRequest model, Guid id, [FromQuery] FilterStatusRequest status)
+        {
+            try
+            {
+                return await _request_sv.GetListRequestsOfAgency(model, id, status);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet]
         [Route("get_request_details_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> GetDetailsRequest([FromQuery] Guid id)

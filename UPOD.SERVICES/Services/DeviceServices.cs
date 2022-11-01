@@ -54,6 +54,12 @@ namespace UPOD.SERVICES.Services
                         device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                         code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
                     },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Code).FirstOrDefault(),
+                    },
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
@@ -93,6 +99,12 @@ namespace UPOD.SERVICES.Services
                         service_id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
                         device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                         code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                    },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Code).FirstOrDefault(),
                     },
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
@@ -141,6 +153,12 @@ namespace UPOD.SERVICES.Services
                         device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                         code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
                     },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Code).FirstOrDefault(),
+                    },
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
@@ -180,6 +198,12 @@ namespace UPOD.SERVICES.Services
                         service_id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
                         device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                         code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                    },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Code).FirstOrDefault(),
                     },
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
@@ -228,6 +252,12 @@ namespace UPOD.SERVICES.Services
                         device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                         code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
                     },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Code).FirstOrDefault(),
+                    },
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
@@ -274,6 +304,12 @@ namespace UPOD.SERVICES.Services
                         device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                         code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
                     },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Code).FirstOrDefault(),
+                    },
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
@@ -314,6 +350,12 @@ namespace UPOD.SERVICES.Services
                     service_id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
                     device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                     code = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                },
+                technician = new TechnicianViewResponse
+                {
+                    id = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                    name = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                    code = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(x => x.Code).FirstOrDefault(),
                 },
                 device_name = a.DeviceName,
                 guaranty_start_date = a.GuarantyStartDate,
@@ -368,6 +410,7 @@ namespace UPOD.SERVICES.Services
                 SettingDate = model.setting_date,
                 Other = model.other,
                 IsDelete = false,
+                CreateBy = model.create_by,
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7)
 
@@ -395,6 +438,12 @@ namespace UPOD.SERVICES.Services
                         service_id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
                         device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                         code = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                    },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Code).FirstOrDefault(),
                     },
                     device_name = device.DeviceName,
                     guaranty_start_date = device.GuarantyStartDate,
@@ -514,6 +563,12 @@ namespace UPOD.SERVICES.Services
                         service_id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
                         device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
                         code = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                    },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Code).FirstOrDefault(),
                     },
                     device_name = device.DeviceName,
                     guaranty_start_date = device.GuarantyStartDate,

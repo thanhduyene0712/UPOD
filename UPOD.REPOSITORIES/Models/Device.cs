@@ -24,6 +24,7 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? SettingDate { get; set; }
         public string? Other { get; set; }
         public bool? IsDelete { get; set; }
+        public Guid? CreateBy { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
 
