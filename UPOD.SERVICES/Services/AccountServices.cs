@@ -15,7 +15,7 @@ namespace UPOD.SERVICES.Services
 {
     public interface IAccountService
     {
-        Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model);
+        Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model, SearchRequest value);
         Task<ObjectModelResponse> GetAccountDetails(Guid id);
         Task<ObjectModelResponse> UpdateAccount(Guid id, AccountUpdateRequest model);
         Task<ObjectModelResponse> CreateAccount(AccountRequest model);
@@ -256,26 +256,59 @@ namespace UPOD.SERVICES.Services
                 Type = "Accounts"
             };
         }
-        public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model)
+        public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model, SearchRequest value)
         {
             var total = await _context.Accounts.Where(a => a.IsDelete == false).ToListAsync();
-            var accounts = await _context.Accounts.Where(a => a.IsDelete == false).Select(p => new AccountResponse
+            var accounts = new List<AccountResponse>();
+            if (value.search == null)
             {
-                id = p.Id,
-                code = p.Code,
-                role = new RoleResponse
+                accounts = await _context.Accounts.Where(a => a.IsDelete == false).Select(p => new AccountResponse
                 {
-                    id = p.Role!.Id,
-                    code = p.Role.Code,
-                    role_name = p.Role.RoleName,
-                },
-                username = p.Username,
-                is_assign = p.IsAssign,
-                is_delete = p.IsDelete,
-                create_date = p.CreateDate,
-                update_date = p.UpdateDate,
+                    id = p.Id,
+                    code = p.Code,
+                    role = new RoleResponse
+                    {
+                        id = p.Role!.Id,
+                        code = p.Role.Code,
+                        role_name = p.Role.RoleName,
+                    },
+                    username = p.Username,
+                    is_assign = p.IsAssign,
+                    is_delete = p.IsDelete,
+                    create_date = p.CreateDate,
+                    update_date = p.UpdateDate,
 
-            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+            else
+            {
+                var role = await _context.Roles.Where(a => a.IsDelete == false && a.RoleName!.Contains(value.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                total = await _context.Accounts.Where(a => a.IsDelete == false
+                && (a.RoleId.Equals(role)
+                || a.Username!.Contains(value.search.Trim())
+                || a.Code!.Contains(value.search.Trim()))).ToListAsync();
+                accounts = await _context.Accounts.Where(a => a.IsDelete == false
+                && (a.RoleId.Equals(role)
+                || a.Username!.Contains(value.search.Trim())
+                || a.Code!.Contains(value.search.Trim()))).Select(p => new AccountResponse
+                {
+                    id = p.Id,
+                    code = p.Code,
+                    role = new RoleResponse
+                    {
+                        id = p.Role!.Id,
+                        code = p.Role.Code,
+                        role_name = p.Role.RoleName,
+                    },
+                    username = p.Username,
+                    is_assign = p.IsAssign,
+                    is_delete = p.IsDelete,
+                    create_date = p.CreateDate,
+                    update_date = p.UpdateDate,
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+
             return new ResponseModel<AccountResponse>(accounts)
             {
                 Total = total.Count,
