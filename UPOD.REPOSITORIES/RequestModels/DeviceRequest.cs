@@ -18,6 +18,7 @@ namespace UPOD.REPOSITORIES.RequestModels
         public int? port { get; set; }
         public string? device_account { get; set; }
         public string? device_password { get; set; }
+        public string? img { get; set; }
         public Guid? create_by { get; set; }
         public DateTime? setting_date { get; set; }
         public string? other { get; set; }

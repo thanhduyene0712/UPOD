@@ -27,6 +27,7 @@ namespace UPOD.REPOSITORIES.Models
         public Guid? CreateBy { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string? Img { get; set; }
 
         public virtual Agency? Agency { get; set; }
         public virtual DeviceType? DeviceType { get; set; }

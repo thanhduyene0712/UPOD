@@ -251,6 +251,8 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.DeviceName).HasMaxLength(250);
 
+                entity.Property(e => e.Img).HasMaxLength(250);
+
                 entity.Property(e => e.DevicePassword)
                     .HasMaxLength(100)
                     .IsUnicode(false);

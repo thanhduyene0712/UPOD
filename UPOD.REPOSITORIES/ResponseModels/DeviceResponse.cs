@@ -20,6 +20,7 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? device_password { get; set; }
         public DateTime? setting_date { get; set; }
         public string? other { get; set; }
+        public string? img { get; set; }
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }

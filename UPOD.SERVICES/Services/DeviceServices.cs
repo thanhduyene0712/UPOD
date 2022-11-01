@@ -69,6 +69,7 @@ namespace UPOD.SERVICES.Services
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
+                    img = a.Img,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate
@@ -115,6 +116,7 @@ namespace UPOD.SERVICES.Services
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
+                    img = a.Img,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate
@@ -164,6 +166,7 @@ namespace UPOD.SERVICES.Services
                     guaranty_end_date = a.GuarantyEndDate,
                     ip = a.Ip,
                     port = a.Port,
+                    img = a.Img,
                     device_account = a.DeviceAccount,
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
@@ -214,6 +217,7 @@ namespace UPOD.SERVICES.Services
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
+                    img = a.Img,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate
@@ -267,6 +271,7 @@ namespace UPOD.SERVICES.Services
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
+                    img = a.Img,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate
@@ -315,6 +320,7 @@ namespace UPOD.SERVICES.Services
                     guaranty_end_date = a.GuarantyEndDate,
                     ip = a.Ip,
                     port = a.Port,
+                    img = a.Img,
                     device_account = a.DeviceAccount,
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
@@ -362,6 +368,7 @@ namespace UPOD.SERVICES.Services
                 guaranty_end_date = a.GuarantyEndDate,
                 ip = a.Ip,
                 port = a.Port,
+                img = a.Img,
                 device_account = a.DeviceAccount,
                 device_password = a.DevicePassword,
                 setting_date = a.SettingDate,
@@ -410,10 +417,10 @@ namespace UPOD.SERVICES.Services
                 SettingDate = model.setting_date,
                 Other = model.other,
                 IsDelete = false,
+                Img = model.img,
                 CreateBy = model.create_by,
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7)
-
             };
             var data = new DeviceResponse();
 
@@ -449,6 +456,7 @@ namespace UPOD.SERVICES.Services
                     guaranty_start_date = device.GuarantyStartDate,
                     guaranty_end_date = device.GuarantyEndDate,
                     ip = device.Ip,
+                    img = device.Img,
                     port = device.Port,
                     device_account = device.DeviceAccount,
                     device_password = device.DevicePassword,
@@ -507,6 +515,7 @@ namespace UPOD.SERVICES.Services
                     device_password = device.DevicePassword,
                     setting_date = device.SettingDate,
                     other = device.Other,
+                    img = device.Img,
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
                     update_date = device.UpdateDate
@@ -579,6 +588,7 @@ namespace UPOD.SERVICES.Services
                     device_password = device.DevicePassword,
                     setting_date = device.SettingDate,
                     other = device.Other,
+                    img = device.Img,
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
                     update_date = device.UpdateDate
