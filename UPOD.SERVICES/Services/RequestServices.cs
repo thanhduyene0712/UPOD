@@ -91,10 +91,10 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                var agency_name = await _context.Agencies.Where(a => a.AgencyName!.Contains(status.search)).Select(a => a.Id).FirstOrDefaultAsync();
-                var customer_name = await _context.Customers.Where(a => a.Name!.Contains(status.search)).Select(a => a.Id).FirstOrDefaultAsync();
-                var contract_name = await _context.Contracts.Where(a => a.ContractName!.Contains(status.search)).Select(a => a.Id).FirstOrDefaultAsync();
-                var service_name = await _context.Services.Where(a => a.ServiceName!.Contains(status.search)).Select(a => a.Id).FirstOrDefaultAsync();
+                var agency_name = await _context.Agencies.Where(a => a.AgencyName!.Contains(status.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var customer_name = await _context.Customers.Where(a => a.Name!.Contains(status.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var contract_name = await _context.Contracts.Where(a => a.ContractName!.Contains(status.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var service_name = await _context.Services.Where(a => a.ServiceName!.Contains(status.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Requests.Where(a => a.IsDelete == false
                 && (a.RequestStatus!.Contains(status.search)
                 || a.RequestName!.Contains(status.search)
