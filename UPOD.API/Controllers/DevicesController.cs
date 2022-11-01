@@ -19,7 +19,7 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_devices")]
-        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevices([FromQuery] PaginationRequest model,[FromQuery] FilterRequest value)
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevices([FromQuery] PaginationRequest model,[FromQuery] SearchRequest value)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_list_devices_by_device_type_id")]
-        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevicesByDeviceType([FromQuery] PaginationRequest model, [FromQuery] FilterRequest value, Guid id)
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevicesByDeviceType([FromQuery] PaginationRequest model, [FromQuery] SearchRequest value, Guid id)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace UPOD.API.Controllers
         
         [HttpGet]
         [Route("get_list_devices_by_agency_id")]
-        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevicesAgency([FromQuery]PaginationRequest model, Guid id, [FromQuery] FilterRequest value)
+        public async Task<ActionResult<ResponseModel<DeviceResponse>>> GetListDevicesAgency([FromQuery]PaginationRequest model, Guid id, [FromQuery] SearchRequest value)
 
         {
             try

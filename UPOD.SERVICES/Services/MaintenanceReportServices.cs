@@ -19,7 +19,7 @@ namespace UPOD.SERVICES.Services
 {
     public interface IMaintenanceReportService
     {
-        Task<ResponseModel<MaintenanceReportResponse>> GetListMaintenanceReports(PaginationRequest model, FilterRequest value);
+        Task<ResponseModel<MaintenanceReportResponse>> GetListMaintenanceReports(PaginationRequest model, FilterStatusRequest value);
         Task<ObjectModelResponse> CreateMaintenanceReport(MaintenanceReportRequest model);
         Task<ObjectModelResponse> GetDetailsMaintenanceReport(Guid id);
     }
@@ -31,11 +31,11 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<MaintenanceReportResponse>> GetListMaintenanceReports(PaginationRequest model, FilterRequest value)
+        public async Task<ResponseModel<MaintenanceReportResponse>> GetListMaintenanceReports(PaginationRequest model, FilterStatusRequest value)
         {
             var total = await _context.MaintenanceReports.Where(a => a.IsDelete == false).ToListAsync();
             var maintenanceReports = new List<MaintenanceReportResponse>();
-            if (value.search == null)
+            if (value.search == null && value.status == null)
             {
                 total = await _context.MaintenanceReports.Where(a => a.IsDelete == false).ToListAsync();
                 maintenanceReports = await _context.MaintenanceReports.Where(a => a.IsDelete == false).Select(a => new MaintenanceReportResponse
@@ -86,15 +86,22 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-
+                if (value.search == null)
+                {
+                    value.search = "";
+                }
+                if (value.status == null)
+                {
+                    value.status = "";
+                }
                 total = await _context.MaintenanceReports.Where(a => a.IsDelete == false
-                && (a.Status!.Contains(value.search)
-                || a.Name!.Contains(value.search)
-                || a.Code!.Contains(value.search))).ToListAsync();
+                && (a.Status!.Contains(value.status!.Trim())
+                && (a.Name!.Contains(value.search!.Trim())
+                || a.Code!.Contains(value.search!.Trim())))).ToListAsync();
                 maintenanceReports = await _context.MaintenanceReports.Where(a => a.IsDelete == false
-                && (a.Status!.Contains(value.search)
-                || a.Name!.Contains(value.search)
-                || a.Code!.Contains(value.search))).Select(a => new MaintenanceReportResponse
+                && (a.Status!.Contains(value.status!.Trim())
+                && (a.Name!.Contains(value.search!.Trim())
+                || a.Code!.Contains(value.search!.Trim())))).Select(a => new MaintenanceReportResponse
                 {
                     id = a.Id,
                     name = a.Name,

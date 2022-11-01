@@ -11,13 +11,13 @@ namespace UPOD.SERVICES.Services
 
     public interface IDeviceService
     {
-        Task<ResponseModel<DeviceResponse>> GetListDevices(PaginationRequest model, FilterRequest value);
-        Task<ResponseModel<DeviceResponse>> GetListDevicesByDeviceType(PaginationRequest model, FilterRequest value, Guid id);
+        Task<ResponseModel<DeviceResponse>> GetListDevices(PaginationRequest model, SearchRequest value);
+        Task<ResponseModel<DeviceResponse>> GetListDevicesByDeviceType(PaginationRequest model, SearchRequest value, Guid id);
         Task<ObjectModelResponse> GetDetailsDevice(Guid id);
         Task<ObjectModelResponse> CreateDevice(DeviceRequest model);
         Task<ObjectModelResponse> UpdateDevice(Guid id, DeviceUpdateRequest model);
         Task<ObjectModelResponse> DisableDevice(Guid id);
-        Task<ResponseModel<DeviceResponse>> GetListDevicesAgency(PaginationRequest model, Guid id, FilterRequest value);
+        Task<ResponseModel<DeviceResponse>> GetListDevicesAgency(PaginationRequest model, Guid id, SearchRequest value);
     }
 
     public class DeviceServices : IDeviceService
@@ -28,7 +28,7 @@ namespace UPOD.SERVICES.Services
             _context = context;
         }
 
-        public async Task<ResponseModel<DeviceResponse>> GetListDevices(PaginationRequest model, FilterRequest value)
+        public async Task<ResponseModel<DeviceResponse>> GetListDevices(PaginationRequest model, SearchRequest value)
         {
             var total = await _context.Devices.Where(a => a.IsDelete == false).ToListAsync();
             var devices = new List<DeviceResponse>();
@@ -115,7 +115,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Devices"
             };
         }
-        public async Task<ResponseModel<DeviceResponse>> GetListDevicesByDeviceType(PaginationRequest model, FilterRequest value, Guid id)
+        public async Task<ResponseModel<DeviceResponse>> GetListDevicesByDeviceType(PaginationRequest model, SearchRequest value, Guid id)
         {
             var total = await _context.Devices.Where(a => a.IsDelete == false).ToListAsync();
             var devices = new List<DeviceResponse>();
@@ -202,7 +202,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Devices"
             };
         }
-        public async Task<ResponseModel<DeviceResponse>> GetListDevicesAgency(PaginationRequest model, Guid id, FilterRequest value)
+        public async Task<ResponseModel<DeviceResponse>> GetListDevicesAgency(PaginationRequest model, Guid id, SearchRequest value)
         {
             var total = await _context.Devices.Where(a => a.IsDelete == false && a.AgencyId.Equals(id)).ToListAsync();
             var devices = new List<DeviceResponse>();

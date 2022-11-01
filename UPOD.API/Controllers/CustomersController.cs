@@ -19,11 +19,11 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_all_customers")]
-        public async Task<ActionResult<ResponseModel<CustomerResponse>>> GetAllCustomers([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<CustomerResponse>>> GetAllCustomers([FromQuery] PaginationRequest model, [FromQuery] SearchRequest value)
         {
             try
             {
-                return await _customer_sv.GetAll(model);
+                return await _customer_sv.GetAll(model, value);
             }
             catch (Exception ex)
             {
@@ -72,7 +72,7 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_requests_by_customer_id")]
-        public async Task<ActionResult<ResponseModel<RequestListResponse>>> GetListRequestsByCustomerId([FromQuery] PaginationRequest model, [FromQuery] FilterRequest status, Guid id)
+        public async Task<ActionResult<ResponseModel<RequestListResponse>>> GetListRequestsByCustomerId([FromQuery] PaginationRequest model, [FromQuery] SearchRequest status, Guid id)
         {
             try
             {

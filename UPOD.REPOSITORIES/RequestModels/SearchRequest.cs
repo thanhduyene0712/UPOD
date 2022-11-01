@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace UPOD.REPOSITORIES.RequestModels
 {
-    public class FilterStatusRequest
+    public class SearchRequest
     {
         public string? search { get; set; }
-        public string? status { get; set; }
     }
 }

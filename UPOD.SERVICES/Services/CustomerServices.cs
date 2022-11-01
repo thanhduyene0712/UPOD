@@ -12,14 +12,14 @@ namespace UPOD.SERVICES.Services
 {
     public interface ICustomerService
     {
-        Task<ResponseModel<CustomerResponse>> GetAll(PaginationRequest model);
+        Task<ResponseModel<CustomerResponse>> GetAll(PaginationRequest model, SearchRequest value);
         Task<ObjectModelResponse> CreateCustomer(CustomerRequest model);
         Task<ObjectModelResponse> GetCustomerDetails(Guid id);
         Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
         Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id);
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
-        Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id);
+        Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest status, Guid id);
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
         Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, Guid id);
     }
@@ -72,7 +72,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Contracts"
             };
         }
-        public async Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterRequest status, Guid id)
+        public async Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest status, Guid id)
         {
             var total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
             var requests = new List<RequestListResponse>();
@@ -164,32 +164,73 @@ namespace UPOD.SERVICES.Services
                 Type = "Requests"
             };
         }
-        public async Task<ResponseModel<CustomerResponse>> GetAll(PaginationRequest model)
+        public async Task<ResponseModel<CustomerResponse>> GetAll(PaginationRequest model, SearchRequest value)
         {
             var total = await _context.Customers.Where(a => a.IsDelete == false).ToListAsync();
-            var customers = await _context.Customers.Where(a => a.IsDelete == false).Select(a => new CustomerResponse
+            var customers = new List<CustomerResponse>();
+            if (value.search == null)
             {
-                id = a.Id,
-                code = a.Code,
-                name = a.Name,
-                account = new AccountViewResponse
+                total = await _context.Customers.Where(a => a.IsDelete == false).ToListAsync();
+                customers = await _context.Customers.Where(a => a.IsDelete == false).Select(a => new CustomerResponse
                 {
-                    id = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Id).FirstOrDefault(),
-                    code = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Code).FirstOrDefault(),
-                    role_name = _context.Roles.Where(x => x.Id.Equals(a.Account!.RoleId)).Select(x => x.RoleName).FirstOrDefault(),
-                    username = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Username).FirstOrDefault(),
-                    password = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Password).FirstOrDefault(),
-                },
-                address = a.Address,
-                mail = a.Mail,
-                phone = a.Phone,
-                description = a.Description,
-                is_delete = a.IsDelete,
-                create_date = a.CreateDate,
-                update_date = a.UpdateDate,
+                    id = a.Id,
+                    code = a.Code,
+                    name = a.Name,
+                    account = new AccountViewResponse
+                    {
+                        id = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Code).FirstOrDefault(),
+                        role_name = _context.Roles.Where(x => x.Id.Equals(a.Account!.RoleId)).Select(x => x.RoleName).FirstOrDefault(),
+                        username = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Username).FirstOrDefault(),
+                        password = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Password).FirstOrDefault(),
+                    },
+                    address = a.Address,
+                    mail = a.Mail,
+                    phone = a.Phone,
+                    description = a.Description,
+                    is_delete = a.IsDelete,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
 
 
-            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+            else
+            {
+                total = await _context.Customers.Where(a => a.IsDelete == false
+                && (a.Code!.Contains(value.search.Trim())
+                || a.Name!.Contains(value.search.Trim())
+                || a.Mail!.Contains(value.search.Trim())
+                || a.Phone!.Contains(value.search.Trim()))).ToListAsync();
+                customers = await _context.Customers.Where(a => a.IsDelete == false
+                && (a.Code!.Contains(value.search.Trim())
+                || a.Name!.Contains(value.search.Trim())
+                || a.Mail!.Contains(value.search.Trim())
+                || a.Phone!.Contains(value.search.Trim()))).Select(a => new CustomerResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    name = a.Name,
+                    account = new AccountViewResponse
+                    {
+                        id = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Code).FirstOrDefault(),
+                        role_name = _context.Roles.Where(x => x.Id.Equals(a.Account!.RoleId)).Select(x => x.RoleName).FirstOrDefault(),
+                        username = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Username).FirstOrDefault(),
+                        password = _context.Accounts.Where(x => x.Id.Equals(a.AccountId)).Select(x => x.Password).FirstOrDefault(),
+                    },
+                    address = a.Address,
+                    mail = a.Mail,
+                    phone = a.Phone,
+                    description = a.Description,
+                    is_delete = a.IsDelete,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
+
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+
             return new ResponseModel<CustomerResponse>(customers)
             {
                 Total = total.Count,

@@ -18,7 +18,7 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_maintenance_reports")]
-        public async Task<ActionResult<ResponseModel<MaintenanceReportResponse>>> GetListMaintenanceReports([FromQuery] PaginationRequest model, [FromQuery] FilterRequest value)
+        public async Task<ActionResult<ResponseModel<MaintenanceReportResponse>>> GetListMaintenanceReports([FromQuery] PaginationRequest model, [FromQuery] FilterStatusRequest value)
         {
             try
             {

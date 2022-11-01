@@ -8,7 +8,7 @@ namespace UPOD.SERVICES.Services
 {
     public interface IAdminService
     {
-        Task<ResponseModel<AdminResponse>> GetListAdmins(PaginationRequest model, FilterRequest value);
+        Task<ResponseModel<AdminResponse>> GetListAdmins(PaginationRequest model, SearchRequest value);
         Task<ObjectModelResponse> CreateAdmin(AdminRequest model);
         Task<ObjectModelResponse> UpdateAdmin(Guid id, AdminRequest model);
         Task<ObjectModelResponse> DisableAdmin(Guid id);
@@ -23,7 +23,7 @@ namespace UPOD.SERVICES.Services
             _context = context;
         }
 
-        public async Task<ResponseModel<AdminResponse>> GetListAdmins(PaginationRequest model, FilterRequest value)
+        public async Task<ResponseModel<AdminResponse>> GetListAdmins(PaginationRequest model, SearchRequest value)
         {
             var total = await _context.Admins.Where(a => a.IsDelete == false).ToListAsync();
             var admins = new List<AdminResponse>();

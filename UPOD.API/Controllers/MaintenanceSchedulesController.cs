@@ -49,7 +49,7 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_maintenance_schedules")]
-        public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedules([FromQuery] PaginationRequest model, [FromQuery] FilterRequest value)
+        public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedules([FromQuery] PaginationRequest model, [FromQuery] FilterStatusRequest value)
         {
             try
             {
@@ -62,11 +62,11 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_list_maintenance_schedules_by_technician_id")]
-        public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedulesTechnician([FromQuery] PaginationRequest model, Guid id)
+        public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedulesTechnician([FromQuery] PaginationRequest model, Guid id,[FromQuery] FilterStatusRequest value)
         {
             try
             {
-                return await _maintenanceSchedule_sv.GetListMaintenanceSchedulesTechnician(model, id);
+                return await _maintenanceSchedule_sv.GetListMaintenanceSchedulesTechnician(model, id, value);
             }
             catch (Exception ex)
             {
@@ -75,11 +75,11 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_list_maintenance_schedules_by_agency_id")]
-        public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedulesAgency([FromQuery] PaginationRequest model, Guid id)
+        public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedulesAgency([FromQuery] PaginationRequest model, Guid id, [FromQuery] FilterStatusRequest value)
         {
             try
             {
-                return await _maintenanceSchedule_sv.GetListMaintenanceSchedulesAgency(model, id);
+                return await _maintenanceSchedule_sv.GetListMaintenanceSchedulesAgency(model, id, value);
             }
             catch (Exception ex)
             {

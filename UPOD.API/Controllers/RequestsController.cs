@@ -25,7 +25,7 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_requests")]
-        public async Task<ActionResult<ResponseModel<RequestListResponse>>> GetListRequests([FromQuery] PaginationRequest model, [FromQuery] FilterRequest status)
+        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequests([FromQuery] PaginationRequest model, [FromQuery] FilterStatusRequest status)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPut]
         [Route("update_request_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> UpdateRequest([FromQuery] Guid id, RequestUpdateRequest model)
@@ -121,7 +121,7 @@ namespace UPOD.API.Controllers
         }
         [HttpPut]
         [Route("reject_request_by_id")]
-        public async Task<ActionResult<ObjectModelResponse>> RejectRequest(Guid id,[FromQuery] RejectRequest value)
+        public async Task<ActionResult<ObjectModelResponse>> RejectRequest(Guid id, [FromQuery] RejectRequest value)
         {
             try
             {

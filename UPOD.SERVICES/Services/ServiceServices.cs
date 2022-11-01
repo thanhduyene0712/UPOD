@@ -8,7 +8,7 @@ namespace UPOD.SERVICES.Services
 {
     public interface IServiceService
     {
-        Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model);
+        Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model, SearchRequest value);
         Task<ObjectModelResponse> GetServiceDetails(Guid id);
         Task<ObjectModelResponse> UpdateService(Guid id, ServiceRequest model);
         Task<ObjectModelResponse> CreateService(ServiceRequest model);
@@ -42,20 +42,44 @@ namespace UPOD.SERVICES.Services
                 Type = "Service"
             };
         }
-        public async Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model)
+        public async Task<ResponseModel<ServiceResponse>> GetAll(PaginationRequest model, SearchRequest value)
         {
             var total = await _context.Services.Where(a => a.IsDelete == false).ToListAsync();
-            var services = await _context.Services.Where(a => a.IsDelete == false).Select(a => new ServiceResponse
+            var services = new List<ServiceResponse>();
+            if (value.search == null)
             {
-                id = a.Id,
-                code = a.Code,
-                service_name = a.ServiceName,
-                description = a.Description,
-                is_delete = a.IsDelete,
-                create_date = a.CreateDate,
-                update_date = a.UpdateDate,
+                total = await _context.Services.Where(a => a.IsDelete == false).ToListAsync();
+                services = await _context.Services.Where(a => a.IsDelete == false).Select(a => new ServiceResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    service_name = a.ServiceName,
+                    description = a.Description,
+                    is_delete = a.IsDelete,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
 
-            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+            else
+            {
+                total = await _context.Services.Where(a => a.IsDelete == false
+                && (a.Code!.Contains(value.search.Trim())
+                || a.ServiceName!.Contains(value.search.Trim()))).ToListAsync();
+                services = await _context.Services.Where(a => a.IsDelete == false
+                && (a.Code!.Contains(value.search.Trim())
+                || a.ServiceName!.Contains(value.search.Trim()))).Select(a => new ServiceResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    service_name = a.ServiceName,
+                    description = a.Description,
+                    is_delete = a.IsDelete,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
             return new ResponseModel<ServiceResponse>(services)
             {
                 Total = total.Count,
@@ -138,7 +162,7 @@ namespace UPOD.SERVICES.Services
                 Description = model.description,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
-                UpdateDate =DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
             }).FirstOrDefaultAsync();
             var data = new ServiceResponse();
             _context.Services.Update(service!);

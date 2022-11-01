@@ -23,11 +23,11 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_all_contracts")]
-        public async Task<ActionResult<ResponseModel<ContractResponse>>> GetAllContracts([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<ContractResponse>>> GetAllContracts([FromQuery] PaginationRequest model, [FromQuery] SearchRequest value)
         {
             try
             {
-                return await _contract_service_sv.GetAll(model);
+                return await _contract_service_sv.GetAll(model, value);
             }
             catch (Exception ex)
             {

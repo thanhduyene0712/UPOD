@@ -18,11 +18,11 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_all_services")]
-        public async Task<ActionResult<ResponseModel<ServiceResponse>>> GetAllServices([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<ServiceResponse>>> GetAllServices([FromQuery] PaginationRequest model, [FromQuery] SearchRequest value)
         {
             try
             {
-                return await _service_sv.GetAll(model);
+                return await _service_sv.GetAll(model, value);
             }
             catch (Exception ex)
             {

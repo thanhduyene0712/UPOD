@@ -12,8 +12,8 @@ namespace UPOD.SERVICES.Services
 
     public interface IAgencyService
     {
-        Task<ResponseModel<AgencyResponse>> GetListAgencies(PaginationRequest model, FilterRequest value);
-        Task<ResponseModel<AgencyResponse>> GetListAgenciesByTechnician(PaginationRequest model, Guid id, FilterRequest value);
+        Task<ResponseModel<AgencyResponse>> GetListAgencies(PaginationRequest model, SearchRequest value);
+        Task<ResponseModel<AgencyResponse>> GetListAgenciesByTechnician(PaginationRequest model, Guid id, SearchRequest value);
         Task<ObjectModelResponse> GetDetailsAgency(Guid id);
         Task<ObjectModelResponse> CreateAgency(AgencyRequest model);
         Task<ObjectModelResponse> UpdateAgency(Guid id, AgencyUpdateRequest model);
@@ -28,7 +28,7 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<AgencyResponse>> GetListAgenciesByTechnician(PaginationRequest model, Guid id, FilterRequest value)
+        public async Task<ResponseModel<AgencyResponse>> GetListAgenciesByTechnician(PaginationRequest model, Guid id, SearchRequest value)
         {
             var total = await _context.Agencies.Where(a => a.IsDelete == false).ToListAsync();
             var agencies = new List<AgencyResponse>();
@@ -135,7 +135,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Agencies"
             };
         }
-        public async Task<ResponseModel<AgencyResponse>> GetListAgencies(PaginationRequest model, FilterRequest value)
+        public async Task<ResponseModel<AgencyResponse>> GetListAgencies(PaginationRequest model, SearchRequest value)
         {
             var total = await _context.Agencies.Where(a => a.IsDelete == false).ToListAsync();
             var agencies = new List<AgencyResponse>();
