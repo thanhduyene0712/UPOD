@@ -59,7 +59,7 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_all_accounts_is_not_assign")]
-        public async Task<ActionResult<ResponseModel<AccountResponse>>> GetAllAccountIsNotAssign([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<AccountResponse>>> GetAllAccountIsNotAssign([FromQuery] PaginationRequest model, [FromQuery] FilterRequest value)
         {
             //var accountRole = _userAccessor.GetRoleId();
             //if (accountRole != Guid.Parse("dd3cb3b4-84fe-432e-bb06-2d8aecaa640d"))
@@ -68,7 +68,7 @@ namespace UPOD.API.Controllers
             //}
             try
             {
-                return await _account_sv.GetAllAccountIsNotAssign(model);
+                return await _account_sv.GetAllAccountIsNotAssign(model, value);
             }
             catch (Exception ex)
             {

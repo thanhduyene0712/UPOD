@@ -23,7 +23,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> Login(LoginRequest model);
         Task<ResponseModel<RoleResponse>> GetAllRoles(PaginationRequest model);
         Task<ObjectModelResponse> ChangePassword(ChangePasswordRequest model, Guid id);
-        Task<ResponseModel<AccountResponse>> GetAllAccountIsNotAssign(PaginationRequest model);
+        Task<ResponseModel<AccountResponse>> GetAllAccountIsNotAssign(PaginationRequest model, FilterRequest value);
 
     }
 
@@ -229,10 +229,11 @@ namespace UPOD.SERVICES.Services
                 Type = "Account",
             };
         }
-        public async Task<ResponseModel<AccountResponse>> GetAllAccountIsNotAssign(PaginationRequest model)
+        public async Task<ResponseModel<AccountResponse>> GetAllAccountIsNotAssign(PaginationRequest model, FilterRequest value)
         {
-            var total = await _context.Accounts.Where(a => a.IsDelete == false && a.IsAssign == false).ToListAsync();
-            var accounts = await _context.Accounts.Where(a => a.IsDelete == false && a.IsAssign == false).Select(p => new AccountResponse
+            var role_name = await _context.Roles.Where(a => a.RoleName!.Equals(value.search)).Select(a => a.Id).FirstOrDefaultAsync();
+            var total = await _context.Accounts.Where(a => a.IsDelete == false && a.IsAssign == false && a.RoleId!.Equals(role_name)).ToListAsync();
+            var accounts = await _context.Accounts.Where(a => a.IsDelete == false && a.IsAssign == false && a.RoleId!.Equals(role_name)).Select(p => new AccountResponse
             {
                 id = p.Id,
                 code = p.Code,
