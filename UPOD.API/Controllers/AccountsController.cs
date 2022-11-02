@@ -102,12 +102,25 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPost]
-        [Route("create_account")]
-        public async Task<ActionResult<ObjectModelResponse>> CreateAccount(AccountRequest model)
+        [Route("create_account_technician")]
+        public async Task<ActionResult<ObjectModelResponse>> CreateAccountTechnician(AccountRequest model)
         {
             try
             {
-                return await _account_sv.CreateAccount(model);
+                return await _account_sv.CreateAccountTechnician(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost]
+        [Route("create_account_customer")]
+        public async Task<ActionResult<ObjectModelResponse>> CreateAccountCustomer(AccountRequest model)
+        {
+            try
+            {
+                return await _account_sv.CreateAccountCustomer(model);
             }
             catch (Exception ex)
             {

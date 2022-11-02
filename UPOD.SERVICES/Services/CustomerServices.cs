@@ -19,7 +19,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> DisableCustomer(Guid id);
         Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id);
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
-        Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest status, Guid id);
+        Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest status, Guid id);
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
         Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, Guid id);
     }
@@ -72,14 +72,14 @@ namespace UPOD.SERVICES.Services
                 Type = "Contracts"
             };
         }
-        public async Task<ResponseModel<RequestListResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest status, Guid id)
+        public async Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest status, Guid id)
         {
             var total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
-            var requests = new List<RequestListResponse>();
+            var requests = new List<RequestResponse>();
             if (status.search == null)
             {
                 total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
-                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new RequestListResponse
+                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -97,6 +97,7 @@ namespace UPOD.SERVICES.Services
                         code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                        phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -105,11 +106,24 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    reject_reason = a.ReasonReject,
                     description = a.RequestDesciption,
                     priority = a.Priority,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
+                    technicican = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    },
+                    contract = new ContractViewResponse
+                    {
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
+                    }
 
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
@@ -123,7 +137,7 @@ namespace UPOD.SERVICES.Services
                 requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
                 && (a.RequestStatus!.Equals(status.search)
                 || a.RequestName!.Contains(status.search)
-                || a.Code!.Contains(status.search))).Select(a => new RequestListResponse
+                || a.Code!.Contains(status.search))).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -133,7 +147,7 @@ namespace UPOD.SERVICES.Services
                         id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-
+                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
                     },
                     agency = new AgencyViewResponse
                     {
@@ -141,6 +155,7 @@ namespace UPOD.SERVICES.Services
                         code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                        phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -149,16 +164,29 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    reject_reason = a.ReasonReject,
                     description = a.RequestDesciption,
                     priority = a.Priority,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
+                    technicican = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    },
+                    contract = new ContractViewResponse
+                    {
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
+                    }
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 
-            return new ResponseModel<RequestListResponse>(requests)
+            return new ResponseModel<RequestResponse>(requests)
             {
                 Total = total.Count,
                 Type = "Requests"

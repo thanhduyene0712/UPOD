@@ -20,7 +20,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? description { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
-        public Guid? create_by { get; set; } = null!;
         public ContractViewResponse contract { get; set; } = null!;
         public CustomerViewResponse customer { get; set; } = null!;
         public AgencyViewResponse agency { get; set; } = null!;

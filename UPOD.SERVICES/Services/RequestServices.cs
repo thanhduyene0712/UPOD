@@ -60,6 +60,7 @@ namespace UPOD.SERVICES.Services
                         code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                        phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -68,11 +69,24 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    reject_reason = a.ReasonReject,
+                    description = a.RequestDesciption,
                     priority = a.Priority,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-
+                    technicican = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    },
+                    contract = new ContractViewResponse
+                    {
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
+                    }
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 
@@ -199,7 +213,6 @@ namespace UPOD.SERVICES.Services
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    create_by = a.CustomerId,
                     technicican = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -212,6 +225,7 @@ namespace UPOD.SERVICES.Services
                         code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
                         name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     }
+
 
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
@@ -490,10 +504,10 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> GetDetailsRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
-            var request_details = new RequestResponse();
+            var request_details = new RequestDetailsResponse();
             if (request!.AdminId == null)
             {
-                request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestResponse
+                request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestDetailsResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -526,7 +540,13 @@ namespace UPOD.SERVICES.Services
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    create_by = a.CustomerId,
+                    create_by = new CreateByViewModel
+                    {
+                        id = a.CustomerId,
+                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                        role = "Customer",
+                    },
                     technicican = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -543,7 +563,7 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestResponse
+                request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestDetailsResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -576,7 +596,13 @@ namespace UPOD.SERVICES.Services
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    create_by = a.AdminId,
+                    create_by = new CreateByViewModel
+                    {
+                        id = a.AdminId,
+                        code = _context.Admins.Where(x => x.Id.Equals(a.AdminId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Admins.Where(x => x.Id.Equals(a.AdminId)).Select(a => a.Name).FirstOrDefault(),
+                        role = "Admin",
+                    },
                     technicican = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),

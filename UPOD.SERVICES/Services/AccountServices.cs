@@ -18,7 +18,8 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model, SearchRequest value);
         Task<ObjectModelResponse> GetAccountDetails(Guid id);
         Task<ObjectModelResponse> UpdateAccount(Guid id, AccountUpdateRequest model);
-        Task<ObjectModelResponse> CreateAccount(AccountRequest model);
+        Task<ObjectModelResponse> CreateAccountTechnician(AccountRequest model);
+        Task<ObjectModelResponse> CreateAccountCustomer(AccountRequest model);
         Task<ObjectModelResponse> DisableAccount(Guid id);
         Task<ObjectModelResponse> Login(LoginRequest model);
         Task<ResponseModel<RoleResponse>> GetAllRoles(PaginationRequest model);
@@ -340,7 +341,7 @@ namespace UPOD.SERVICES.Services
             };
         }
 
-        public async Task<ObjectModelResponse> CreateAccount(AccountRequest model)
+        public async Task<ObjectModelResponse> CreateAccountTechnician(AccountRequest model)
         {
             var account_id = Guid.NewGuid();
             while (true)
@@ -361,7 +362,7 @@ namespace UPOD.SERVICES.Services
             {
                 Id = account_id,
                 Code = code,
-                RoleId = model.role_id,
+                RoleId = await _context.Roles.Where(a => a.RoleName.Equals("Technician") && a.IsDelete == false).Select(a => a.Id).FirstOrDefaultAsync(),
                 Username = model.user_name,
                 Password = model.password,
                 IsDelete = false,
@@ -400,6 +401,79 @@ namespace UPOD.SERVICES.Services
                         username = account.Username,
                         is_delete = account.IsDelete,
                         create_date = account.CreateDate,
+                        update_date = account.UpdateDate,
+                        is_assign = account.IsAssign,
+                    });
+                }
+            }
+            return new ObjectModelResponse(data)
+            {
+                Message = message,
+                Status = status,
+                Type = "Account"
+            };
+        }
+        public async Task<ObjectModelResponse> CreateAccountCustomer(AccountRequest model)
+        {
+            var account_id = Guid.NewGuid();
+            while (true)
+            {
+                var account_dup = await _context.Accounts.Where(x => x.Id.Equals(account_id)).FirstOrDefaultAsync();
+                if (account_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    account_id = Guid.NewGuid();
+                }
+            }
+            var code_number = await GetLastCode();
+            var code = CodeHelper.GeneratorCode("ACC", code_number + 1);
+            var account = new Account
+            {
+                Id = account_id,
+                Code = code,
+                RoleId = await _context.Roles.Where(a => a.RoleName.Equals("Customer") && a.IsDelete == false).Select(a => a.Id).FirstOrDefaultAsync(),
+                Username = model.user_name,
+                Password = model.password,
+                IsDelete = false,
+                CreateDate = DateTime.UtcNow.AddHours(7),
+                UpdateDate = DateTime.UtcNow.AddHours(7),
+                IsAssign = false,
+            };
+            var data = new AccountResponse();
+            var message = "blank";
+            var status = 500;
+            var username = await _context.Accounts.Where(x => x.Username!.Equals(account.Username) && x.IsDelete == false).FirstOrDefaultAsync();
+            if (username != null)
+            {
+                status = 400;
+                message = "Username is already exists!";
+            }
+            else
+            {
+
+                message = "Successfully";
+                status = 200;
+                _context.Accounts.Add(account);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    data = (new AccountResponse
+                    {
+                        id = account.Id,
+                        code = account.Code,
+                        role = new RoleResponse
+                        {
+                            id = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.Id).FirstOrDefault(),
+                            code = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.Code).FirstOrDefault(),
+                            role_name = _context.Roles.Where(a => a.Id.Equals(account.RoleId)).Select(a => a.RoleName).FirstOrDefault(),
+                        },
+                        username = account.Username,
+                        is_delete = account.IsDelete,
+                        create_date = account.CreateDate,
+                        is_assign = account.IsAssign,
                         update_date = account.UpdateDate,
                     });
                 }

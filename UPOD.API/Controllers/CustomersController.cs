@@ -72,7 +72,7 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_requests_by_customer_id")]
-        public async Task<ActionResult<ResponseModel<RequestListResponse>>> GetListRequestsByCustomerId([FromQuery] PaginationRequest model, [FromQuery] SearchRequest status, Guid id)
+        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsByCustomerId([FromQuery] PaginationRequest model, [FromQuery] SearchRequest status, Guid id)
         {
             try
             {
