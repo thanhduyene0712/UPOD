@@ -131,12 +131,12 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest value, Guid id)
         {
-            var total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
+            var total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id) && a.AdminId == null).ToListAsync();
             var requests = new List<RequestResponse>();
             if (value.search == null)
             {
-                total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
-                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new RequestResponse
+                total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id) && a.AdminId == null).ToListAsync();
+                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id) && a.AdminId == null).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -187,11 +187,15 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
+                total = await _context.Requests.Where(a => a.IsDelete == false
+                && a.CustomerId.Equals(id)
+                && a.AdminId == null
                 && (a.RequestStatus!.Equals(value.search)
                 || a.RequestName!.Contains(value.search)
                 || a.Code!.Contains(value.search))).ToListAsync();
-                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
+                requests = await _context.Requests.Where(a => a.IsDelete == false
+                && a.CustomerId.Equals(id)
+                && a.AdminId == null
                 && (a.RequestStatus!.Equals(value.search)
                 || a.RequestName!.Contains(value.search)
                 || a.Code!.Contains(value.search))).Select(a => new RequestResponse
