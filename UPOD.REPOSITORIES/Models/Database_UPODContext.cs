@@ -188,14 +188,6 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
-
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
-
                 entity.HasOne(d => d.Contract)
                     .WithMany(p => p.ContractServices)
                     .HasForeignKey(d => d.ContractId)
@@ -516,12 +508,6 @@ namespace UPOD.REPOSITORIES.Models
                 entity.ToTable("Skill");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code).HasMaxLength(255);
-
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.Skills)

@@ -563,8 +563,6 @@ namespace UPOD.SERVICES.Services
                     TechnicianId = technician.Id,
                     ServiceId = item,
                     IsDelete = false,
-                    CreateDate = DateTime.UtcNow.AddHours(7),
-                    UpdateDate = DateTime.UtcNow.AddHours(7),
                 };
                 _context.Skills.Add(skill);
             }
@@ -769,8 +767,6 @@ namespace UPOD.SERVICES.Services
                     TechnicianId = technician!.Id,
                     ServiceId = item,
                     IsDelete = false,
-                    CreateDate = technician.CreateDate,
-                    UpdateDate = DateTime.UtcNow.AddHours(7),
                 };
                 _context.Skills.Add(skill);
             }

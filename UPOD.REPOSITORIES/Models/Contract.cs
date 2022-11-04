@@ -18,6 +18,7 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool? IsDelete { get; set; }
+        public bool? IsExpire { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public double? ContractPrice { get; set; }

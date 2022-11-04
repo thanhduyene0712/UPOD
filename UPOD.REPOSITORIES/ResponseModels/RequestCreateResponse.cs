@@ -11,6 +11,7 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public Guid id { get; set; }
         public string? code { get; set; }
         public string? request_name { get; set; }
+        public string? customer_name { get; set; }
         public string? request_description { get; set; }
         public string? phone { get; set; }
         public int? priority { get; set; }

@@ -17,6 +17,7 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public DateTime? start_date { get; set; }
         public DateTime? end_date { get; set; }
         public bool? is_delete { get; set; }
+        public bool? is_expire { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
         public string? attachment { get; set; }

@@ -718,6 +718,7 @@ namespace UPOD.SERVICES.Services
                     phone = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                     service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                    customer_name = _context.Customers.Where(x => x.Id.Equals(request.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                 };
             }
             return new ObjectModelResponse(data)
@@ -742,8 +743,8 @@ namespace UPOD.SERVICES.Services
             }
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("RE", num + 1);
-            var customer_id = await _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefaultAsync();
-            var contract = _context.Contracts.Where(a => a.CustomerId.Equals(customer_id)).ToList();
+            //var customer_id = await _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefaultAsync();
+            var contract = _context.Contracts.Where(a => a.CustomerId.Equals(model.customer_id)).ToList();
             Guid? contract_id = null;
             foreach (var item in contract)
             {
@@ -754,7 +755,7 @@ namespace UPOD.SERVICES.Services
                 Id = request_id,
                 Code = code,
                 RequestName = model.request_name,
-                CustomerId = customer_id,
+                CustomerId = model.customer_id,
                 ServiceId = model.service_id,
                 AgencyId = model.agency_id,
                 RequestDesciption = model.request_description,
@@ -790,6 +791,7 @@ namespace UPOD.SERVICES.Services
                     priority = request.Priority,
                     phone = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    customer_name = _context.Customers.Where(x => x.Id.Equals(request.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                     service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
                 };
 
@@ -855,6 +857,7 @@ namespace UPOD.SERVICES.Services
                         request_description = request.RequestDesciption,
                         priority = request.Priority,
                         phone = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
+                        customer_name = _context.Customers.Where(x => x.Id.Equals(request.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
                     };

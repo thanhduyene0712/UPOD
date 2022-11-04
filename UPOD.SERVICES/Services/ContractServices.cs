@@ -4,7 +4,7 @@ using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
 using UPOD.SERVICES.Helpers;
-using Contract = UPOD.REPOSITORIES.Models.Contract;
+
 
 namespace UPOD.SERVICES.Services
 {
@@ -15,6 +15,8 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateContract(ContractRequest model);
         Task<ObjectModelResponse> GetDetailsContract(Guid id);
         Task<ObjectModelResponse> DisableContract(Guid id);
+        Task<List<Guid>> GetContractNotify();
+        Task SetExpire(Guid contractId);
     }
 
     public class ContractServiceService : IContractServiceService
@@ -23,6 +25,24 @@ namespace UPOD.SERVICES.Services
         public ContractServiceService(Database_UPODContext context)
         {
             _context = context;
+        }
+       
+        public async Task<List<Guid>> GetContractNotify()
+        {
+
+            var todayContracts = await _context.Contracts.Where(a => (a.EndDate!.Value.Date <= DateTime.UtcNow.AddHours(7) && a.IsDelete == false)).ToListAsync();
+            var rs = new List<Guid>();
+            foreach (var item in todayContracts)
+            {
+                rs.Add(item.Id);
+            }
+            return rs;
+        }
+         public async Task SetExpire(Guid contractId)
+        {
+            var maintainStatus = await _context.Contracts.Where(a => a.Id.Equals(contractId) && a.IsDelete == false).FirstOrDefaultAsync();
+            maintainStatus!.IsExpire = true;
+            await _context.SaveChangesAsync();
         }
         public async Task<ObjectModelResponse> DisableContract(Guid id)
         {
@@ -54,6 +74,7 @@ namespace UPOD.SERVICES.Services
                     contract_price = contract.ContractPrice,
                     description = contract.Description,
                     attachment = contract.Attachment,
+                    is_expire = contract.IsExpire,
                     img = contract.Img,
                     service = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                     {
@@ -96,6 +117,7 @@ namespace UPOD.SERVICES.Services
                     start_date = a.StartDate,
                     end_date = a.EndDate,
                     is_delete = a.IsDelete,
+                    is_expire = a.IsExpire,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
                     contract_price = a.ContractPrice,
@@ -183,6 +205,7 @@ namespace UPOD.SERVICES.Services
                     description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
                 },
                 start_date = a.StartDate,
+                is_expire = a.IsExpire,
                 end_date = a.EndDate,
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
@@ -239,6 +262,7 @@ namespace UPOD.SERVICES.Services
                 Description = model.description!,
                 TerminalTime = null,
                 TerminalContent = null,
+                IsExpire = false,
             };
             foreach (var item in model.service)
             {
@@ -261,11 +285,7 @@ namespace UPOD.SERVICES.Services
                     FrequencyMaintain = item.frequency_maintain,
                     ContractId = contract.Id,
                     ServiceId = item.service_id,
-                    StartDate = contract.StartDate,
-                    EndDate = contract.EndDate,
-                    IsDelete = false,
-                    CreateDate = DateTime.UtcNow.AddHours(7),
-                    UpdateDate = DateTime.UtcNow.AddHours(7),
+                    IsDelete = false
                 };
                 _context.ContractServices.Add(contract_service);
             }

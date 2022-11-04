@@ -400,7 +400,11 @@ namespace UPOD.SERVICES.Services
         {
             var agency = await _context.Agencies.Where(x => x.Id.Equals(id)).Include(x => x.Customer).Include(x => x.Area).FirstOrDefaultAsync();
             agency!.IsDelete = true;
-            agency.UpdateDate = DateTime.UtcNow.AddHours(7);
+            var devices = await _context.Devices.Where(x => x.AgencyId.Equals(agency.Id)).ToListAsync();
+            foreach (var item in devices)
+            {
+                item.IsDelete = true;
+            }
             var data = new AgencyResponse();
             _context.Agencies.Update(agency);
             var rs = await _context.SaveChangesAsync();

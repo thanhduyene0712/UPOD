@@ -14,11 +14,13 @@ namespace UPOD.API.Controllers
     {
 
         private readonly IMaintenanceScheduleService _maintenanceSchedule_sv;
-        public MaintenanceSchedulesController(IMaintenanceScheduleService maintenanceSchedule_sv)
+        private readonly IContractServiceService _contract_sv;
+        public MaintenanceSchedulesController(IMaintenanceScheduleService maintenanceSchedule_sv, IContractServiceService contract_sv)
         {
             _maintenanceSchedule_sv = maintenanceSchedule_sv;
+            _contract_sv = contract_sv;
         }
-        
+
         [HttpPut]
         [Route("notifications")]
         public async Task<ActionResult> Notifications()
@@ -27,6 +29,11 @@ namespace UPOD.API.Controllers
             {
                 var listSchedule = await _maintenanceSchedule_sv.GetMaintenanceSchedulesNotify();
                 var listScheduleMissing = await _maintenanceSchedule_sv.GetMaintenanceSchedulesNotifyMissing();
+                var listContract = await _contract_sv.GetContractNotify();
+                foreach (var item in listContract)
+                {
+                    await _contract_sv.SetExpire(item);
+                }
                 foreach (var item in listSchedule)
                 {
                     //send notifications
