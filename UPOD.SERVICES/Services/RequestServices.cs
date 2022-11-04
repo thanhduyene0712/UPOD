@@ -759,7 +759,7 @@ namespace UPOD.SERVICES.Services
                 ServiceId = model.service_id,
                 AgencyId = model.agency_id,
                 RequestDesciption = model.request_description,
-                RequestStatus = ProcessStatus.PENDING.ToString(),
+                RequestStatus = ProcessStatus.PREPARING.ToString(),
                 ReasonReject = null,
                 Priority = model.priority,
                 CreateDate = DateTime.UtcNow.AddHours(7),
@@ -770,7 +770,7 @@ namespace UPOD.SERVICES.Services
                 IsDelete = false,
                 Feedback = null,
                 Rating = 0,
-                CurrentTechnicianId = null,
+                CurrentTechnicianId = model.technician_id,
                 StartTime = null,
                 EndTime = null,
                 AdminId = model.admin_id,
@@ -793,6 +793,7 @@ namespace UPOD.SERVICES.Services
                     agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                     customer_name = _context.Customers.Where(x => x.Id.Equals(request.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                     service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                    technician_name = _context.Technicians.Where(x => x.Id.Equals(request.CurrentTechnicianId)).Select(x => x.TechnicianName).FirstOrDefault(),
                 };
 
 

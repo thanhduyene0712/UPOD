@@ -13,6 +13,7 @@ namespace UPOD.REPOSITORIES.RequestModels
         public Guid? agency_id { get; set; }
         public Guid? service_id { get; set; }
         public Guid? admin_id { get; set; }
+        public Guid? technician_id { get; set; }
         public string? request_description { get; set; }
         public string? request_name { get; set; }
         public int? priority { get; set; }
