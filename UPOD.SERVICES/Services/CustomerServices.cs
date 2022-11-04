@@ -455,7 +455,22 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> DisableCustomer(Guid id)
         {
             var customer = await _context.Customers.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
+            var agencies = await _context.Agencies.Where(x => x.CustomerId.Equals(id)).ToListAsync();
+            var contracts = await _context.Contracts.Where(x => x.CustomerId.Equals(id)).ToListAsync();
             customer!.IsDelete = true;
+            foreach (var item in agencies)
+            {
+                item.IsDelete = true;
+                var devices = await _context.Devices.Where(x => x.AgencyId.Equals(item.Id)).ToListAsync();
+                foreach (var item1 in devices)
+                {
+                    item1.IsDelete = true;
+                }
+            }
+            foreach (var item in contracts)
+            {
+                item.IsDelete = true;
+            }
             customer.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Customers.Update(customer);
             var rs = await _context.SaveChangesAsync();
