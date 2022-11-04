@@ -164,6 +164,7 @@ namespace UPOD.SERVICES.Services
                     start_date = a.StartDate,
                     end_date = a.EndDate,
                     is_delete = a.IsDelete,
+                    is_expire = a.IsExpire,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
                     contract_price = a.ContractPrice,
@@ -378,6 +379,7 @@ namespace UPOD.SERVICES.Services
                         update_date = contract.UpdateDate,
                         contract_price = contract.ContractPrice,
                         description = contract.Description,
+                        is_expire = contract.IsExpire,
                         attachment = contract.Attachment,
                         img = contract.Img,
                         service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse

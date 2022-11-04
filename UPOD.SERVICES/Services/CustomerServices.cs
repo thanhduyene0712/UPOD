@@ -13,15 +13,15 @@ namespace UPOD.SERVICES.Services
     public interface ICustomerService
     {
         Task<ResponseModel<CustomerResponse>> GetAll(PaginationRequest model, SearchRequest value);
+        Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, SearchRequest value, Guid id);
         Task<ObjectModelResponse> CreateCustomer(CustomerRequest model);
         Task<ObjectModelResponse> GetCustomerDetails(Guid id);
         Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
         Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id);
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
-        Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest status, Guid id);
+        Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest value, Guid id);
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
-        Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, Guid id);
     }
 
     public class CustomerServices : ICustomerService
@@ -31,52 +31,109 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-        public async Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, Guid id)
+        public async Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, SearchRequest value, Guid id)
         {
             var total = await _context.Contracts.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
-            var contracts = await _context.Contracts.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new ContractResponse
+            var contracts = new List<ContractResponse>();
+            if (value.search == null)
             {
-                id = a.Id,
-                code = a.Code,
-                contract_name = a.ContractName,
-                customer = new CustomerViewResponse
+                total = await _context.Contracts.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
+                contracts = await _context.Contracts.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new ContractResponse
                 {
-                    id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
-                    code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                    name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                    description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    id = a.Id,
+                    code = a.Code,
+                    contract_name = a.ContractName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
 
-                },
-                start_date = a.StartDate,
-                end_date = a.EndDate,
-                is_delete = a.IsDelete,
-                create_date = a.CreateDate,
-                update_date = a.UpdateDate,
-                contract_price = a.ContractPrice,
-                description = a.Description,
-                attachment = a.Attachment,
-                img = a.Img,
-                service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
+                    },
+                    start_date = a.StartDate,
+                    end_date = a.EndDate,
+                    is_delete = a.IsDelete,
+                    is_expire = a.IsExpire,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
+                    contract_price = a.ContractPrice,
+                    description = a.Description,
+                    attachment = a.Attachment,
+                    img = a.Img,
+                    service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
+                    {
+                        id = x.ServiceId,
+                        code = x.Service!.Code,
+                        service_name = x.Service!.ServiceName,
+                        description = x.Service!.Description,
+                        frequency_maintain = x.FrequencyMaintain,
+                    }).ToList()
+
+                }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+            else
+            {
+
+                var customer = await _context.Customers.Where(a => a.Name!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                total = await _context.Contracts.Where(a => a.IsDelete == false
+                && a.CustomerId.Equals(id)
+                 && (a.Code!.Contains(value.search.Trim())
+                 || a.Code!.Contains(value.search.Trim())
+                 || a.ContractName!.Contains(value.search.Trim())
+                 || a.CustomerId!.Equals(customer))).ToListAsync();
+                contracts = await _context.Contracts.Where(a => a.IsDelete == false
+                && a.CustomerId.Equals(id)
+                && (a.Code!.Contains(value.search.Trim())
+                || a.Code!.Contains(value.search.Trim())
+                || a.ContractName!.Contains(value.search.Trim())
+                || a.CustomerId!.Equals(customer))).Select(a => new ContractResponse
                 {
-                    id = x.ServiceId,
-                    code = x.Service!.Code,
-                    service_name = x.Service!.ServiceName,
-                    description = x.Service!.Description,
-                    frequency_maintain = x.FrequencyMaintain,
-                }).ToList()
+                    id = a.Id,
+                    code = a.Code,
+                    contract_name = a.ContractName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
 
-            }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                    },
+                    start_date = a.StartDate,
+                    end_date = a.EndDate,
+                    is_delete = a.IsDelete,
+                    is_expire = a.IsExpire,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
+                    contract_price = a.ContractPrice,
+                    description = a.Description,
+                    attachment = a.Attachment,
+                    img = a.Img,
+                    service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
+                    {
+                        id = x.ServiceId,
+                        code = x.Service!.Code,
+                        service_name = x.Service!.ServiceName,
+                        description = x.Service!.Description,
+                        frequency_maintain = x.FrequencyMaintain,
+                    }).ToList()
+
+                }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+
             return new ResponseModel<ContractResponse>(contracts)
             {
                 Total = total.Count,
                 Type = "Contracts"
             };
         }
-        public async Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest status, Guid id)
+
+        public async Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest value, Guid id)
         {
             var total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
             var requests = new List<RequestResponse>();
-            if (status.search == null)
+            if (value.search == null)
             {
                 total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new RequestResponse
@@ -131,13 +188,13 @@ namespace UPOD.SERVICES.Services
             else
             {
                 total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
-                && (a.RequestStatus!.Equals(status.search)
-                || a.RequestName!.Contains(status.search)
-                || a.Code!.Contains(status.search))).ToListAsync();
+                && (a.RequestStatus!.Equals(value.search)
+                || a.RequestName!.Contains(value.search)
+                || a.Code!.Contains(value.search))).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)
-                && (a.RequestStatus!.Equals(status.search)
-                || a.RequestName!.Contains(status.search)
-                || a.Code!.Contains(status.search))).Select(a => new RequestResponse
+                && (a.RequestStatus!.Equals(value.search)
+                || a.RequestName!.Contains(value.search)
+                || a.Code!.Contains(value.search))).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,

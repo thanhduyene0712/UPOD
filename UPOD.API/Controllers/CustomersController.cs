@@ -58,25 +58,25 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_contracts_by_customer_id")]
-        public async Task<ActionResult<ResponseModel<ContractResponse>>> GetAllContractByCustomer([FromQuery] PaginationRequest model, Guid id)
+        public async Task<ActionResult<ResponseModel<ContractResponse>>> GetAllContractByCustomer([FromQuery] PaginationRequest model, [FromQuery] SearchRequest value, Guid id)
         {
             try
             {
-                return await _customer_sv.GetAllContractByCustomer(model, id);
+                return await _customer_sv.GetAllContractByCustomer(model,value, id);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
+        
         [HttpGet]
         [Route("get_requests_by_customer_id")]
-        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsByCustomerId([FromQuery] PaginationRequest model, [FromQuery] SearchRequest status, Guid id)
+        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsByCustomerId([FromQuery] PaginationRequest model, [FromQuery] SearchRequest value, Guid id)
         {
             try
             {
-                return await _customer_sv.GetListRequestsByCustomerId(model, status, id);
+                return await _customer_sv.GetListRequestsByCustomerId(model, value, id);
             }
             catch (Exception ex)
             {
