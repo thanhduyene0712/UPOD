@@ -8,7 +8,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
 {
     public  class DevicesOfRequestResponse
     {
-        public Guid? ticket_id { get; set; }
         public Guid? device_id { get; set; }
         public string? code { get; set; }
         public string? name { get; set; }

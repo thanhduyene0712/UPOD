@@ -40,7 +40,6 @@ namespace UPOD.SERVICES.Services
             var total = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).ToListAsync();
             var device_of_request = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).Select(a => new DevicesOfRequestResponse
             {
-                ticket_id = a.Id,
                 device_id = a.Device!.Id,
                 code = a.Device.Code,
                 name = a.Device.DeviceName,
@@ -401,7 +400,6 @@ namespace UPOD.SERVICES.Services
                 await _context.Tickets.AddAsync(ticket);
                 list.Add(new DevicesOfRequestResponse
                 {
-                    ticket_id = ticket.Id,
                     device_id = ticket.DeviceId,
                     code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
                     name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
@@ -454,7 +452,6 @@ namespace UPOD.SERVICES.Services
                 await _context.Tickets.AddAsync(ticket);
                 list.Add(new DevicesOfRequestResponse
                 {
-                    ticket_id = ticket.Id,
                     device_id = ticket.DeviceId,
                     code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
                     name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
@@ -512,7 +509,6 @@ namespace UPOD.SERVICES.Services
                 await _context.Tickets.AddAsync(ticket);
                 list.Add(new DevicesOfRequestResponse
                 {
-                    ticket_id = ticket.Id,
                     device_id = ticket.DeviceId,
                     code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
                     name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
