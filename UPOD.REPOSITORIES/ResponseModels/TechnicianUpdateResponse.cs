@@ -18,7 +18,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? email { get; set; }
         public int? gender { get; set; }
         public string? address { get; set; }
-        public double? rating_avg { get; set; }
         public bool? is_busy { get; set; }
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }

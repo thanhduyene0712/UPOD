@@ -22,7 +22,6 @@ namespace UPOD.REPOSITORIES.Models
         public string? Email { get; set; }
         public int? Gender { get; set; }
         public string? Address { get; set; }
-        public double? RatingAvg { get; set; }
         public bool? IsBusy { get; set; }
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }

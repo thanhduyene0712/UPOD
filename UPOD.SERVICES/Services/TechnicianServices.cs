@@ -84,7 +84,6 @@ namespace UPOD.SERVICES.Services
                     email = a.Email,
                     gender = a.Gender,
                     address = a.Address,
-                    rating_avg = a.RatingAvg,
                     is_busy = a.IsBusy,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
@@ -139,7 +138,6 @@ namespace UPOD.SERVICES.Services
                     email = a.Email,
                     gender = a.Gender,
                     address = a.Address,
-                    rating_avg = a.RatingAvg,
                     is_busy = a.IsBusy,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
@@ -338,7 +336,6 @@ namespace UPOD.SERVICES.Services
                 email = a.Email,
                 gender = a.Gender,
                 address = a.Address,
-                rating_avg = a.RatingAvg,
                 is_busy = a.IsBusy,
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
@@ -361,11 +358,7 @@ namespace UPOD.SERVICES.Services
             var technician = await _context.Technicians.OrderBy(x => x.Code).LastOrDefaultAsync();
             return CodeHelper.StringToInt(technician!.Code!);
         }
-        private async Task<int> GetLastCode1()
-        {
-            var ticket = await _context.Tickets.OrderBy(x => x.Code).LastOrDefaultAsync();
-            return CodeHelper.StringToInt(ticket!.Code!);
-        }
+
         public async Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model)
         {
 
@@ -379,8 +372,6 @@ namespace UPOD.SERVICES.Services
             var list = new List<DevicesOfRequestResponse>();
             foreach (var item in model.ticket)
             {
-                var num = await GetLastCode1();
-                var code = CodeHelper.GeneratorCode("TI", num + 1);
                 var device_id = Guid.NewGuid();
                 while (true)
                 {
@@ -397,7 +388,6 @@ namespace UPOD.SERVICES.Services
                 var ticket = new Ticket
                 {
                     Id = device_id,
-                    Code = code,
                     RequestId = request.Id,
                     DeviceId = item.device_id,
                     Description = item.description,
@@ -433,8 +423,6 @@ namespace UPOD.SERVICES.Services
             var list = new List<DevicesOfRequestResponse>();
             foreach (var item in model.ticket)
             {
-                var num = await GetLastCode1();
-                var code = CodeHelper.GeneratorCode("TI", num + 1);
                 var device_id = Guid.NewGuid();
                 while (true)
                 {
@@ -451,7 +439,6 @@ namespace UPOD.SERVICES.Services
                 var ticket = new Ticket
                 {
                     Id = device_id,
-                    Code = code,
                     RequestId = request!.Id,
                     DeviceId = item.device_id,
                     Description = item.description,
@@ -494,8 +481,8 @@ namespace UPOD.SERVICES.Services
                 data = new TicketViewResponse
                 {
                     id = ticket.Id,
+                    code = _context.Devices.Where(a => a.Id.Equals(ticket!.DeviceId)).Select(a => a.Code).FirstOrDefault(),
                     device_id = ticket.DeviceId,
-                    code = ticket.Code,
                     description = ticket.Description,
                     solution = ticket.Solution
                 };
@@ -534,7 +521,6 @@ namespace UPOD.SERVICES.Services
                 Address = model.address,
                 Email = model.email,
                 Gender = model.gender,
-                RatingAvg = model.rating_avg,
                 IsBusy = false,
                 IsDelete = false,
                 CreateDate = DateTime.UtcNow.AddHours(7),
@@ -582,7 +568,6 @@ namespace UPOD.SERVICES.Services
                     email = technician.Email,
                     gender = technician.Gender,
                     address = technician.Address,
-                    rating_avg = technician.RatingAvg,
                     is_busy = technician.IsBusy,
                     is_delete = technician.IsDelete,
                     create_date = technician.CreateDate,
@@ -664,7 +649,6 @@ namespace UPOD.SERVICES.Services
                     email = technician.Email,
                     gender = technician.Gender,
                     address = technician.Address,
-                    rating_avg = technician.RatingAvg,
                     is_busy = technician.IsBusy,
                     is_delete = technician.IsDelete,
                     create_date = technician.CreateDate,
@@ -748,7 +732,6 @@ namespace UPOD.SERVICES.Services
                 Address = model.address,
                 Email = model.email,
                 Gender = model.gender,
-                RatingAvg = model.rating_avg,
                 IsBusy = x.IsBusy,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
@@ -786,7 +769,6 @@ namespace UPOD.SERVICES.Services
                     email = technician.Email,
                     gender = technician.Gender,
                     address = technician.Address,
-                    rating_avg = technician.RatingAvg,
                     is_busy = technician.IsBusy,
                     is_delete = technician.IsDelete,
                     create_date = technician.CreateDate,

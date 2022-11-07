@@ -14,7 +14,6 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? UpdateDate { get; set; }
         public Guid? CreateBy { get; set; }
         public string? Solution { get; set; }
-        public string? Code { get; set; }
         public string? Img { get; set; }
 
         public virtual Device? Device { get; set; }

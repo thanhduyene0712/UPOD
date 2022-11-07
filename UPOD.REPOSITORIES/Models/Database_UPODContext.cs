@@ -536,7 +536,6 @@ namespace UPOD.REPOSITORIES.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.RatingAvg).HasColumnName("RatingAVG");
 
                 entity.Property(e => e.TechnicianName).HasMaxLength(100);
 
@@ -563,7 +562,6 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Code).HasMaxLength(255);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
