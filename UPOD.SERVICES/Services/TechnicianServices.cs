@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Data;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
@@ -18,12 +19,12 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model);
         Task<ObjectModelResponse> DisableTechnician(Guid id);
         Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model);
-        Task<ResponseModel<DevicesOfRequestResponse>> AddTicket(Guid id, ListTicketRequest model);
+        //Task<ResponseModel<DevicesOfRequestResponse>> AddTicket(Guid id, ListTicketRequest model);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterStatusRequest value);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> ResolvingRequest(Guid id);
-        Task<ObjectModelResponse> ConfirmRequest(Guid id);
-        Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, TicketRequest model);
+        //Task<ObjectModelResponse> ConfirmRequest(Guid id);
+        Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, ListTicketRequest model);
         Task<ObjectModelResponse> DisableDeviceOfTicket(Guid id);
     }
 
@@ -404,6 +405,8 @@ namespace UPOD.SERVICES.Services
                     device_id = ticket.DeviceId,
                     code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
                     name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    solution = ticket.Solution,
+                    description = ticket.Description
 
                 });
                 await _context.SaveChangesAsync();
@@ -466,28 +469,61 @@ namespace UPOD.SERVICES.Services
                 Type = "Devices"
             };
         }
-        public async Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, TicketRequest model)
+        public async Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, ListTicketRequest model)
         {
 
-            var ticket = await _context.Tickets.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
-            ticket!.DeviceId = model.device_id;
-            ticket!.Solution = model.solution;
-            ticket!.Description = model.description;
-            ticket!.UpdateDate = DateTime.UtcNow.AddHours(7);
-            var rs = await _context.SaveChangesAsync();
-            var data = new TicketViewResponse();
-            if (rs > 0)
+            var devices = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).ToListAsync();
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            technician!.IsBusy = false;
+            request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
+            var list = new List<DevicesOfRequestResponse>();
+            foreach (var device in devices)
             {
-                data = new TicketViewResponse
-                {
-                    id = ticket.Id,
-                    code = _context.Devices.Where(a => a.Id.Equals(ticket!.DeviceId)).Select(a => a.Code).FirstOrDefault(),
-                    device_id = ticket.DeviceId,
-                    description = ticket.Description,
-                    solution = ticket.Solution
-                };
+                _context.Tickets.Remove(device);
             }
-            return new ObjectModelResponse(data!)
+            foreach (var item in model.ticket)
+            {
+                var device_id = Guid.NewGuid();
+                while (true)
+                {
+                    var ticket_id = await _context.Tickets.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
+                    if (ticket_id == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        device_id = Guid.NewGuid();
+                    }
+                }
+                var ticket = new Ticket
+                {
+                    Id = device_id,
+                    RequestId = request!.Id,
+                    DeviceId = item.device_id,
+                    Description = item.description,
+                    Solution = item.solution,
+                    IsDelete = false,
+                    CreateBy = technician!.Id,
+                    CreateDate = DateTime.UtcNow.AddHours(7),
+                    UpdateDate = DateTime.UtcNow.AddHours(7)
+                };
+                await _context.Tickets.AddAsync(ticket);
+                list.Add(new DevicesOfRequestResponse
+                {
+                    ticket_id = ticket.Id,
+                    device_id = ticket.DeviceId,
+                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    solution = ticket.Solution,
+                    description = ticket.Description
+
+                });
+                await _context.SaveChangesAsync();
+
+            }
+            return new ObjectModelResponse(list!)
             {
                 Status = 201,
                 Type = "Device"
