@@ -35,7 +35,7 @@ namespace UPOD.SERVICES.Services
             if (value.search == null)
             {
                 total = await _context.Devices.Where(a => a.IsDelete == false).ToListAsync();
-                devices = await _context.Devices.Where(a => a.IsDelete == false).Select(a => new DeviceResponse
+                devices = await _context.Devices.Where(a => a.IsDelete == false).Include(a => a.Agency).Include(a => a.DeviceType).Select(a => new DeviceResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -46,6 +46,19 @@ namespace UPOD.SERVICES.Services
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                         phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
+                    },
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    service = new ServiceNotInContractViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
                     },
                     devicetype = new DeviceTypeViewResponse
                     {
@@ -82,7 +95,7 @@ namespace UPOD.SERVICES.Services
                 || a.DeviceName!.Contains(value.search))).ToListAsync();
                 devices = await _context.Devices.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search)
-                || a.DeviceName!.Contains(value.search))).Select(a => new DeviceResponse
+                || a.DeviceName!.Contains(value.search))).Include(a => a.DeviceType).Include(a => a.Agency).Select(a => new DeviceResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -93,6 +106,19 @@ namespace UPOD.SERVICES.Services
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                         phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
+                    },
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    service = new ServiceNotInContractViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
                     },
                     devicetype = new DeviceTypeViewResponse
                     {
@@ -136,7 +162,7 @@ namespace UPOD.SERVICES.Services
             if (value.search == null)
             {
                 total = await _context.Devices.Where(a => a.IsDelete == false && a.DeviceTypeId.Equals(id)).ToListAsync();
-                devices = await _context.Devices.Where(a => a.IsDelete == false && a.DeviceTypeId.Equals(id)).Select(a => new DeviceResponse
+                devices = await _context.Devices.Where(a => a.IsDelete == false && a.DeviceTypeId.Equals(id)).Include(a => a.Agency).Include(a => a.DeviceType).Select(a => new DeviceResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -147,6 +173,19 @@ namespace UPOD.SERVICES.Services
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                         phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
+                    },
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    service = new ServiceNotInContractViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
                     },
                     devicetype = new DeviceTypeViewResponse
                     {
@@ -183,7 +222,7 @@ namespace UPOD.SERVICES.Services
                 || a.DeviceName!.Contains(value.search))).ToListAsync();
                 devices = await _context.Devices.Where(a => a.IsDelete == false && a.DeviceTypeId.Equals(id)
                 && (a.Code!.Contains(value.search)
-                || a.DeviceName!.Contains(value.search))).Select(a => new DeviceResponse
+                || a.DeviceName!.Contains(value.search))).Include(a => a.Agency).Include(a => a.DeviceType).Select(a => new DeviceResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -194,6 +233,19 @@ namespace UPOD.SERVICES.Services
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                         phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
+                    },
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    service = new ServiceNotInContractViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
                     },
                     devicetype = new DeviceTypeViewResponse
                     {
@@ -249,6 +301,19 @@ namespace UPOD.SERVICES.Services
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                         phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     },
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    service = new ServiceNotInContractViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                    },
                     devicetype = new DeviceTypeViewResponse
                     {
                         id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
@@ -302,6 +367,19 @@ namespace UPOD.SERVICES.Services
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                         phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     },
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    },
+                    service = new ServiceNotInContractViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                    },
                     devicetype = new DeviceTypeViewResponse
                     {
                         id = _context.DeviceTypes.Where(x => x.Id.Equals(a.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
@@ -349,6 +427,19 @@ namespace UPOD.SERVICES.Services
                     code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
                     agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                     address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                },
+                customer = new CustomerViewResponse
+                {
+                    id = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                    name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                    description = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                },
+                service = new ServiceNotInContractViewResponse
+                {
+                    id = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.Code).FirstOrDefault(),
+                    service_name = _context.Services.Where(x => x.Id.Equals(a.DeviceType!.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
                 },
                 devicetype = new DeviceTypeViewResponse
                 {

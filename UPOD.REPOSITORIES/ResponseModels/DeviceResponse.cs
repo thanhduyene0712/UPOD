@@ -24,6 +24,8 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
+        public CustomerViewResponse customer { get; set; } = null!;
+        public ServiceNotInContractViewResponse service { get; set; } = null!;
         public TechnicianViewResponse technician { get; set; } = null!;
         public AgencyViewResponse agency { get; set; } = null!;
         public DeviceTypeViewResponse devicetype { get; set; } = null!;
