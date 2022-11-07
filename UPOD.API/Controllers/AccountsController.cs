@@ -101,7 +101,20 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-      
+
+        [HttpPost]
+        [Route("create_account")]
+        public async Task<ActionResult<ObjectModelResponse>> CreateAccount(AccountCreateRequest model)
+        {
+            try
+            {
+                return await _account_sv.CreateAccount(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost]
         [Route("create_account_admin")]
         public async Task<ActionResult<ObjectModelResponse>> CreateAccountAdmin(AccountRequest model)
