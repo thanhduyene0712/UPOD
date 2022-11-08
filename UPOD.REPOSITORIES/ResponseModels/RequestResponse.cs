@@ -18,6 +18,7 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? request_status { get; set; }
         public string? reject_reason { get; set; }
         public string? description { get; set; }
+        public Guid? admin_id { get; set; } = null!;
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
         public ContractViewResponse contract { get; set; } = null!;

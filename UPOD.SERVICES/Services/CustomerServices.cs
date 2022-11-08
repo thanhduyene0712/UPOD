@@ -20,7 +20,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> DisableCustomer(Guid id);
         Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id);
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
-        Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest value, Guid id);
+        Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterStatusRequest value, Guid id);
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
     }
 
@@ -129,24 +129,25 @@ namespace UPOD.SERVICES.Services
             };
         }
 
-        public async Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, SearchRequest value, Guid id)
+        public async Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterStatusRequest value, Guid id)
         {
-            var total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id) && a.AdminId == null).ToListAsync();
+            var total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
             var requests = new List<RequestResponse>();
-            if (value.search == null)
+            if (value.search == null && value.status == null)
             {
-                total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id) && a.AdminId == null).ToListAsync();
-                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id) && a.AdminId == null).Select(a => new RequestResponse
+                total = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).ToListAsync();
+                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CustomerId.Equals(id)).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
                     request_name = a.RequestName,
+                    admin_id = a.AdminId,
                     customer = new CustomerViewResponse
                     {
                         id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+
                     },
                     agency = new AgencyViewResponse
                     {
@@ -154,7 +155,6 @@ namespace UPOD.SERVICES.Services
                         code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
-                        phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -162,6 +162,12 @@ namespace UPOD.SERVICES.Services
                         code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    contract = new ContractViewResponse
+                    {
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     },
                     reject_reason = a.ReasonReject,
                     description = a.RequestDesciption,
@@ -174,41 +180,53 @@ namespace UPOD.SERVICES.Services
                         id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
                         name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                    },
-                    contract = new ContractViewResponse
-                    {
-                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
-                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     }
-
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             else
             {
+                if (value.search == null)
+                {
+                    value.search = "";
+                }
+                if (value.status == null)
+                {
+                    value.status = "";
+                }
+                var agency_name = await _context.Agencies.Where(a => a.AgencyName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var customer_name = await _context.Customers.Where(a => a.Name!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var contract_name = await _context.Contracts.Where(a => a.ContractName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var service_name = await _context.Services.Where(a => a.ServiceName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Requests.Where(a => a.IsDelete == false
                 && a.CustomerId.Equals(id)
-                && a.AdminId == null
-                && (a.RequestStatus!.Equals(value.search)
-                || a.RequestName!.Contains(value.search)
-                || a.Code!.Contains(value.search))).ToListAsync();
+                && (a.RequestStatus!.Contains(value.status!.Trim())
+                && (a.RequestName!.Contains(value.search!.Trim())
+                || a.Code!.Contains(value.search!.Trim())
+                || a.AgencyId!.Equals(agency_name)
+                || a.CustomerId!.Equals(customer_name)
+                || a.ContractId!.Equals(contract_name)
+                || a.ServiceId!.Equals(service_name)))).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false
                 && a.CustomerId.Equals(id)
-                && a.AdminId == null
-                && (a.RequestStatus!.Equals(value.search)
-                || a.RequestName!.Contains(value.search)
-                || a.Code!.Contains(value.search))).Select(a => new RequestResponse
+                && (a.RequestName!.Contains(value.search!.Trim())
+                || a.Code!.Contains(value.search.Trim())
+                || a.AgencyId!.Equals(agency_name)
+                || a.CustomerId!.Equals(customer_name)
+                || a.ContractId!.Equals(contract_name)
+                || a.ServiceId!.Equals(service_name))
+                && (a.RequestStatus!.Contains(value.status!.Trim()))).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
+                    admin_id = a.AdminId,
                     request_name = a.RequestName,
                     customer = new CustomerViewResponse
                     {
                         id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+
                     },
                     agency = new AgencyViewResponse
                     {
@@ -216,7 +234,6 @@ namespace UPOD.SERVICES.Services
                         code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
-                        phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -224,6 +241,12 @@ namespace UPOD.SERVICES.Services
                         code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    contract = new ContractViewResponse
+                    {
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     },
                     reject_reason = a.ReasonReject,
                     description = a.RequestDesciption,
@@ -236,14 +259,7 @@ namespace UPOD.SERVICES.Services
                         id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
                         name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                    },
-                    contract = new ContractViewResponse
-                    {
-                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
-                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                     }
-
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 

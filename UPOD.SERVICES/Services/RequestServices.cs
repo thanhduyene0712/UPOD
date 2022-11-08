@@ -54,6 +54,7 @@ namespace UPOD.SERVICES.Services
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
                     },
+                    admin_id = a.AdminId,
                     agency = new AgencyViewResponse
                     {
                         id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
@@ -130,6 +131,7 @@ namespace UPOD.SERVICES.Services
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
 
                     },
+                    admin_id = a.AdminId,
                     agency = new AgencyViewResponse
                     {
                         id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
@@ -183,6 +185,7 @@ namespace UPOD.SERVICES.Services
                     id = a.Id,
                     code = a.Code,
                     request_name = a.RequestName,
+                    admin_id = a.AdminId,
                     customer = new CustomerViewResponse
                     {
                         id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
@@ -269,6 +272,7 @@ namespace UPOD.SERVICES.Services
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
 
                     },
+                    admin_id = a.AdminId,
                     agency = new AgencyViewResponse
                     {
                         id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
