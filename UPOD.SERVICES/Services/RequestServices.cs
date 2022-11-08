@@ -675,7 +675,10 @@ namespace UPOD.SERVICES.Services
             Guid? contract_id = null;
             foreach (var item in contract)
             {
-                contract_id = await _context.ContractServices.Where(a => a.ServiceId.Equals(model.service_id)).Select(a => a.ContractId).FirstOrDefaultAsync();
+                if (item.ContractServices.Select(a => a.ServiceId).Equals(model.service_id))
+                {
+                    contract_id = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id)).Select(a => a.ContractId).FirstOrDefaultAsync();
+                }
             }
             var request = new Request
             {
@@ -749,7 +752,11 @@ namespace UPOD.SERVICES.Services
             Guid? contract_id = null;
             foreach (var item in contract)
             {
-                contract_id = await _context.ContractServices.Where(a => a.ServiceId.Equals(model.service_id)).Select(a => a.ContractId).FirstOrDefaultAsync();
+                if (item.ContractServices.Select(a => a.ServiceId).Equals(model.service_id))
+                {
+                    contract_id = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id)).Select(a => a.ContractId).FirstOrDefaultAsync();
+
+                }
             }
             var request = new Request
             {
