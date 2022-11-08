@@ -14,7 +14,7 @@ namespace UPOD.REPOSITORIES.ResponseViewModel
         public string? service_name { get; set; }
         public string? description { get; set; }
         public int? frequency_maintain { get; set; }
-       
+
     }
 
 }

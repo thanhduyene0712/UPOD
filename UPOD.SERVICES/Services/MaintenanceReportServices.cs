@@ -63,12 +63,13 @@ namespace UPOD.SERVICES.Services
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(a => a.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(a => a.Description).FirstOrDefault(),
                     },
-                    service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceViewResponse
+                    service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceReportResponse
                     {
                         id = a.ServiceId,
                         code = a.Service!.Code,
                         service_name = a.Service!.ServiceName,
-                        description = a.Service!.Description
+                        description = a.Description,
+                        created = a.Created,
                     }).ToList(),
                     maintenance_schedule = new MaintenanceReportViewResponse
                     {
@@ -126,12 +127,13 @@ namespace UPOD.SERVICES.Services
                         name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(a => a.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(a => a.Description).FirstOrDefault(),
                     },
-                    service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceViewResponse
+                    service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceReportResponse
                     {
                         id = a.ServiceId,
                         code = a.Service!.Code,
                         service_name = a.Service!.ServiceName,
-                        description = a.Service!.Description
+                        description = a.Description,
+                        created = a.Created,
                     }).ToList(),
                     maintenance_schedule = new MaintenanceReportViewResponse
                     {
@@ -195,12 +197,13 @@ namespace UPOD.SERVICES.Services
                     code = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(a => a.Code).FirstOrDefault(),
                     name = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy)).Select(a => a.TechnicianName).FirstOrDefault(),
                 },
-                service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceViewResponse
+                service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceReportResponse
                 {
                     id = a.ServiceId,
                     code = a.Service!.Code,
                     service_name = a.Service!.ServiceName,
-                    description = a.Service!.Description
+                    description = a.Description,
+                    created = a.Created,
                 }).ToList(),
             }).FirstOrDefaultAsync();
 
@@ -284,6 +287,7 @@ namespace UPOD.SERVICES.Services
                         Description = item.Description,
                         MaintenanceReportId = maintenanceReport.Id,
                         ServiceId = item.service_id,
+                        Created = false,
                     };
                     await _context.MaintenanceReportServices.AddAsync(maintenanceReportService);
                     //await _context.SaveChangesAsync();
@@ -332,12 +336,13 @@ namespace UPOD.SERVICES.Services
                         code = _context.Technicians.Where(x => x.Id.Equals(maintenanceReport.CreateBy)).Select(a => a.Code).FirstOrDefault(),
                         name = _context.Technicians.Where(x => x.Id.Equals(maintenanceReport.CreateBy)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
-                    service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(maintenanceReport.Id)).Select(a => new ServiceViewResponse
+                    service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(maintenanceReport.Id)).Select(a => new ServiceReportResponse
                     {
                         id = a.ServiceId,
                         code = a.Service!.Code,
                         service_name = a.Service!.ServiceName,
-                        description = a.Service!.Description
+                        description = a.Description,
+                        created = a.Created,
                     }).ToList(),
                 };
             }

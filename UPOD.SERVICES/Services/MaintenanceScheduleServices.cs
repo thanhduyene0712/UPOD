@@ -24,9 +24,10 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateMaintenanceSchedule(Guid id, MaintenanceScheduleRequest model);
         Task<ObjectModelResponse> MaintainingSchedule(Guid id);
         Task<ObjectModelResponse> DisableMaintenanceSchedule(Guid id);
-        Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotify();
+        Task SetMaintenanceSchedulesNotify();
         Task SetStatus(ScheduleStatus status, Guid scheduleId);
-        Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotifyMissing();
+        Task SetMaintenanceSchedulesNotifyMissing();
+        Task SetMaintenanceSchedulesMaintaining();
     }
 
     public class MaintenanceScheduleServices : IMaintenanceScheduleService
@@ -94,38 +95,47 @@ namespace UPOD.SERVICES.Services
                 Type = "MaintenanceSchedule"
             };
         }
-        public async Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotify()
+        public async Task SetMaintenanceSchedulesNotify()
         {
 
             var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime!.Value.Date == DateTime.UtcNow.AddHours(7).Date) && a.IsDelete == false).ToListAsync();
-            var rs = new Dictionary<Guid, Guid>();
             foreach (var item in todaySchedules)
             {
-                rs.Add(item.TechnicianId!.Value, item.Id);
+                item.Status = ScheduleStatus.NOTIFIED.ToString();
             }
-            return rs;
         }
-        public async Task<Dictionary<Guid, Guid>> GetMaintenanceSchedulesNotifyMissing()
+        public async Task SetMaintenanceSchedulesNotifyMissing()
         {
-            var maintainSchedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false).ToListAsync();
-            var rs = new Dictionary<Guid, Guid>();
+            var maintainSchedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("NOTIFIED")).ToListAsync();
             foreach (var item in maintainSchedule)
             {
                 var missingDate = DateTime.UtcNow.AddHours(7) - item.MaintainTime;
                 var date = missingDate!.Value.Days;
                 if (date >= 5)
                 {
-                    var missingSchedules = await _context.MaintenanceSchedules.Where(a => a.Status!.Equals("NOTIFIED") && a.IsDelete == false).ToListAsync();
-
-                    foreach (var item1 in missingSchedules)
-                    {
-                        rs.Add(item.TechnicianId!.Value, item.Id);
-                    }
+                    item.Status = ScheduleStatus.MISSED.ToString();
                 }
             }
 
 
-            return rs;
+            //return rs;
+        }
+        public async Task SetMaintenanceSchedulesMaintaining()
+        {
+            var maintainSchedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("MAINTAINING")).ToListAsync();
+            foreach (var item in maintainSchedule)
+            {
+                //var missingDate = DateTime.UtcNow.AddHours(7) - item.MaintainTime;
+                //var date = missingDate!.Value.Days;
+                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId) && a.IsDelete==false).FirstOrDefaultAsync();
+                if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
+                {
+                    item.Status = ScheduleStatus.MISSED.ToString();
+                }
+            }
+
+
+            //return rs;
         }
         public async Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedules(PaginationRequest model, FilterStatusRequest value)
         {
@@ -482,7 +492,7 @@ namespace UPOD.SERVICES.Services
                          phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.Telephone).FirstOrDefault()
                      }
                  }).OrderByDescending(a => a.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-                
+
             }
             return new ResponseModel<MaintenanceScheduleResponse>(maintenanceSchedules)
             {

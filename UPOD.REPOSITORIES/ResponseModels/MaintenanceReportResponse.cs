@@ -17,10 +17,11 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? code { get; set; }
         public string? status { get; set; }
         public string? description { get; set; }
+        public bool? created { get; set; }
         public AgencyViewResponse agency { get; set; } = null!;
         public CustomerViewResponse customer { get; set; } = null!;
         public TechnicianViewResponse create_by { get; set; } = null!;
         public MaintenanceReportViewResponse maintenance_schedule { get; set; } = null!;
-        public List<ServiceViewResponse> service { get; set; } = null!;
+        public List<ServiceReportResponse> service { get; set; } = null!;
     }
 }

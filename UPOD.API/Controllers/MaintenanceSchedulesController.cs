@@ -27,23 +27,24 @@ namespace UPOD.API.Controllers
         {
             try
             {
-                var listSchedule = await _maintenanceSchedule_sv.GetMaintenanceSchedulesNotify();
-                var listScheduleMissing = await _maintenanceSchedule_sv.GetMaintenanceSchedulesNotifyMissing();
+                await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotify();
+                await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotifyMissing();
+                await _maintenanceSchedule_sv.SetMaintenanceSchedulesMaintaining();
                 var listContract = await _contract_sv.GetContractNotify();
                 foreach (var item in listContract)
                 {
                     await _contract_sv.SetExpire(item);
                 }
-                foreach (var item in listSchedule)
-                {
-                    //send notifications
-                    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.NOTIFIED, item.Value);
-                }
-                foreach (var item in listScheduleMissing)
-                {
-                    //send notifications
-                    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.MISSED, item.Value);
-                }
+                //foreach (var item in listSchedule)
+                //{
+                //    //send notifications
+                //    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.NOTIFIED, item.Value);
+                //}
+                //foreach (var item in listScheduleMissing)
+                //{
+                //    //send notifications
+                //    await _maintenanceSchedule_sv.SetStatus(ScheduleStatus.MISSED, item.Value);
+                //}
                 var timeShedule = DateTime.SpecifyKind(DateTime.UtcNow.AddHours(12), DateTimeKind.Utc);
                 BackgroundJob.Schedule(() => Notifications(), timeShedule);
                 return Ok();

@@ -26,7 +26,7 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
-       
+
         public async Task<List<Guid>> GetContractNotify()
         {
 
@@ -38,7 +38,7 @@ namespace UPOD.SERVICES.Services
             }
             return rs;
         }
-         public async Task SetExpire(Guid contractId)
+        public async Task SetExpire(Guid contractId)
         {
             var maintainStatus = await _context.Contracts.Where(a => a.Id.Equals(contractId) && a.IsDelete == false).FirstOrDefaultAsync();
             maintainStatus!.IsExpire = true;
@@ -388,6 +388,7 @@ namespace UPOD.SERVICES.Services
                             code = x.Service!.Code,
                             service_name = x.Service!.ServiceName,
                             description = x.Service!.Description,
+                            frequency_maintain = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id) && a.ServiceId.Equals(x.ServiceId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
                         }).ToList(),
                     };
                 }
