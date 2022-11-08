@@ -671,13 +671,17 @@ namespace UPOD.SERVICES.Services
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("RE", num + 1);
             var customer_id = await _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefaultAsync();
-            var contract = _context.Contracts.Where(a => a.CustomerId.Equals(customer_id)).ToList();
+            var contracts = _context.Contracts.Where(a => a.CustomerId.Equals(customer_id)).ToList();
             Guid? contract_id = null;
-            foreach (var item in contract)
+            foreach (var item in contracts)
             {
-                if (item.ContractServices.Select(a => a.ServiceId).Equals(model.service_id))
+                var contract_services = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id)).ToListAsync();
+                foreach (var item1 in contract_services)
                 {
-                    contract_id = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id)).Select(a => a.ContractId).FirstOrDefaultAsync();
+                    if (item1.ServiceId.Equals(model.service_id))
+                    {
+                        contract_id = item1.ContractId;
+                    }
                 }
             }
             var request = new Request
