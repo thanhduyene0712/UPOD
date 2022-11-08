@@ -17,7 +17,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? code { get; set; }
         public string? status { get; set; }
         public string? description { get; set; }
-        public bool? created { get; set; }
         public AgencyViewResponse agency { get; set; } = null!;
         public CustomerViewResponse customer { get; set; } = null!;
         public TechnicianViewResponse create_by { get; set; } = null!;
