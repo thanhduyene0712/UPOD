@@ -101,7 +101,7 @@ namespace UPOD.SERVICES.Services
                 {
                     value.status = "";
                 }
-                if (value.search.ToLower().Trim().Equals("admin"))
+                if (value.search.ToLower().Trim().Contains("admin"))
                 {
                     total = await _context.Requests.Where(a => a.IsDelete == false
                                         && a.AgencyId.Equals(id)
@@ -301,7 +301,7 @@ namespace UPOD.SERVICES.Services
                 {
                     value.status = "";
                 }
-                if (value.search.ToLower().Trim().Equals("admin"))
+                if (value.search.ToLower().Trim().Contains("admin"))
                 {
                     total = await _context.Requests.Where(a => a.IsDelete == false
                     && (a.RequestStatus!.Contains(value.status!.Trim())

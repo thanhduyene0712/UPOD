@@ -194,7 +194,7 @@ namespace UPOD.SERVICES.Services
                 {
                     value.status = "";
                 }
-                if (value.search.ToLower().Trim().Equals("admin"))
+                if (value.search.ToLower().Trim().Contains("admin"))
                 {
                     total = await _context.Requests.Where(a => a.IsDelete == false
                     && a.CustomerId.Equals(id)
