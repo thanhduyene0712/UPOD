@@ -21,10 +21,11 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<TechnicianRequestResponse>> GetTechnicianRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> MappingTechnicianRequest(Guid request_id, Guid technician_id);
         Task<ResponseModel<DeviceResponse>> GetDeviceRequest(PaginationRequest model, Guid id);
-        Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model);
+        Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model, Guid report_service_id);
         Task<ObjectModelResponse> RejectRequest(Guid id, RejectRequest value);
         Task<ObjectModelResponse> ReOpenRequest(Guid id);
         Task<ObjectModelResponse> CancelRequest(Guid id);
+        Task<ObjectModelResponse> AutoFillRequestAdmin(Guid id);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfAgency(PaginationRequest model, Guid id, FilterStatusRequest value);
     }
     public class RequestServices : IRequestService
@@ -34,6 +35,44 @@ namespace UPOD.SERVICES.Services
         public RequestServices(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ObjectModelResponse> AutoFillRequestAdmin(Guid id)
+        {
+            var reportSchedule = await _context.MaintenanceReportServices.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            var maintenance_report = await _context.MaintenanceReports.Where(a => a.Id.Equals(reportSchedule!.MaintenanceReportId)).FirstOrDefaultAsync();
+            var agency = await _context.Agencies.Where(a => a.Id.Equals(reportSchedule!.MaintenanceReport!.AgencyId)).FirstOrDefaultAsync();
+            var customer = await _context.Customers.Where(a => a.Id.Equals(agency!.CustomerId)).FirstOrDefaultAsync();
+            var service = await _context.Services.Where(a => a.Id.Equals(reportSchedule!.ServiceId)).FirstOrDefaultAsync();
+            var request = new AutoFillRequestResponse
+            {
+                report_service_id = reportSchedule!.Id,
+                customer = new CustomerViewResponse
+                {
+                    id = customer!.Id,
+                    code = customer!.Code,
+                    name = customer!.Name,
+                    description = customer.Description,
+                },
+                agency = new AgencyViewResponse
+                {
+                    id = agency!.Id,
+                    code = agency!.Code,
+                    address = agency!.Address,
+                    phone = agency!.Telephone,
+                    agency_name = agency.AgencyName
+                },
+                service = new ServiceNotInContractViewResponse
+                {
+                    id = service!.Id,
+                    code = service!.Code,
+                    service_name = service!.ServiceName
+                },
+                request_description = reportSchedule!.Description,
+            };
+            return new ObjectModelResponse(request!)
+            {
+                Type = "Request"
+            };
         }
         public async Task<ResponseModel<RequestResponse>> GetListRequestsOfAgency(PaginationRequest model, Guid id, FilterStatusRequest value)
         {
@@ -789,7 +828,7 @@ namespace UPOD.SERVICES.Services
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("RE", num + 1);
             var customer_id = await _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefaultAsync();
-            var contracts = _context.Contracts.Where(a => a.CustomerId.Equals(customer_id)).ToList();
+            var contracts = await _context.Contracts.Where(a => a.CustomerId.Equals(customer_id)).ToListAsync();
             Guid? contract_id = null;
             foreach (var item in contracts)
             {
@@ -850,7 +889,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Request"
             };
         }
-        public async Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model)
+        public async Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model, Guid report_service_id)
         {
             var request_id = Guid.NewGuid();
             while (true)
@@ -867,15 +906,19 @@ namespace UPOD.SERVICES.Services
             }
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("RE", num + 1);
-            //var customer_id = await _context.Agencies.Where(a => a.Id.Equals(model.agency_id)).Select(a => a.CustomerId).FirstOrDefaultAsync();
-            var contract = _context.Contracts.Where(a => a.CustomerId.Equals(model.customer_id)).ToList();
+            var contracts = await _context.Contracts.Where(a => a.CustomerId.Equals(model.customer_id)).ToListAsync();
+            var report_service = await _context.MaintenanceReportServices.Where(a => a.Id.Equals(report_service_id)).FirstOrDefaultAsync();
+            report_service!.Created = true;
             Guid? contract_id = null;
-            foreach (var item in contract)
+            foreach (var item in contracts)
             {
-                if (item.ContractServices.Select(a => a.ServiceId).Equals(model.service_id))
+                var contract_services = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id)).ToListAsync();
+                foreach (var item1 in contract_services)
                 {
-                    contract_id = await _context.ContractServices.Where(a => a.ContractId.Equals(item.Id)).Select(a => a.ContractId).FirstOrDefaultAsync();
-
+                    if (item1.ServiceId.Equals(model.service_id))
+                    {
+                        contract_id = item1.ContractId;
+                    }
                 }
             }
             var request = new Request

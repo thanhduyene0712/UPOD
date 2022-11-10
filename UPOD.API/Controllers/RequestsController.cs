@@ -24,6 +24,19 @@ namespace UPOD.API.Controllers
         }
 
         [HttpGet]
+        [Route("auto_fill_request_by_report_service_id")]
+        public async Task<ActionResult<ObjectModelResponse>> AutoFillRequestAdmin(Guid id)
+        {
+            try
+            {
+                return await _request_sv.AutoFillRequestAdmin(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
         [Route("get_list_requests")]
         public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequests([FromQuery] PaginationRequest model, [FromQuery] FilterStatusRequest value)
         {
@@ -105,12 +118,12 @@ namespace UPOD.API.Controllers
         }
         [HttpPost]
         [Route("create_request_by_admin")]
-        public async Task<ActionResult<ObjectModelResponse>> CreateRequestByAdmin(RequestAdminRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> CreateRequestByAdmin(RequestAdminRequest model, Guid report_service_id)
         {
 
             try
             {
-                return await _request_sv.CreateRequestByAdmin(model);
+                return await _request_sv.CreateRequestByAdmin(model, report_service_id);
             }
             catch (Exception ex)
             {

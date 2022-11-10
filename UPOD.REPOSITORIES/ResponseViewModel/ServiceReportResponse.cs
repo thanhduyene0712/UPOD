@@ -8,13 +8,11 @@ namespace UPOD.REPOSITORIES.ResponseViewModel
 {
     public class ServiceReportResponse
     {
-
-        public Guid? id { get; set; }
+        public Guid? report_service_id { get; set; }
+        public Guid? service_id { get; set; }
         public string? code { get; set; }
         public string? service_name { get; set; }
         public string? description { get; set; }
         public bool? created { get; set; }
-
-
     }
 }

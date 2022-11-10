@@ -65,7 +65,8 @@ namespace UPOD.SERVICES.Services
                     },
                     service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceReportResponse
                     {
-                        id = a.ServiceId,
+                        report_service_id = a.Id,
+                        service_id = a.ServiceId,
                         code = a.Service!.Code,
                         service_name = a.Service!.ServiceName,
                         description = a.Description,
@@ -129,7 +130,8 @@ namespace UPOD.SERVICES.Services
                     },
                     service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceReportResponse
                     {
-                        id = a.ServiceId,
+                        report_service_id = a.Id,
+                        service_id = a.ServiceId,
                         code = a.Service!.Code,
                         service_name = a.Service!.ServiceName,
                         description = a.Description,
@@ -199,7 +201,8 @@ namespace UPOD.SERVICES.Services
                 },
                 service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(a.Id)).Select(a => new ServiceReportResponse
                 {
-                    id = a.ServiceId,
+                    report_service_id = a.Id,
+                    service_id = a.ServiceId,
                     code = a.Service!.Code,
                     service_name = a.Service!.ServiceName,
                     description = a.Description,
@@ -338,7 +341,8 @@ namespace UPOD.SERVICES.Services
                     },
                     service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(maintenanceReport.Id)).Select(a => new ServiceReportResponse
                     {
-                        id = a.ServiceId,
+                        report_service_id = a.Id,
+                        service_id = a.ServiceId,
                         code = a.Service!.Code,
                         service_name = a.Service!.ServiceName,
                         description = a.Description,
