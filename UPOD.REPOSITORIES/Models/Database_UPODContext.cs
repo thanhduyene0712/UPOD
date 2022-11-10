@@ -426,7 +426,6 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.EndTime).HasColumnType("datetime");
 
-                entity.Property(e => e.ExceptionSource).HasMaxLength(255);
 
                 entity.Property(e => e.Img)
                     .HasMaxLength(255)
@@ -434,9 +433,7 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
-                entity.Property(e => e.Token)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+           
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
