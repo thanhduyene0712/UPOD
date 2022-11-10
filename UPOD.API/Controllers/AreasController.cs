@@ -20,11 +20,11 @@ namespace UPOD.API.Controllers
 
         [HttpGet]
         [Route("get_list_area")]
-        public async Task<ActionResult<ResponseModel<AreaResponse>>> GetListAreas([FromQuery] PaginationRequest model)
+        public async Task<ActionResult<ResponseModel<AreaResponse>>> GetListAreas([FromQuery] PaginationRequest model, [FromQuery] SearchRequest value)
         {
             try
             {
-                return await _area_sv.GetListAreas(model);
+                return await _area_sv.GetListAreas(model, value);
 
             }
             catch (Exception ex)
@@ -32,6 +32,21 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet]
+        [Route("get_area_details_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> GetDetailsArea(Guid id)
+        {
+            try
+            {
+                return await _area_sv.GetDetailsArea(id);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+       
         [HttpGet]
         [Route("get_list_technicians_by_area_id")]
         public async Task<ActionResult<ResponseModel<TechnicianViewResponse>>> GetListTechniciansByAreaId([FromQuery]PaginationRequest model, Guid id)

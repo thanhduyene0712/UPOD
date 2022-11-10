@@ -10,10 +10,11 @@ namespace UPOD.SERVICES.Services
 
     public interface IAreaService
     {
-        Task<ResponseModel<AreaResponse>> GetListAreas(PaginationRequest model);
+        Task<ResponseModel<AreaResponse>> GetListAreas(PaginationRequest model, SearchRequest value);
         Task<ObjectModelResponse> CreateArea(AreaRequest model);
         Task<ObjectModelResponse> UpdateArea(Guid id, AreaRequest model);
         Task<ObjectModelResponse> DisableArea(Guid id);
+        Task<ObjectModelResponse> GetDetailsArea(Guid id);
         Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id);
     }
 
@@ -26,10 +27,56 @@ namespace UPOD.SERVICES.Services
         }
 
 
-        public async Task<ResponseModel<AreaResponse>> GetListAreas(PaginationRequest model)
+        public async Task<ResponseModel<AreaResponse>> GetListAreas(PaginationRequest model, SearchRequest value)
         {
             var total = await _context.Areas.Where(a => a.IsDelete == false).ToListAsync();
-            var areas = await _context.Areas.Where(a => a.IsDelete == false).Select(a => new AreaResponse
+            var areas = new List<AreaResponse>();
+            if (value.search == null)
+            {
+                total = await _context.Areas.Where(a => a.IsDelete == false).ToListAsync();
+                areas = await _context.Areas.Where(a => a.IsDelete == false).Select(a => new AreaResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    area_name = a.AreaName,
+                    description = a.Description,
+                    is_delete = a.IsDelete,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+            else
+            {
+                total = await _context.Areas.Where(a => a.IsDelete == false
+                && (a.Code!.Contains(value.search.Trim())
+                || a.AreaName!.Contains(value.search.Trim())
+                || a.Description!.Contains(value.search.Trim()))).ToListAsync();
+                areas = await _context.Areas.Where(a => a.IsDelete == false
+                && (a.Code!.Contains(value.search.Trim())
+                || a.AreaName!.Contains(value.search.Trim())
+                || a.Description!.Contains(value.search.Trim()))).Select(a => new AreaResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    area_name = a.AreaName,
+                    description = a.Description,
+                    is_delete = a.IsDelete,
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate
+
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }
+
+            return new ResponseModel<AreaResponse>(areas)
+            {
+                Total = total.Count,
+                Type = "Areas"
+            };
+        }
+        public async Task<ObjectModelResponse> GetDetailsArea(Guid id)
+        {
+            var areas = await _context.Areas.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(a => new AreaResponse
             {
                 id = a.Id,
                 code = a.Code,
@@ -39,11 +86,10 @@ namespace UPOD.SERVICES.Services
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate
 
-            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<AreaResponse>(areas)
+            }).FirstOrDefaultAsync();
+            return new ObjectModelResponse(areas!)
             {
-                Total = total.Count,
-                Type = "Areas"
+                Type = "Area"
             };
         }
         public async Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id)
@@ -92,23 +138,23 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new AreaResponse();
-                await _context.Areas.AddAsync(area);
-                var rs = await _context.SaveChangesAsync();
-                if (rs > 0)
+            await _context.Areas.AddAsync(area);
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new AreaResponse
                 {
-                    data = new AreaResponse
-                    {
-                        id = area.Id,
-                        code = area.Code,
-                        area_name = area.AreaName,
-                        description = area.Description,
-                        is_delete = area.IsDelete,
-                        create_date = area.CreateDate,
-                        update_date = area.UpdateDate
-                    };
-                }
+                    id = area.Id,
+                    code = area.Code,
+                    area_name = area.AreaName,
+                    description = area.Description,
+                    is_delete = area.IsDelete,
+                    create_date = area.CreateDate,
+                    update_date = area.UpdateDate
+                };
+            }
 
-            
+
 
             return new ObjectModelResponse(data)
             {
