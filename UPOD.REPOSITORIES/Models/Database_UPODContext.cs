@@ -87,6 +87,8 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Telephone).HasMaxLength(250);
 
+                entity.Property(e => e.Address).HasMaxLength(250);
+
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)

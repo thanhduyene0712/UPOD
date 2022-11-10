@@ -11,6 +11,7 @@ namespace UPOD.REPOSITORIES.RequestModels
         public string? name { get; set; }
         public string? mail { get; set; }
         public string? telephone { get; set; }
+        public string? address { get; set; }
         public Guid? account_id { get; set; }
     }
 }

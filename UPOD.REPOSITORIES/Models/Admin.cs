@@ -19,6 +19,7 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string? Code { get; set; }
+        public string? Address { get; set; }
 
         public virtual Account? Account { get; set; }
         public virtual ICollection<Request> Requests { get; set; }

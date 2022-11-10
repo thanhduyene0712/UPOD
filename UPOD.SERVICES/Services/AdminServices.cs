@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
@@ -49,6 +50,7 @@ namespace UPOD.SERVICES.Services
                      update_date = a.UpdateDate,
                      mail = a.Mail,
                      telephone = a.Telephone,
+                     address = a.Address,
                  }).OrderByDescending(a => a.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             else
@@ -65,6 +67,7 @@ namespace UPOD.SERVICES.Services
                     update_date = a.UpdateDate,
                     mail = a.Mail,
                     telephone = a.Telephone,
+                    address = a.Address,
                 }).OrderByDescending(a => a.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 
@@ -76,19 +79,20 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> GetDetailsAdmin(Guid id)
         {
-            var admin = await _context.Admins.Where(a=>a.Id.Equals(id)).Select(a => new AdminResponse
-                 {
-                     id = a.Id,
-                     code = a.Code,
-                     name = a.Name,
-                     account_id = a.AccountId,
-                     create_date = a.CreateDate,
-                     is_delete = a.IsDelete,
-                     update_date = a.UpdateDate,
-                     mail = a.Mail,
-                     telephone = a.Telephone,
-                 }).FirstOrDefaultAsync();
-           
+            var admin = await _context.Admins.Where(a => a.Id.Equals(id)).Select(a => new AdminResponse
+            {
+                id = a.Id,
+                code = a.Code,
+                name = a.Name,
+                account_id = a.AccountId,
+                create_date = a.CreateDate,
+                is_delete = a.IsDelete,
+                update_date = a.UpdateDate,
+                mail = a.Mail,
+                telephone = a.Telephone,
+                address = a.Address,
+            }).FirstOrDefaultAsync();
+
             return new ObjectModelResponse(admin!)
             {
                 Type = "Admin"
@@ -122,6 +126,7 @@ namespace UPOD.SERVICES.Services
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7),
                 AccountId = model.account_id,
+                Address = model.address,
             };
             var account_asign = await _context.Accounts.Where(a => a.Id.Equals(model.account_id)).FirstOrDefaultAsync();
             account_asign!.IsAssign = true;
@@ -154,6 +159,7 @@ namespace UPOD.SERVICES.Services
                         update_date = admin.UpdateDate,
                         mail = admin.Mail,
                         telephone = admin.Telephone,
+                        address = admin.Address,
                     };
                 }
             }
@@ -180,6 +186,7 @@ namespace UPOD.SERVICES.Services
                 CreateDate = a.CreateDate,
                 UpdateDate = DateTime.UtcNow.AddHours(7),
                 AccountId = model.account_id,
+                Address = model.address,
             }).FirstOrDefaultAsync();
             var data = new AdminResponse();
             _context.Admins.Update(admin!);
@@ -197,6 +204,7 @@ namespace UPOD.SERVICES.Services
                     update_date = admin.UpdateDate,
                     mail = admin.Mail,
                     telephone = admin.Telephone,
+                    address = admin.Address,
                 };
             }
 
@@ -228,6 +236,7 @@ namespace UPOD.SERVICES.Services
                     update_date = admin.UpdateDate,
                     mail = admin.Mail,
                     telephone = admin.Telephone,
+                    address = admin.Address,
                 };
             }
 
