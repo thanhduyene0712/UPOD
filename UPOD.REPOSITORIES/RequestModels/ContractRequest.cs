@@ -13,7 +13,6 @@ namespace UPOD.REPOSITORIES.RequestModels
         public DateTime? start_date { get; set; }
         public DateTime? end_date { get; set; }
         public double? contract_price { get; set; }
-        public int? priority { get; set; }
         public string? attachment { get; set; }
         public string? img { get; set; }
         public string? description { get; set; }

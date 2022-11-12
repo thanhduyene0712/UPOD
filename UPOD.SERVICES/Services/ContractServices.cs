@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
@@ -15,6 +16,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateContract(ContractRequest model);
         Task<ObjectModelResponse> GetDetailsContract(Guid id);
         Task<ObjectModelResponse> DisableContract(Guid id);
+        Task<ObjectModelResponse> UpdateContract(Guid id, ContractRequest model);
         Task<List<Guid>> GetContractNotify();
         Task SetExpire(Guid contractId);
     }
@@ -229,6 +231,178 @@ namespace UPOD.SERVICES.Services
                 Type = "Contract"
             };
         }
+        public async Task<ObjectModelResponse> UpdateContract(Guid id, ContractRequest model)
+        {
+            var contract = await _context.Contracts.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(x => new Contract
+            {
+                Id = id,
+                Code = x.Code,
+                CustomerId = model.customer_id,
+                ContractName = model.contract_name,
+                StartDate = model.start_date,
+                EndDate = model.end_date,
+                IsDelete = false,
+                CreateDate = x.CreateDate,
+                UpdateDate = DateTime.UtcNow.AddHours(7),
+                ContractPrice = model.contract_price,
+                Img = model.img,
+                Attachment = model.attachment,
+                Description = model.description!,
+                TerminalTime = null,
+                TerminalContent = null,
+                IsExpire = false
+            }).FirstOrDefaultAsync();
+            var contract_services = await _context.ContractServices.Where(a => a.ContractId.Equals(contract!.Id)).ToListAsync();
+            foreach (var item in contract_services)
+            {
+                _context.ContractServices.Remove(item);
+            }
+            var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.ContractId.Equals(contract!.Id)).ToListAsync();
+            foreach (var item in maintainSchedules)
+            {
+                _context.MaintenanceSchedules.Remove(item);
+            }
+            foreach (var item in model.service)
+            {
+                var contract_service_id = Guid.NewGuid();
+                while (true)
+                {
+                    var contract_service_dup = await _context.ContractServices.Where(x => x.Id.Equals(contract_service_id)).FirstOrDefaultAsync();
+                    if (contract_service_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        contract_service_id = Guid.NewGuid();
+                    }
+                }
+                var contract_service = new ContractService
+                {
+                    Id = contract_service_id,
+                    FrequencyMaintain = item.frequency_maintain,
+                    ContractId = contract!.Id,
+                    ServiceId = item.service_id,
+                    IsDelete = false
+                };
+                _context.ContractServices.Add(contract_service);
+            }
+            var lastTime = model.end_date - model.start_date;
+            var lastDay = lastTime!.Value.Days - 15;
+            var listAgency = await _context.Agencies.Where(a => a.CustomerId.Equals(model.customer_id) && a.IsDelete == false).ToListAsync();
+            var code_number1 = await GetLastCode1();
+            foreach (var itemService in model.service)
+            {
+                var maintenanceTime = lastDay / itemService.frequency_maintain;
+
+                foreach (var item in listAgency)
+                {
+                    var maintenanceDate = model.start_date;
+                    for (int i = 1; i <= itemService.frequency_maintain; i++)
+                    {
+                        maintenanceDate = maintenanceDate!.Value.AddDays(maintenanceTime!.Value);
+                        var maintenance_id = Guid.NewGuid();
+                        while (true)
+                        {
+                            var maintenance_dup = await _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenance_id)).FirstOrDefaultAsync();
+                            if (maintenance_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                maintenance_id = Guid.NewGuid();
+                            }
+                        }
+                        var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
+                        while (true)
+                        {
+                            var code_dup = await _context.MaintenanceSchedules.Where(x => x.Code.Equals(code1)).FirstOrDefaultAsync();
+                            if (code_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+
+                                code1 = "MS-" + code_number1++.ToString();
+                            }
+                        }
+                        var service = await _context.Services.Where(a => a.Id.Equals(itemService.service_id) && a.IsDelete == false).FirstOrDefaultAsync();
+                        var maintenanceSchedule = new MaintenanceSchedule
+                        {
+                            Id = maintenance_id,
+                            Code = code1,
+                            AgencyId = item.Id,
+                            CreateDate = DateTime.UtcNow.AddHours(7),
+                            UpdateDate = DateTime.UtcNow.AddHours(7),
+                            IsDelete = false,
+                            Name = "MaintenanceAgency: " + item.AgencyName + ", Service: " + service!.ServiceName + ", time " + i,
+                            Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
+                            TechnicianId = item.TechnicianId,
+                            MaintainTime = maintenanceDate,
+                            StartDate = null,
+                            EndDate = null,
+                            ServiceId = itemService.service_id,
+                            ContractId = contract!.Id
+
+                        };
+                        await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
+                    }
+                }
+            }
+
+            var data = new ContractResponse();
+
+            var message = "Successfully";
+            var status = 200;
+            _context.Contracts.Update(contract!);
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new ContractResponse
+                {
+                    id = contract!.Id,
+                    code = contract.Code,
+                    contract_name = contract.ContractName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+
+                    },
+                    start_date = contract.StartDate,
+                    end_date = contract.EndDate,
+                    is_delete = contract.IsDelete,
+                    create_date = contract.CreateDate,
+                    update_date = contract.UpdateDate,
+                    contract_price = contract.ContractPrice,
+                    description = contract.Description,
+                    is_expire = contract.IsExpire,
+                    attachment = contract.Attachment,
+                    img = contract.Img,
+                    service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
+                    {
+                        id = x.ServiceId,
+                        code = x.Service!.Code,
+                        service_name = x.Service!.ServiceName,
+                        description = x.Service!.Description,
+                        frequency_maintain = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id) && a.ServiceId.Equals(x.ServiceId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
+                    }).ToList(),
+                };
+            }
+
+
+
+            return new ObjectModelResponse(data)
+            {
+                Message = message,
+                Status = status,
+                Type = "Contract"
+            };
+        }
         public async Task<ObjectModelResponse> CreateContract(ContractRequest model)
         {
             var contract_id = Guid.NewGuid();
@@ -318,6 +492,18 @@ namespace UPOD.SERVICES.Services
                             }
                         }
                         var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
+                        while (true)
+                        {
+                            var code_dup = await _context.MaintenanceSchedules.Where(x => x.Code.Equals(code1)).FirstOrDefaultAsync();
+                            if (code_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                code1 = "MS-" + code_number1++.ToString();
+                            }
+                        }
                         var service = await _context.Services.Where(a => a.Id.Equals(itemService.service_id) && a.IsDelete == false).FirstOrDefaultAsync();
                         var maintenanceSchedule = new MaintenanceSchedule
                         {

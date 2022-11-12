@@ -98,7 +98,7 @@ namespace UPOD.SERVICES.Services
         public async Task SetMaintenanceSchedulesNotify()
         {
 
-            var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime!.Value.Date == DateTime.UtcNow.AddHours(7).Date) && a.IsDelete == false).ToListAsync();
+            var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime!.Value.Date >= DateTime.UtcNow.AddHours(7).Date && a.MaintainTime!.Value.Date <= DateTime.UtcNow.AddHours(7).AddDays(1).Date) && a.IsDelete == false).ToListAsync();
             foreach (var item in todaySchedules)
             {
                 item.Status = ScheduleStatus.NOTIFIED.ToString();
@@ -116,6 +116,16 @@ namespace UPOD.SERVICES.Services
                     item.Status = ScheduleStatus.MISSED.ToString();
                 }
             }
+            var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("SCHEDULED")).ToListAsync();
+            foreach (var item in maintainSchedules)
+            {
+                var missingDate = DateTime.UtcNow.AddHours(7) - item.MaintainTime;
+                var date = missingDate!.Value.Days;
+                if (date >= 5)
+                {
+                    item.Status = ScheduleStatus.MISSED.ToString();
+                }
+            }
 
 
             //return rs;
@@ -125,17 +135,30 @@ namespace UPOD.SERVICES.Services
             var maintainSchedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("MAINTAINING")).ToListAsync();
             foreach (var item in maintainSchedule)
             {
-                //var missingDate = DateTime.UtcNow.AddHours(7) - item.MaintainTime;
-                //var date = missingDate!.Value.Days;
-                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId) && a.IsDelete==false).FirstOrDefaultAsync();
+                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId) && a.IsDelete == false).FirstOrDefaultAsync();
                 if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
                 {
                     item.Status = ScheduleStatus.MISSED.ToString();
                 }
             }
-
-
-            //return rs;
+            var maintainScheduless = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("NOTIFIED")).ToListAsync();
+            foreach (var item in maintainScheduless)
+            {
+                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId) && a.IsDelete == false).FirstOrDefaultAsync();
+                if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
+                {
+                    item.Status = ScheduleStatus.MISSED.ToString();
+                }
+            }
+            var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("SCHEDULED")).ToListAsync();
+            foreach (var item in maintainSchedules)
+            {
+                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId) && a.IsDelete == false).FirstOrDefaultAsync();
+                if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
+                {
+                    item.Status = ScheduleStatus.MISSED.ToString();
+                }
+            }
         }
         public async Task<ResponseModel<MaintenanceScheduleResponse>> GetListMaintenanceSchedules(PaginationRequest model, FilterStatusRequest value)
         {

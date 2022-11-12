@@ -439,7 +439,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id)
         {
 
-            var services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
+            var services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false && x.Contract.IsExpire == false
                 && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Select(x => new ServiceViewResponse
                 {
                     id = x.ServiceId,
@@ -458,7 +458,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id)
         {
 
-            var services_in_contract = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
+            var services_in_contract = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false && x.Contract.IsExpire == false
                 && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Select(a => new ServiceNotInContractViewResponse
                 {
                     id = a.ServiceId,
