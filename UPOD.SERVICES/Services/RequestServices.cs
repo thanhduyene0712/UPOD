@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Diagnostics.Contracts;
 using System.Linq.Dynamic.Core;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
@@ -696,6 +695,8 @@ namespace UPOD.SERVICES.Services
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
+                    start_time = a.StartTime,
+                    end_time = a.EndTime,
                     create_by = new CreateByViewModel
                     {
                         id = a.CustomerId,

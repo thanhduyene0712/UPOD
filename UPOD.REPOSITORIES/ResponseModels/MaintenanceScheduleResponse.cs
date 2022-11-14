@@ -11,6 +11,8 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
+        public DateTime? start_time { get; set; }
+        public DateTime? end_time { get; set; }
         public string? code { get; set; }
         public string? status { get; set; }
         public TechnicianViewResponse technician { get; set; }
