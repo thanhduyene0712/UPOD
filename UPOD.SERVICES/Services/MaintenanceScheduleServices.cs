@@ -24,6 +24,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateMaintenanceSchedule(Guid id, MaintenanceScheduleRequest model);
         Task<ObjectModelResponse> MaintainingSchedule(Guid id);
         Task<ObjectModelResponse> DisableMaintenanceSchedule(Guid id);
+        Task<ObjectModelResponse> MaintenanceScheduleDetails(Guid id);
         Task SetMaintenanceSchedulesNotify();
         Task SetStatus(ScheduleStatus status, Guid scheduleId);
         Task SetMaintenanceSchedulesNotifyMissing();
@@ -88,6 +89,55 @@ namespace UPOD.SERVICES.Services
                     }
                 };
             }
+
+            return new ObjectModelResponse(data)
+            {
+                Status = 201,
+                Type = "MaintenanceSchedule"
+            };
+        }
+        public async Task<ObjectModelResponse> MaintenanceScheduleDetails(Guid id)
+        {
+            var maintenanceSchedule = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            var data = new MaintenanceScheduleResponse();
+                data = new MaintenanceScheduleResponse
+                {
+                    id = maintenanceSchedule!.Id,
+                    code = maintenanceSchedule.Code,
+                    name = maintenanceSchedule.Name,
+                    description = maintenanceSchedule.Description,
+                    is_delete = maintenanceSchedule.IsDelete,
+                    create_date = maintenanceSchedule.CreateDate,
+                    update_date = maintenanceSchedule.UpdateDate,
+                    maintain_time = maintenanceSchedule.MaintainTime,
+                    status = maintenanceSchedule.Status,
+                    service = new ServiceViewResponse
+                    {
+                        id = maintenanceSchedule.ServiceId,
+                        service_name = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                        description = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                        frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(maintenanceSchedule.ServiceId) && x.ContractId.Equals(maintenanceSchedule.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
+
+                    },
+                    technician = new TechnicianViewResponse
+                    {
+                        id = maintenanceSchedule.TechnicianId,
+                        name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+
+
+                    },
+                    agency = new AgencyViewResponse
+                    {
+                        id = maintenanceSchedule.AgencyId,
+                        code = _context.Agencies.Where(x => x.Id.Equals(maintenanceSchedule.AgencyId)).Select(a => a.Code).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(maintenanceSchedule.AgencyId)).Select(a => a.AgencyName).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(maintenanceSchedule.AgencyId)).Select(a => a.Address).FirstOrDefault(),
+                        phone = _context.Agencies.Where(x => x.Id.Equals(maintenanceSchedule.AgencyId)).Select(a => a.Telephone).FirstOrDefault()
+                    }
+                };
+            
 
             return new ObjectModelResponse(data)
             {

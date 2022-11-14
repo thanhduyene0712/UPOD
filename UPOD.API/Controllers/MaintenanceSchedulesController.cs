@@ -69,6 +69,19 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpGet]
+        [Route("get_details_maintenance_schedule")]
+        public async Task<ActionResult<ObjectModelResponse>> MaintenanceScheduleDetails(Guid id)
+        {
+            try
+            {
+                return await _maintenanceSchedule_sv.MaintenanceScheduleDetails(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
         [Route("get_list_maintenance_schedules_by_technician_id")]
         public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedulesTechnician([FromQuery] PaginationRequest model, Guid id,[FromQuery] FilterStatusRequest value)
         {
