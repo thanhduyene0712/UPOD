@@ -320,7 +320,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> GetAccountDetails(Guid id)
         {
-            var account = await _context.Accounts.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(p => new AccountResponse
+            var account = await _context.Accounts.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(p => new AccountDetailsResponse
             {
                 id = p.Id,
                 code = p.Code,
@@ -330,6 +330,7 @@ namespace UPOD.SERVICES.Services
                     code = p.Role.Code,
                     role_name = p.Role.RoleName,
                 },
+                password = p.Password,
                 username = p.Username,
                 is_assign = p.IsAssign,
                 is_delete = p.IsDelete,
