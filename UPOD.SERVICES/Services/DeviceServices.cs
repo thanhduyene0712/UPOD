@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
+using System.Net.Sockets;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
@@ -82,10 +83,15 @@ namespace UPOD.SERVICES.Services
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
-                    img = a.Img,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
-                    update_date = a.UpdateDate
+                    update_date = a.UpdateDate,
+                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             else
@@ -142,10 +148,15 @@ namespace UPOD.SERVICES.Services
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
-                    img = a.Img,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
-                    update_date = a.UpdateDate
+                    update_date = a.UpdateDate,
+                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 
@@ -205,14 +216,19 @@ namespace UPOD.SERVICES.Services
                     guaranty_end_date = a.GuarantyEndDate,
                     ip = a.Ip,
                     port = a.Port,
-                    img = a.Img,
                     device_account = a.DeviceAccount,
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
-                    update_date = a.UpdateDate
+                    update_date = a.UpdateDate,
+                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             else
@@ -269,10 +285,15 @@ namespace UPOD.SERVICES.Services
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
-                    img = a.Img,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
-                    update_date = a.UpdateDate
+                    update_date = a.UpdateDate,
+                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 
@@ -336,10 +357,15 @@ namespace UPOD.SERVICES.Services
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
-                    img = a.Img,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
-                    update_date = a.UpdateDate
+                    update_date = a.UpdateDate,
+                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             else
@@ -398,14 +424,19 @@ namespace UPOD.SERVICES.Services
                     guaranty_end_date = a.GuarantyEndDate,
                     ip = a.Ip,
                     port = a.Port,
-                    img = a.Img,
                     device_account = a.DeviceAccount,
                     device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
-                    update_date = a.UpdateDate
+                    update_date = a.UpdateDate,
+                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 
@@ -459,14 +490,19 @@ namespace UPOD.SERVICES.Services
                 guaranty_end_date = a.GuarantyEndDate,
                 ip = a.Ip,
                 port = a.Port,
-                img = a.Img,
                 device_account = a.DeviceAccount,
                 device_password = a.DevicePassword,
                 setting_date = a.SettingDate,
                 other = a.Other,
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
-                update_date = a.UpdateDate
+                update_date = a.UpdateDate,
+                img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                {
+                    id = x.Id,
+                    link = x.Link,
+                    object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                }).ToList(),
             }).FirstOrDefaultAsync();
             return new ObjectModelResponse(device!)
             {
@@ -508,11 +544,33 @@ namespace UPOD.SERVICES.Services
                 SettingDate = model.setting_date,
                 Other = model.other,
                 IsDelete = false,
-                Img = model.img,
                 CreateBy = model.create_by,
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7)
             };
+            foreach (var item in model.img!)
+            {
+                var img_id = Guid.NewGuid();
+                while (true)
+                {
+                    var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                    if (img_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        img_id = Guid.NewGuid();
+                    }
+                }
+                var imgTicket = new Image
+                {
+                    Id = img_id,
+                    Link = item,
+                    ObjectId = device.Id,
+                };
+                await _context.Images.AddAsync(imgTicket);
+            }
             var data = new DeviceResponse();
 
             await _context.Devices.AddAsync(device);
@@ -547,7 +605,6 @@ namespace UPOD.SERVICES.Services
                     guaranty_start_date = device.GuarantyStartDate,
                     guaranty_end_date = device.GuarantyEndDate,
                     ip = device.Ip,
-                    img = device.Img,
                     port = device.Port,
                     device_account = device.DeviceAccount,
                     device_password = device.DevicePassword,
@@ -555,7 +612,13 @@ namespace UPOD.SERVICES.Services
                     other = device.Other,
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
-                    update_date = device.UpdateDate
+                    update_date = device.UpdateDate,
+                    img = _context.Images.Where(a => a.ObjectId.Equals(device.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 };
             }
 
@@ -606,10 +669,15 @@ namespace UPOD.SERVICES.Services
                     device_password = device.DevicePassword,
                     setting_date = device.SettingDate,
                     other = device.Other,
-                    img = device.Img,
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
-                    update_date = device.UpdateDate
+                    update_date = device.UpdateDate,
+                    img = _context.Images.Where(a => a.ObjectId.Equals(device.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 };
             }
             return new ObjectModelResponse(data)
@@ -642,6 +710,35 @@ namespace UPOD.SERVICES.Services
 
             }).FirstOrDefaultAsync();
             _context.Devices.Update(device!);
+            var imgs = await _context.Images.Where(a => a.ObjectId.Equals(device!.Id)).ToListAsync();
+            foreach (var item in imgs)
+            {
+                _context.Images.Remove(item);
+            }
+            foreach (var item in model.img!)
+            {
+                var img_id = Guid.NewGuid();
+                while (true)
+                {
+                    var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                    if (img_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        img_id = Guid.NewGuid();
+                    }
+                }
+                var imgTicket = new Image
+                {
+                    Id = img_id,
+                    Link = item,
+                    ObjectId = device!.Id,
+                };
+                await _context.Images.AddAsync(imgTicket);
+
+            }
             var data = new DeviceResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
@@ -675,17 +772,22 @@ namespace UPOD.SERVICES.Services
                     guaranty_end_date = device.GuarantyEndDate,
                     ip = device.Ip,
                     port = device.Port,
+
                     device_account = device.DeviceAccount,
                     device_password = device.DevicePassword,
                     setting_date = device.SettingDate,
                     other = device.Other,
-                    img = device.Img,
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
-                    update_date = device.UpdateDate
+                    update_date = device.UpdateDate,
+                    img = _context.Images.Where(a => a.ObjectId.Equals(device.Id)).Select(x => new ImageResponse
+                    {
+                        id = x.Id,
+                        link = x.Link,
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    }).ToList(),
                 };
-            }
-
+            };
             return new ObjectModelResponse(data)
             {
                 Status = 201,

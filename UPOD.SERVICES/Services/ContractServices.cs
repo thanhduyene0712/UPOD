@@ -77,7 +77,6 @@ namespace UPOD.SERVICES.Services
                     description = contract.Description,
                     attachment = contract.Attachment,
                     is_expire = contract.IsExpire,
-                    img = contract.Img,
                     service = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
@@ -125,7 +124,6 @@ namespace UPOD.SERVICES.Services
                     contract_price = a.ContractPrice,
                     description = a.Description,
                     attachment = a.Attachment,
-                    img = a.Img,
                     service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
@@ -172,7 +170,6 @@ namespace UPOD.SERVICES.Services
                     contract_price = a.ContractPrice,
                     description = a.Description,
                     attachment = a.Attachment,
-                    img = a.Img,
                     service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
@@ -216,7 +213,6 @@ namespace UPOD.SERVICES.Services
                 contract_price = a.ContractPrice,
                 description = a.Description,
                 attachment = a.Attachment,
-                img = a.Img,
                 service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                 {
                     id = x.ServiceId,
@@ -245,7 +241,6 @@ namespace UPOD.SERVICES.Services
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.UtcNow.AddHours(7),
                 ContractPrice = model.contract_price,
-                Img = model.img,
                 Attachment = model.attachment,
                 Description = model.description!,
                 TerminalTime = null,
@@ -382,7 +377,6 @@ namespace UPOD.SERVICES.Services
                     description = contract.Description,
                     is_expire = contract.IsExpire,
                     attachment = contract.Attachment,
-                    img = contract.Img,
                     service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
@@ -432,7 +426,6 @@ namespace UPOD.SERVICES.Services
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7),
                 ContractPrice = model.contract_price,
-                Img = model.img,
                 Attachment = model.attachment,
                 Description = model.description!,
                 TerminalTime = null,
@@ -567,7 +560,6 @@ namespace UPOD.SERVICES.Services
                         description = contract.Description,
                         is_expire = contract.IsExpire,
                         attachment = contract.Attachment,
-                        img = contract.Img,
                         service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
                         {
                             id = x.ServiceId,

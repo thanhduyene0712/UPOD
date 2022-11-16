@@ -20,7 +20,7 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string? Code { get; set; }
-        public bool? IsAssign { get; set; }  
+        public bool? IsAssign { get; set; }
 
         public virtual Role? Role { get; set; }
         public virtual ICollection<Admin> Admins { get; set; }

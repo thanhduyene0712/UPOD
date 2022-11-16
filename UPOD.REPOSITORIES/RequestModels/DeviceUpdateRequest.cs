@@ -14,6 +14,7 @@ namespace UPOD.REPOSITORIES.RequestModels
         public DateTime? guaranty_end_date { get; set; }
         public string? ip { get; set; }
         public int? port { get; set; }
+        public List<string>? img { get; set; }
         public string? device_account { get; set; }
         public string? device_password { get; set; }
         public DateTime? setting_date { get; set; }

@@ -15,5 +15,6 @@ namespace UPOD.REPOSITORIES.RequestModels
         public Guid? device_id { get; set; }
         public string? description { get; set; }
         public string? solution { get; set; }
+        public List<string>? img { get; set; }
     }
 }

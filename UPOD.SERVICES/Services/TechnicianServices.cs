@@ -428,6 +428,7 @@ namespace UPOD.SERVICES.Services
             _context.Requests.Update(request);
             _context.Technicians.Update(technician);
             var list = new List<DevicesOfRequestResponse>();
+
             foreach (var item in model.ticket)
             {
                 var device_id = Guid.NewGuid();
@@ -465,56 +466,32 @@ namespace UPOD.SERVICES.Services
                     description = ticket.Description
 
                 });
-                await _context.SaveChangesAsync();
 
-            }
-            return new ResponseModel<DevicesOfRequestResponse>(list)
-            {
-                Total = list.Count,
-                Type = "Devices"
-            };
-        }
-        public async Task<ResponseModel<DevicesOfRequestResponse>> AddTicket(Guid id, ListTicketRequest model)
-        {
-
-            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
-            var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
-            var list = new List<DevicesOfRequestResponse>();
-            foreach (var item in model.ticket)
-            {
-                var device_id = Guid.NewGuid();
-                while (true)
+                foreach (var item1 in item.img!)
                 {
-                    var ticket_id = await _context.Tickets.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
-                    if (ticket_id == null)
+                    var img_id = Guid.NewGuid();
+                    while (true)
                     {
-                        break;
+                        var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                        if (img_dup == null)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            img_id = Guid.NewGuid();
+                        }
                     }
-                    else
+                    var imgTicket = new Image
                     {
-                        device_id = Guid.NewGuid();
-                    }
+                        Id = img_id,
+                        Link = item1,
+                        ObjectId = ticket.Id,
+                    };
+                    await _context.Images.AddAsync(imgTicket);
+
                 }
-                var ticket = new Ticket
-                {
-                    Id = device_id,
-                    RequestId = request!.Id,
-                    DeviceId = item.device_id,
-                    Description = item.description,
-                    Solution = item.solution,
-                    IsDelete = false,
-                    CreateBy = technician!.Id,
-                    CreateDate = DateTime.UtcNow.AddHours(7),
-                    UpdateDate = DateTime.UtcNow.AddHours(7)
-                };
-                await _context.Tickets.AddAsync(ticket);
-                list.Add(new DevicesOfRequestResponse
-                {
-                    device_id = ticket.DeviceId,
-                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
-                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
 
-                });
                 await _context.SaveChangesAsync();
 
             }
@@ -524,6 +501,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Devices"
             };
         }
+       
         public async Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, ListTicketRequest model)
         {
 
@@ -536,6 +514,11 @@ namespace UPOD.SERVICES.Services
             foreach (var device in devices)
             {
                 _context.Tickets.Remove(device);
+                var imgs = await _context.Images.Where(a => a.ObjectId.Equals(device.Id)).ToListAsync();
+                foreach (var item in imgs)
+                {
+                    _context.Images.Remove(item);
+                }
             }
             foreach (var item in model.ticket)
             {
@@ -574,6 +557,30 @@ namespace UPOD.SERVICES.Services
                     description = ticket.Description
 
                 });
+                foreach (var item1 in item.img!)
+                {
+                    var img_id = Guid.NewGuid();
+                    while (true)
+                    {
+                        var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                        if (img_dup == null)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            img_id = Guid.NewGuid();
+                        }
+                    }
+                    var imgTicket = new Image
+                    {
+                        Id = img_id,
+                        Link = item1,
+                        ObjectId = ticket.Id,
+                    };
+                    await _context.Images.AddAsync(imgTicket);
+
+                }
                 await _context.SaveChangesAsync();
 
             }

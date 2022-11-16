@@ -5,6 +5,11 @@ namespace UPOD.REPOSITORIES.Models
 {
     public partial class Ticket
     {
+        public Ticket()
+        {
+            Images = new HashSet<Image>();
+        }
+
         public Guid Id { get; set; }
         public Guid? RequestId { get; set; }
         public Guid? DeviceId { get; set; }
@@ -14,9 +19,9 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? UpdateDate { get; set; }
         public Guid? CreateBy { get; set; }
         public string? Solution { get; set; }
-        public string? Img { get; set; }
 
         public virtual Device? Device { get; set; }
         public virtual Request? Request { get; set; }
+        public virtual ICollection<Image> Images { get; set; }
     }
 }

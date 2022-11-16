@@ -20,10 +20,10 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? device_password { get; set; }
         public DateTime? setting_date { get; set; }
         public string? other { get; set; }
-        public string? img { get; set; }
         public bool? is_delete { get; set; }
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
+        public List<ImageResponse> img { get; set; } = null!;
         public CustomerViewResponse customer { get; set; } = null!;
         public ServiceNotInContractViewResponse service { get; set; } = null!;
         public TechnicianViewResponse technician { get; set; } = null!;

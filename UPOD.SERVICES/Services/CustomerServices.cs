@@ -60,7 +60,6 @@ namespace UPOD.SERVICES.Services
                     contract_price = a.ContractPrice,
                     description = a.Description,
                     attachment = a.Attachment,
-                    img = a.Img,
                     service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
@@ -109,7 +108,6 @@ namespace UPOD.SERVICES.Services
                     contract_price = a.ContractPrice,
                     description = a.Description,
                     attachment = a.Attachment,
-                    img = a.Img,
                     service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,

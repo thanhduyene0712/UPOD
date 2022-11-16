@@ -8,6 +8,7 @@ namespace UPOD.REPOSITORIES.Models
         public Contract()
         {
             ContractServices = new HashSet<ContractService>();
+            Images = new HashSet<Image>();
             MaintenanceSchedules = new HashSet<MaintenanceSchedule>();
             Requests = new HashSet<Request>();
         }
@@ -18,19 +19,19 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool? IsDelete { get; set; }
-        public bool? IsExpire { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public double? ContractPrice { get; set; }
         public DateTime? TerminalTime { get; set; }
         public string? Attachment { get; set; }
-        public string? Img { get; set; }
         public string? Description { get; set; }
         public string? Code { get; set; }
         public string? TerminalContent { get; set; }
+        public bool? IsExpire { get; set; }
 
         public virtual Customer? Customer { get; set; }
         public virtual ICollection<ContractService> ContractServices { get; set; }
+        public virtual ICollection<Image> Images { get; set; }
         public virtual ICollection<MaintenanceSchedule> MaintenanceSchedules { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
     }

@@ -7,6 +7,7 @@ namespace UPOD.REPOSITORIES.Models
     {
         public Request()
         {
+            Images = new HashSet<Image>();
             Tickets = new HashSet<Ticket>();
         }
 
@@ -27,7 +28,6 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public int? Priority { get; set; }
         public DateTime? UpdateDate { get; set; }
-        public string? Img { get; set; }
         public string? Code { get; set; }
         public Guid? AdminId { get; set; }
         public Guid? ContractId { get; set; }
@@ -38,6 +38,7 @@ namespace UPOD.REPOSITORIES.Models
         public virtual Technician? CurrentTechnician { get; set; }
         public virtual Customer? Customer { get; set; }
         public virtual Service? Service { get; set; }
+        public virtual ICollection<Image> Images { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }
