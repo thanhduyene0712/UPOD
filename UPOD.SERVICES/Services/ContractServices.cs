@@ -17,6 +17,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> GetDetailsContract(Guid id);
         Task<ObjectModelResponse> DisableContract(Guid id);
         Task<ObjectModelResponse> UpdateContract(Guid id, ContractRequest model);
+        Task<ObjectModelResponse> TerminationContract(Guid id, ContractTermanationRequest model);
         Task<List<Guid>> GetContractNotify();
         Task SetExpire(Guid contractId);
     }
@@ -32,7 +33,7 @@ namespace UPOD.SERVICES.Services
         public async Task<List<Guid>> GetContractNotify()
         {
 
-            var todayContracts = await _context.Contracts.Where(a => (a.EndDate!.Value.Date <= DateTime.UtcNow.AddHours(7) && a.IsDelete == false)).ToListAsync();
+            var todayContracts = await _context.Contracts.Where(a => (a.EndDate!.Value.Date <= DateTime.UtcNow.AddHours(7) && a.IsDelete == false && a.IsExpire == false)).ToListAsync();
             var rs = new List<Guid>();
             foreach (var item in todayContracts)
             {
@@ -115,6 +116,7 @@ namespace UPOD.SERVICES.Services
                         description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
 
                     },
+                    terminal_content = a.TerminalContent,
                     start_date = a.StartDate,
                     end_date = a.EndDate,
                     is_delete = a.IsDelete,
@@ -151,6 +153,7 @@ namespace UPOD.SERVICES.Services
                 || a.CustomerId!.Equals(customer))).Select(a => new ContractResponse
                 {
                     id = a.Id,
+                    terminal_content = a.TerminalContent,
                     code = a.Code,
                     contract_name = a.ContractName,
                     customer = new CustomerViewResponse
@@ -204,6 +207,7 @@ namespace UPOD.SERVICES.Services
                     name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                     description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
                 },
+                terminal_content = a.TerminalContent,
                 start_date = a.StartDate,
                 is_expire = a.IsExpire,
                 end_date = a.EndDate,
@@ -225,6 +229,55 @@ namespace UPOD.SERVICES.Services
             return new ObjectModelResponse(contract!)
             {
                 Type = "Contract"
+            };
+        }
+        public async Task<ObjectModelResponse> TerminationContract(Guid id, ContractTermanationRequest model)
+        {
+            var contract = await _context.Contracts.Where(a => a.IsDelete == false && a.Id.Equals(id)).FirstOrDefaultAsync();
+            contract!.TerminalTime = DateTime.UtcNow.AddHours(7);
+            contract!.TerminalContent = model.terminal_content;
+            contract!.IsExpire = true;
+            var data = new ContractResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+
+                data = new ContractResponse
+                {
+                    id = contract!.Id,
+                    code = contract.Code,
+                    contract_name = contract.ContractName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+
+                    },
+                    start_date = contract.StartDate,
+                    end_date = contract.EndDate,
+                    is_delete = contract.IsDelete,
+                    create_date = contract.CreateDate,
+                    update_date = contract.UpdateDate,
+                    contract_price = contract.ContractPrice,
+                    description = contract.Description,
+                    is_expire = contract.IsExpire,
+                    attachment = contract.Attachment,
+                    terminal_content = contract.TerminalContent,
+                    service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
+                    {
+                        id = x.ServiceId,
+                        code = x.Service!.Code,
+                        service_name = x.Service!.ServiceName,
+                        description = x.Service!.Description,
+                        frequency_maintain = _context.ContractServices.Where(a => a.ContractId.Equals(contract.Id) && a.ServiceId.Equals(x.ServiceId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
+                    }).ToList(),
+                };
+            }
+            return new ObjectModelResponse(data!)
+            {
+                Type = "Contract",
             };
         }
         public async Task<ObjectModelResponse> UpdateContract(Guid id, ContractRequest model)

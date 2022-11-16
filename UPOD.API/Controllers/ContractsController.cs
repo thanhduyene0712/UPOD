@@ -77,6 +77,20 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPut]
+        [Route("terminal_contract_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> TerminationContract(Guid id, ContractTermanationRequest model)
+        {
+            try
+            {
+                return await _contract_service_sv.TerminationContract(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpPut]
         [Route("disable_contract_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> DisableContract(Guid id)
         {

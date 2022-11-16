@@ -12,7 +12,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public Guid id { get; set; }
         public string? code { get; set; }
         public string? contract_name { get; set; }
-        public CustomerViewResponse customer { get; set; } = null!;
         public double? contract_price { get; set; }
         public DateTime? start_date { get; set; }
         public DateTime? end_date { get; set; }
@@ -23,6 +22,8 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? attachment { get; set; }
         public string? img { get; set; }
         public string? description { get; set; }
+        public string? terminal_content { get; set; }
+        public CustomerViewResponse customer { get; set; } = null!;
         public List<ServiceViewResponse> service { get; set; } = null!;
     }
 }

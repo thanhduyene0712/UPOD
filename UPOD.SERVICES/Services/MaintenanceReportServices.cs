@@ -13,6 +13,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<MaintenanceReportResponse>> GetListMaintenanceReports(PaginationRequest model, FilterStatusRequest value);
         Task<ObjectModelResponse> CreateMaintenanceReport(MaintenanceReportRequest model);
         Task<ObjectModelResponse> GetDetailsMaintenanceReport(Guid id);
+        Task<ObjectModelResponse> UpdateMaintenanceReport(Guid id, MaintenanceReportRequest model);
     }
 
     public class MaintenanceReportServices : IMaintenanceReportService
@@ -206,6 +207,154 @@ namespace UPOD.SERVICES.Services
                 Type = "MaintenanceReport"
             };
 
+        }
+        public async Task<ObjectModelResponse> UpdateMaintenanceReport(Guid id, MaintenanceReportRequest model)
+        {
+            var maintenanceReport = await _context.MaintenanceReports.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            maintenanceReport!.Name = model.name;
+            maintenanceReport!.MaintenanceScheduleId = model.maintenance_schedule_id;
+            maintenanceReport!.Description = model.description;
+            maintenanceReport!.UpdateDate = DateTime.UtcNow.AddHours(7);
+            maintenanceReport!.Status = ReportStatus.NO_PROBLEM.ToString();
+            if (model.service.Count == 0)
+            {
+                var report_service_removes = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(maintenanceReport.Id)).ToListAsync();
+                foreach (var report_service in report_service_removes)
+                {
+                    if(report_service.Created == true)
+                    {
+                        _context.MaintenanceReports.Update(maintenanceReport);
+                    }
+                    else
+                    {
+                        _context.MaintenanceReportServices.Remove(report_service);
+                        _context.MaintenanceReports.Update(maintenanceReport);
+                    }
+                }
+                
+            }
+            else
+            {
+                maintenanceReport!.Status = ReportStatus.PROBLEM.ToString();
+                _context.MaintenanceReports.Update(maintenanceReport);
+                var report_service_removes = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(maintenanceReport.Id)).ToListAsync();
+                foreach (var item in report_service_removes)
+                {
+                    foreach (var item1 in model.service)
+                    {
+                        if (item.Created == false && item.ServiceId.Equals(item1.service_id))
+                        {
+                            _context.MaintenanceReportServices.Remove(item);
+                            var maintenanceReportService_id = Guid.NewGuid();
+                            while (true)
+                            {
+                                var maintenanceReportService_dup = await _context.MaintenanceReportServices.Where(x => x.Id.Equals(maintenanceReportService_id)).FirstOrDefaultAsync();
+                                if (maintenanceReportService_dup == null)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    maintenanceReportService_id = Guid.NewGuid();
+                                }
+                            }
+                            var maintenanceReportService = new MaintenanceReportService
+                            {
+                                Id = maintenanceReportService_id,
+                                Description = item1.Description,
+                                MaintenanceReportId = maintenanceReport.Id,
+                                ServiceId = item1.service_id,
+                                Created = false,
+                            };
+                            await _context.MaintenanceReportServices.AddAsync(maintenanceReportService);
+                        }
+                        //else if (item.ServiceId != item1.service_id)
+                        //{
+                        //    var maintenanceReportService_id = Guid.NewGuid();
+                        //    while (true)
+                        //    {
+                        //        var maintenanceReportService_dup = await _context.MaintenanceReportServices.Where(x => x.Id.Equals(maintenanceReportService_id)).FirstOrDefaultAsync();
+                        //        if (maintenanceReportService_dup == null)
+                        //        {
+                        //            break;
+                        //        }
+                        //        else
+                        //        {
+                        //            maintenanceReportService_id = Guid.NewGuid();
+                        //        }
+                        //    }
+                        //    var maintenanceReportService = new MaintenanceReportService
+                        //    {
+                        //        Id = maintenanceReportService_id,
+                        //        Description = item1.Description,
+                        //        MaintenanceReportId = maintenanceReport.Id,
+                        //        ServiceId = item1.service_id,
+                        //        Created = false,
+                        //    };
+                        //    await _context.MaintenanceReportServices.AddAsync(maintenanceReportService);
+                        //}
+                    }
+
+                }
+            }
+            var data = new MaintenanceReportResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new MaintenanceReportResponse
+
+                {
+                    id = maintenanceReport.Id,
+                    name = maintenanceReport.Name,
+                    code = maintenanceReport.Code,
+                    update_date = maintenanceReport.UpdateDate,
+                    create_date = maintenanceReport.CreateDate,
+                    description = maintenanceReport.Description,
+                    is_delete = maintenanceReport.IsDelete,
+                    status = maintenanceReport.Status,
+                    agency = new AgencyViewResponse
+                    {
+                        id = maintenanceReport.AgencyId,
+                        code = _context.Agencies.Where(x => x.Id.Equals(maintenanceReport.AgencyId)).Select(a => a.Code).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(maintenanceReport.AgencyId)).Select(a => a.AgencyName).FirstOrDefault(),
+                        phone = _context.Agencies.Where(x => x.Id.Equals(maintenanceReport.AgencyId)).Select(a => a.Telephone).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(maintenanceReport.AgencyId)).Select(a => a.Address).FirstOrDefault(),
+                    },
+                    customer = new CustomerViewResponse
+                    {
+                        id = maintenanceReport.CustomerId,
+                        code = _context.Customers.Where(x => x.Id.Equals(maintenanceReport.CustomerId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Customers.Where(x => x.Id.Equals(maintenanceReport.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(maintenanceReport.CustomerId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+
+                    maintenance_schedule = new MaintenanceReportViewResponse
+                    {
+                        id = maintenanceReport.MaintenanceScheduleId,
+                        code = _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenanceReport.MaintenanceScheduleId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenanceReport.MaintenanceScheduleId)).Select(a => a.Name).FirstOrDefault(),
+                    },
+                    create_by = new TechnicianViewResponse
+                    {
+                        id = maintenanceReport.CreateBy,
+                        code = _context.Technicians.Where(x => x.Id.Equals(maintenanceReport.CreateBy)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Technicians.Where(x => x.Id.Equals(maintenanceReport.CreateBy)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    },
+                    service = _context.MaintenanceReportServices.Where(x => x.MaintenanceReportId.Equals(maintenanceReport.Id)).Select(a => new ServiceReportResponse
+                    {
+                        report_service_id = a.Id,
+                        service_id = a.ServiceId,
+                        code = a.Service!.Code,
+                        service_name = a.Service!.ServiceName,
+                        description = a.Description,
+                        created = a.Created,
+                    }).ToList(),
+                };
+            }
+            return new ObjectModelResponse(data)
+            {
+                Type = "MaintenanceReport"
+            };
         }
         public async Task<ObjectModelResponse> CreateMaintenanceReport(MaintenanceReportRequest model)
         {
