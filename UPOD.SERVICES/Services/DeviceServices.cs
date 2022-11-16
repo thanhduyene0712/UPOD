@@ -86,11 +86,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -151,11 +151,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -223,11 +223,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -288,11 +288,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -360,11 +360,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -431,11 +431,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -497,11 +497,11 @@ namespace UPOD.SERVICES.Services
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
-                img = _context.Images.Where(d => d.ObjectId.Equals(a.Id)).Select(x => new ImageResponse
+                img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
                 {
                     id = x.Id,
                     link = x.Link,
-                    object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                 }).ToList(),
             }).FirstOrDefaultAsync();
             return new ObjectModelResponse(device!)
@@ -567,7 +567,7 @@ namespace UPOD.SERVICES.Services
                 {
                     Id = img_id,
                     Link = item,
-                    ObjectId = device.Id,
+                    CurrentObject_Id = device.Id,
                 };
                 await _context.Images.AddAsync(imgTicket);
             }
@@ -613,11 +613,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
                     update_date = device.UpdateDate,
-                    img = _context.Images.Where(a => a.ObjectId.Equals(device.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 };
             }
@@ -672,11 +672,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
                     update_date = device.UpdateDate,
-                    img = _context.Images.Where(a => a.ObjectId.Equals(device.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 };
             }
@@ -710,7 +710,7 @@ namespace UPOD.SERVICES.Services
 
             }).FirstOrDefaultAsync();
             _context.Devices.Update(device!);
-            var imgs = await _context.Images.Where(a => a.ObjectId.Equals(device!.Id)).ToListAsync();
+            var imgs = await _context.Images.Where(a => a.CurrentObject_Id.Equals(device!.Id)).ToListAsync();
             foreach (var item in imgs)
             {
                 _context.Images.Remove(item);
@@ -734,7 +734,7 @@ namespace UPOD.SERVICES.Services
                 {
                     Id = img_id,
                     Link = item,
-                    ObjectId = device!.Id,
+                    CurrentObject_Id = device!.Id,
                 };
                 await _context.Images.AddAsync(imgTicket);
 
@@ -780,11 +780,11 @@ namespace UPOD.SERVICES.Services
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
                     update_date = device.UpdateDate,
-                    img = _context.Images.Where(a => a.ObjectId.Equals(device.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.ObjectId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
                     }).ToList(),
                 };
             };

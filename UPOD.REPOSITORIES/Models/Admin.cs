@@ -7,7 +7,6 @@ namespace UPOD.REPOSITORIES.Models
     {
         public Admin()
         {
-            Images = new HashSet<Image>();
             Requests = new HashSet<Request>();
         }
 
@@ -23,7 +22,6 @@ namespace UPOD.REPOSITORIES.Models
         public string? Address { get; set; }
 
         public virtual Account? Account { get; set; }
-        public virtual ICollection<Image> Images { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
     }
 }

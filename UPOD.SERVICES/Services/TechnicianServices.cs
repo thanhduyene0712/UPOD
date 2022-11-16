@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Data;
+using System.Net.Sockets;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
@@ -40,13 +41,16 @@ namespace UPOD.SERVICES.Services
             var total = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).ToListAsync();
             var device_of_request = await _context.Tickets.Where(a => a.RequestId.Equals(id) && a.IsDelete == false).Select(a => new DevicesOfRequestResponse
             {
+                ticket_id = a.Id,
                 device_id = a.Device!.Id,
                 code = a.Device.Code,
                 name = a.Device.DeviceName,
                 solution = a.Solution,
                 description = a.Description,
-                create_date = a.UpdateDate,
-            }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).Distinct().ToListAsync();
+                create_date = a.CreateDate,
+                img = _context.Images.Where(x => x.CurrentObject_Id.Equals(a.Id)).Select(a => a.Link).ToList()!,
+
+            }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<DevicesOfRequestResponse>(device_of_request)
             {
                 Total = total.Count,
@@ -456,16 +460,7 @@ namespace UPOD.SERVICES.Services
                     CreateDate = DateTime.UtcNow.AddHours(7),
                     UpdateDate = DateTime.UtcNow.AddHours(7)
                 };
-                await _context.Tickets.AddAsync(ticket);
-                list.Add(new DevicesOfRequestResponse
-                {
-                    device_id = ticket.DeviceId,
-                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
-                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
-                    solution = ticket.Solution,
-                    description = ticket.Description
-
-                });
+               
 
                 foreach (var item1 in item.img!)
                 {
@@ -486,13 +481,25 @@ namespace UPOD.SERVICES.Services
                     {
                         Id = img_id,
                         Link = item1,
-                        ObjectId = ticket.Id,
+                        CurrentObject_Id = ticket.Id,
                     };
+                    await _context.Tickets.AddAsync(ticket);
                     await _context.Images.AddAsync(imgTicket);
 
                 }
 
                 await _context.SaveChangesAsync();
+                list.Add(new DevicesOfRequestResponse
+                {
+                    ticket_id = ticket.Id,
+                    device_id = ticket.DeviceId,
+                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    solution = ticket.Solution,
+                    description = ticket.Description,
+                    create_date = ticket.CreateDate,
+                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(ticket.Id)).Select(x => x.Link).ToList()!,
+                });
 
             }
             return new ResponseModel<DevicesOfRequestResponse>(list)
@@ -501,7 +508,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Devices"
             };
         }
-       
+
         public async Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, ListTicketRequest model)
         {
 
@@ -514,7 +521,7 @@ namespace UPOD.SERVICES.Services
             foreach (var device in devices)
             {
                 _context.Tickets.Remove(device);
-                var imgs = await _context.Images.Where(a => a.ObjectId.Equals(device.Id)).ToListAsync();
+                var imgs = await _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).ToListAsync();
                 foreach (var item in imgs)
                 {
                     _context.Images.Remove(item);
@@ -548,15 +555,7 @@ namespace UPOD.SERVICES.Services
                     UpdateDate = DateTime.UtcNow.AddHours(7)
                 };
                 await _context.Tickets.AddAsync(ticket);
-                list.Add(new DevicesOfRequestResponse
-                {
-                    device_id = ticket.DeviceId,
-                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
-                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
-                    solution = ticket.Solution,
-                    description = ticket.Description
-
-                });
+               
                 foreach (var item1 in item.img!)
                 {
                     var img_id = Guid.NewGuid();
@@ -576,12 +575,24 @@ namespace UPOD.SERVICES.Services
                     {
                         Id = img_id,
                         Link = item1,
-                        ObjectId = ticket.Id,
+                        CurrentObject_Id = ticket.Id,
                     };
                     await _context.Images.AddAsync(imgTicket);
 
                 }
+                 
                 await _context.SaveChangesAsync();
+                list.Add(new DevicesOfRequestResponse
+                {
+                    ticket_id = ticket.Id,
+                    device_id = ticket.DeviceId,
+                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
+                    solution = ticket.Solution,
+                    description = ticket.Description,
+                    create_date = ticket.CreateDate,
+                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(ticket.Id)).Select(x => x.Link).ToList()!,
+                });
 
             }
             return new ObjectModelResponse(list!)

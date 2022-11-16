@@ -7,7 +7,6 @@ namespace UPOD.REPOSITORIES.Models
     {
         public Device()
         {
-            Images = new HashSet<Image>();
             Tickets = new HashSet<Ticket>();
         }
 
@@ -31,7 +30,6 @@ namespace UPOD.REPOSITORIES.Models
 
         public virtual Agency? Agency { get; set; }
         public virtual DeviceType? DeviceType { get; set; }
-        public virtual ICollection<Image> Images { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

@@ -41,7 +41,7 @@ namespace UPOD.REPOSITORIES.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=localhost,1433;Initial Catalog=Database_UPOD;User ID=sa;Password=THANHDUYEN07121999;Trusted_Connection=True;");
             }
         }
@@ -134,8 +134,6 @@ namespace UPOD.REPOSITORIES.Models
                     .HasConstraintName("FK_Agency_Technician");
             });
 
-            
-
             modelBuilder.Entity<Area>(entity =>
             {
                 entity.ToTable("Area");
@@ -201,8 +199,6 @@ namespace UPOD.REPOSITORIES.Models
                     .HasForeignKey(d => d.ServiceId)
                     .HasConstraintName("ContractServiceITSupporterServiceItSupport");
             });
-
-          
 
             modelBuilder.Entity<Customer>(entity =>
             {
@@ -319,70 +315,14 @@ namespace UPOD.REPOSITORIES.Models
                     .HasConstraintName("FK_Guideline_Service");
             });
 
-           
-
             modelBuilder.Entity<Image>(entity =>
             {
                 entity.ToTable("Image");
 
+                entity.Property(e => e.Link).HasMaxLength(255);
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Link).HasMaxLength(250);
-
-                entity.HasOne(d => d.Object)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Admin");
-
-                entity.HasOne(d => d.ObjectNavigation)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Agency");
-
-                entity.HasOne(d => d.Object1)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Contract");
-
-                entity.HasOne(d => d.Object2)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Customer");
-
-                entity.HasOne(d => d.Object3)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Device");
-
-                entity.HasOne(d => d.Object4)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_MaintenanceReportService");
-
-                entity.HasOne(d => d.Object5)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Request");
-
-                entity.HasOne(d => d.Object6)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Service");
-
-                entity.HasOne(d => d.Object7)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Technician");
-
-                entity.HasOne(d => d.Object8)
-                    .WithMany(p => p.Images)
-                    .HasForeignKey(d => d.ObjectId)
-                    .HasConstraintName("FK_Image_Ticket");
             });
-
-           
-
-           
 
             modelBuilder.Entity<MaintenanceReport>(entity =>
             {
@@ -546,10 +486,6 @@ namespace UPOD.REPOSITORIES.Models
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             });
 
-          
-
-          
-
             modelBuilder.Entity<Service>(entity =>
             {
                 entity.ToTable("Service");
@@ -565,7 +501,6 @@ namespace UPOD.REPOSITORIES.Models
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             });
 
-          
             modelBuilder.Entity<Skill>(entity =>
             {
                 entity.ToTable("Skill");
@@ -582,8 +517,6 @@ namespace UPOD.REPOSITORIES.Models
                     .HasForeignKey(d => d.TechnicianId)
                     .HasConstraintName("SkillITSupporter");
             });
-
-           
 
             modelBuilder.Entity<Technician>(entity =>
             {
