@@ -314,7 +314,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> GetDetailsMaintenanceReport(Guid id)
         {
             var maintenanceReports = new MaintenanceReportResponse();
-            maintenanceReports = await _context.MaintenanceReports.Where(a => a.IsDelete == false && a.Id.Equals(id)).Select(a => new MaintenanceReportResponse
+            maintenanceReports = await _context.MaintenanceReports.Where(a => a.IsDelete == false && a.MaintenanceScheduleId.Equals(id)).Select(a => new MaintenanceReportResponse
             {
                 id = a.Id,
                 name = a.Name,
