@@ -492,6 +492,18 @@ namespace UPOD.SERVICES.Services
             }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("CON", code_number + 1);
+            while (true)
+            {
+                var code_dup = await _context.Contracts.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                if (code_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    code = "CON-" + code_number++.ToString();
+                }
+            }
             var contract = new Contract
             {
                 Id = contract_id,

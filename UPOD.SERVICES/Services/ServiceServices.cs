@@ -112,6 +112,18 @@ namespace UPOD.SERVICES.Services
             }
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("SE", num + 1);
+            while (true)
+            {
+                var code_dup = await _context.Services.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                if (code_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    code = "SE-" + num++.ToString();
+                }
+            }
             var service = new Service
             {
                 Id = service_id,

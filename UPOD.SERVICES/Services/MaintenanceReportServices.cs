@@ -516,6 +516,18 @@ namespace UPOD.SERVICES.Services
             var agencyId = _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).Select(a => a.AgencyId).FirstOrDefault();
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("MR", num + 1);
+            while (true)
+            {
+                var code_dup = await _context.MaintenanceReports.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                if (code_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    code = "MR-" + num++.ToString();
+                }
+            }
             var maintenanceReport = new MaintenanceReport
             {
                 Id = maintenanceReport_id,

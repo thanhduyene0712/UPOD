@@ -346,6 +346,18 @@ namespace UPOD.SERVICES.Services
             }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("AG", code_number + 1);
+            while (true)
+            {
+                var code_dup = await _context.Agencies.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                if (code_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    code = "AG-" + code_number++.ToString();
+                }
+            }
             var agency = new Agency
             {
                 Id = agency_id,

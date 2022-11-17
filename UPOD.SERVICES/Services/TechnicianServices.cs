@@ -618,6 +618,18 @@ namespace UPOD.SERVICES.Services
         {
             var num = await GetLastCode();
             var code = CodeHelper.GeneratorCode("TE", num + 1);
+            while (true)
+            {
+                var code_dup = await _context.Technicians.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                if (code_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    code = "TE-" + num++.ToString();
+                }
+            }
             var technician_id = Guid.NewGuid();
             while (true)
             {

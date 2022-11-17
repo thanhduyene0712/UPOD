@@ -115,6 +115,18 @@ namespace UPOD.SERVICES.Services
             }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("AD", code_number + 1);
+            while (true)
+            {
+                var code_dup = await _context.Admins.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                if (code_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    code = "AD-" + code_number++.ToString();
+                }
+            }
             var admin = new Admin
             {
                 Id = admin_id,

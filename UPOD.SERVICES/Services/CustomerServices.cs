@@ -545,6 +545,18 @@ namespace UPOD.SERVICES.Services
             }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("CU", code_number + 1);
+            while (true)
+            {
+                var code_dup = await _context.Customers.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                if (code_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    code = "CU-" + code_number++.ToString();
+                }
+            }
             var customer = new Customer
             {
                 Id = customer_id,

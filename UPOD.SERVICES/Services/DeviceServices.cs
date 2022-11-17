@@ -571,6 +571,18 @@ namespace UPOD.SERVICES.Services
             }
             var code_number = await GetLastCode();
             var code = CodeHelper.GeneratorCode("DE", code_number + 1);
+            while (true)
+            {
+                var code_dup = await _context.Devices.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                if (code_dup == null)
+                {
+                    break;
+                }
+                else
+                {
+                    code = "DE-" + code_number++.ToString();
+                }
+            }
             var device = new Device
             {
                 Id = device_id,

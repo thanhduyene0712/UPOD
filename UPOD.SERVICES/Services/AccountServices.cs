@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Dynamic.Core;
 using System.Security.Claims;
@@ -374,6 +375,30 @@ namespace UPOD.SERVICES.Services
             {
                 var code_number = await GetLastCode();
                 var code = CodeHelper.GeneratorCode("ACC", code_number + 1);
+                while (true)
+                {
+                    var code_dup = await _context.Accounts.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                    if (code_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        code = "ACC-" + code_number++.ToString();
+                    }
+                }
+                while (true)
+                {
+                    var code_dup = await _context.Requests.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                    if (code_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        code = "ACC-" + code_number++.ToString();
+                    }
+                }
                 var account = new Account
                 {
                     Id = account_id,
@@ -455,6 +480,18 @@ namespace UPOD.SERVICES.Services
             {
                 var code_number = await GetLastCode();
                 var code = CodeHelper.GeneratorCode("ACC", code_number + 1);
+                while (true)
+                {
+                    var code_dup = await _context.Accounts.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                    if (code_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        code = "ACC-" + code_number++.ToString();
+                    }
+                }
                 var account = new Account
                 {
                     Id = account_id,
@@ -535,6 +572,18 @@ namespace UPOD.SERVICES.Services
             {
                 var code_number = await GetLastCode();
                 var code = CodeHelper.GeneratorCode("ACC", code_number + 1);
+                while (true)
+                {
+                    var code_dup = await _context.Accounts.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                    if (code_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        code = "ACC-" + code_number++.ToString();
+                    }
+                }
                 var account = new Account
                 {
                     Id = account_id,
@@ -615,6 +664,18 @@ namespace UPOD.SERVICES.Services
             {
                 var code_number = await GetLastCode();
                 var code = CodeHelper.GeneratorCode("ACC", code_number + 1);
+                while (true)
+                {
+                    var code_dup = await _context.Accounts.Where(a => a.Code.Equals(code)).FirstOrDefaultAsync();
+                    if (code_dup == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        code = "ACC-" + code_number++.ToString();
+                    }
+                }
                 var account = new Account
                 {
                     Id = account_id,
