@@ -35,6 +35,7 @@ namespace UPOD.SERVICES.Services
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
+                guideline = a.Guideline,
 
             }).FirstOrDefaultAsync();
             return new ObjectModelResponse(service!)
@@ -58,6 +59,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
+                    guideline = a.Guideline,
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -77,6 +79,8 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
+                    guideline = a.Guideline,
+
 
                 }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
@@ -115,6 +119,7 @@ namespace UPOD.SERVICES.Services
                 ServiceName = model.service_name,
                 Description = model.description,
                 IsDelete = false,
+                Guideline = model.guideline,
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7),
 
@@ -143,6 +148,8 @@ namespace UPOD.SERVICES.Services
                     is_delete = service.IsDelete,
                     create_date = service.CreateDate,
                     update_date = service.UpdateDate,
+                    guideline = service.Guideline,
+
                 };
             }
             return new ObjectModelResponse(data)
@@ -162,6 +169,7 @@ namespace UPOD.SERVICES.Services
                 Description = model.description,
                 IsDelete = x.IsDelete,
                 CreateDate = x.CreateDate,
+                Guideline = model.guideline,
                 UpdateDate = DateTime.UtcNow.AddHours(7),
             }).FirstOrDefaultAsync();
             var data = new ServiceResponse();
@@ -178,6 +186,8 @@ namespace UPOD.SERVICES.Services
                     is_delete = service.IsDelete,
                     create_date = service.CreateDate,
                     update_date = service.UpdateDate,
+                    guideline = service.Guideline,
+
                 };
             }
 
@@ -207,6 +217,8 @@ namespace UPOD.SERVICES.Services
                     is_delete = service.IsDelete,
                     create_date = service.CreateDate,
                     update_date = service.UpdateDate,
+                    guideline = service.Guideline,
+
                 };
             }
 

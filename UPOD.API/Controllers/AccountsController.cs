@@ -1,10 +1,5 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Reso.Core.Utilities;
-using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.SERVICES.Services;
@@ -16,7 +11,6 @@ namespace UPOD.API.Controllers
     [Route("api/accounts")]
     public partial class AccountsController : ControllerBase
     {
-
         private readonly IAccountService _account_sv;
         private readonly IUserAccessor _userAccessor;
 

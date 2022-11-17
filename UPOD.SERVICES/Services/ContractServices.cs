@@ -51,8 +51,14 @@ namespace UPOD.SERVICES.Services
         {
             var contract = await _context.Contracts.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             contract!.IsDelete = true;
+            contract!.IsExpire = true;
             contract.UpdateDate = DateTime.UtcNow.AddHours(7);
             _context.Contracts.Update(contract);
+            var contract_services = await _context.ContractServices.Where(a => a.ContractId.Equals(contract!.Id)).ToListAsync();
+            foreach (var item in contract_services)
+            {
+                _context.ContractServices.Remove(item);
+            }
             var data = new ContractResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
@@ -66,8 +72,11 @@ namespace UPOD.SERVICES.Services
                     {
                         id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                        name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        cus_name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                        phone = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                        address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                        mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
                     start_date = contract.StartDate,
                     end_date = contract.EndDate,
@@ -112,9 +121,11 @@ namespace UPOD.SERVICES.Services
                     {
                         id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        cus_name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-
+                        phone = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                        address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                        mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
                     terminal_content = a.TerminalContent,
                     start_date = a.StartDate,
@@ -160,9 +171,11 @@ namespace UPOD.SERVICES.Services
                     {
                         id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                        name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        cus_name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-
+                        phone = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                        address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                        mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
                     start_date = a.StartDate,
                     end_date = a.EndDate,
@@ -204,8 +217,11 @@ namespace UPOD.SERVICES.Services
                 {
                     id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                     code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                    name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                     description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    phone = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                    address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                    mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                 },
                 terminal_content = a.TerminalContent,
                 start_date = a.StartDate,
@@ -237,6 +253,11 @@ namespace UPOD.SERVICES.Services
             contract!.TerminalTime = DateTime.UtcNow.AddHours(7);
             contract!.TerminalContent = model.terminal_content;
             contract!.IsExpire = true;
+            var contract_services = await _context.ContractServices.Where(a => a.IsDelete == false && a.ContractId.Equals(id)).ToListAsync();
+            foreach (var item in contract_services)
+            {
+                item.IsDelete = true;
+            }
             var data = new ContractResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
@@ -251,9 +272,11 @@ namespace UPOD.SERVICES.Services
                     {
                         id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                        name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        cus_name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-
+                        phone = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                        address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                        mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
                     start_date = contract.StartDate,
                     end_date = contract.EndDate,
@@ -417,9 +440,11 @@ namespace UPOD.SERVICES.Services
                     {
                         id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                         code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                        name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        cus_name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-
+                        phone = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                        address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                        mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
                     start_date = contract.StartDate,
                     end_date = contract.EndDate,
@@ -600,9 +625,11 @@ namespace UPOD.SERVICES.Services
                         {
                             id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
                             code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                            name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                            cus_name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                             description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-
+                            phone = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                            address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                            mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                         },
                         start_date = contract.StartDate,
                         end_date = contract.EndDate,

@@ -56,6 +56,32 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPut]
+        [Route("processing_maintenance_report")]
+        public async Task<ActionResult<ObjectModelResponse>> SetStatusProcessingMaintenanceReport(Guid id)
+        {
+            try
+            {
+                return await _maintenance_report_sv.SetStatusProcessingMaintenanceReport(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        [Route("unprocessing_maintenance_report")]
+        public async Task<ActionResult<ObjectModelResponse>> SetUnProcessingMaintenanceReport(Guid id)
+        {
+            try
+            {
+                return await _maintenance_report_sv.SetUnProcessingMaintenanceReport(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
         [Route("update_maintenance_report")]
         public async Task<ActionResult<ObjectModelResponse>> UpdateMaintenanceReport(Guid id, MaintenanceReportRequest model)
         {
@@ -68,46 +94,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[HttpPost]
-        //[Route("create_maintenance_report_service")]
-        //public async Task<ActionResult<ResponseModel<MaintenanceReportServiceResponse>>> CreateMaintenanceReportService(Guid id, ListMaintenanceReportServiceRequest model)
-        //{
-        //    try
-        //    {
-        //        return await _maintenance_report_sv.CreateMaintenanceReportService(id, model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-        //[HttpPut]
-        //[Route("update_guideline_by_id")]
-        //public async Task<ActionResult<ObjectModelResponse>> UpdateDervice(Guid id, GuidelineRequest model)
-        //{
-        //    try
-        //    {
-        //        return await _guideline_sv.UpdateGuideline(id, model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-        //[HttpPut]
-        //[Route("disable_guideline_by_id")]
-        //public async Task<ActionResult<ObjectModelResponse>> DisableDervice(Guid id)
-        //{
-        //    try
-        //    {
-        //        return await _guideline_sv.DisableGuideline(id);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-
+       
     }
 
 }

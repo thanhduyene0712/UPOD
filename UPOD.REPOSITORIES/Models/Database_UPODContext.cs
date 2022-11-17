@@ -25,7 +25,6 @@ namespace UPOD.REPOSITORIES.Models
         public virtual DbSet<Customer> Customers { get; set; } = null!;
         public virtual DbSet<Device> Devices { get; set; } = null!;
         public virtual DbSet<DeviceType> DeviceTypes { get; set; } = null!;
-        public virtual DbSet<Guideline> Guidelines { get; set; } = null!;
         public virtual DbSet<Image> Images { get; set; } = null!;
         public virtual DbSet<MaintenanceReport> MaintenanceReports { get; set; } = null!;
         public virtual DbSet<MaintenanceReportService> MaintenanceReportServices { get; set; } = null!;
@@ -41,7 +40,7 @@ namespace UPOD.REPOSITORIES.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=localhost,1433;Initial Catalog=Database_UPOD;User ID=sa;Password=THANHDUYEN07121999;Trusted_Connection=True;");
             }
         }
@@ -293,28 +292,7 @@ namespace UPOD.REPOSITORIES.Models
                     .HasConstraintName("DeviceTypeServiceITSupport");
             });
 
-            modelBuilder.Entity<Guideline>(entity =>
-            {
-                entity.ToTable("Guideline");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Code).HasMaxLength(255);
-
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Guideline1).HasColumnName("Guideline");
-
-                entity.Property(e => e.GuidelineName).HasMaxLength(255);
-
-                entity.Property(e => e.UpdateDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Service)
-                    .WithMany(p => p.Guidelines)
-                    .HasForeignKey(d => d.ServiceId)
-                    .HasConstraintName("FK_Guideline_Service");
-            });
-
+           
             modelBuilder.Entity<Image>(entity =>
             {
                 entity.ToTable("Image");
@@ -497,6 +475,8 @@ namespace UPOD.REPOSITORIES.Models
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.ServiceName).HasMaxLength(250);
+
+                entity.Property(e => e.Guideline).HasMaxLength(255);
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             });

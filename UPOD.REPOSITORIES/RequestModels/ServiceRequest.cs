@@ -10,5 +10,6 @@ namespace UPOD.REPOSITORIES.RequestModels
     {
         public string? service_name { get; set; }
         public string? description { get; set; }
+        public string? guideline { get; set; }
     }
 }

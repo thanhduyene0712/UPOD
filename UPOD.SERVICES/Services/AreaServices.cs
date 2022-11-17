@@ -99,8 +99,9 @@ namespace UPOD.SERVICES.Services
             {
                 id = a.Id,
                 code = a.Code,
-                name = a.TechnicianName
-
+                tech_name = a.TechnicianName,
+                phone = a.Telephone,
+                email = a.Email,
             }).OrderBy(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<TechnicianViewResponse>(technician)
             {

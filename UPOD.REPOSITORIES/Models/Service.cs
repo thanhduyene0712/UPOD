@@ -9,7 +9,6 @@ namespace UPOD.REPOSITORIES.Models
         {
             ContractServices = new HashSet<ContractService>();
             DeviceTypes = new HashSet<DeviceType>();
-            Guidelines = new HashSet<Guideline>();
             MaintenanceReportServices = new HashSet<MaintenanceReportService>();
             Requests = new HashSet<Request>();
             Skills = new HashSet<Skill>();
@@ -22,10 +21,10 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string? Code { get; set; }
+        public string? Guideline { get; set; }
 
         public virtual ICollection<ContractService> ContractServices { get; set; }
         public virtual ICollection<DeviceType> DeviceTypes { get; set; }
-        public virtual ICollection<Guideline> Guidelines { get; set; }
         public virtual ICollection<MaintenanceReportService> MaintenanceReportServices { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
         public virtual ICollection<Skill> Skills { get; set; }

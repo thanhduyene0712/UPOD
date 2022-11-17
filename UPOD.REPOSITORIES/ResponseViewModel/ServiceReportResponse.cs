@@ -10,6 +10,7 @@ namespace UPOD.REPOSITORIES.ResponseViewModel
     {
         public Guid? report_service_id { get; set; }
         public Guid? service_id { get; set; }
+        public Guid? request_id { get; set; }
         public string? code { get; set; }
         public string? service_name { get; set; }
         public string? description { get; set; }

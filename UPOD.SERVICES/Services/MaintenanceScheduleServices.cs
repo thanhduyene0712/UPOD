@@ -65,11 +65,11 @@ namespace UPOD.SERVICES.Services
                     },
                     technician = new TechnicianViewResponse
                     {
-                        id = maintenanceSchedule.TechnicianId,
-                        name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        phone = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                        email = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
-
+                        tech_name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     agency = new AgencyViewResponse
                     {
@@ -116,11 +116,11 @@ namespace UPOD.SERVICES.Services
                 },
                 technician = new TechnicianViewResponse
                 {
-                    id = maintenanceSchedule.TechnicianId,
-                    name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                    phone = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                    email = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                     code = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
-
+                    tech_name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                 },
                 agency = new AgencyViewResponse
                 {
@@ -224,10 +224,11 @@ namespace UPOD.SERVICES.Services
                     status = a.Status,
                     technician = new TechnicianViewResponse
                     {
-                        id = a.TechnicianId,
-                        name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        phone = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                        email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
+                        tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -292,11 +293,11 @@ namespace UPOD.SERVICES.Services
                      status = a.Status,
                      technician = new TechnicianViewResponse
                      {
-                         id = a.TechnicianId,
-                         name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                         phone = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                         email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                          code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
-
+                         tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                      },
                      service = new ServiceViewResponse
                      {
@@ -345,10 +346,11 @@ namespace UPOD.SERVICES.Services
                     status = a.Status,
                     technician = new TechnicianViewResponse
                     {
-                        id = a.TechnicianId,
-                        name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        phone = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                        email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
+                        tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -414,11 +416,11 @@ namespace UPOD.SERVICES.Services
                      status = a.Status,
                      technician = new TechnicianViewResponse
                      {
-                         id = a.TechnicianId,
-                         name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                         phone = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                         email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                          code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
-
+                         tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                      },
                      service = new ServiceViewResponse
                      {
@@ -466,10 +468,11 @@ namespace UPOD.SERVICES.Services
                     status = a.Status,
                     technician = new TechnicianViewResponse
                     {
-                        id = a.TechnicianId,
-                        name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        phone = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                        email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
+                        tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -535,11 +538,11 @@ namespace UPOD.SERVICES.Services
                      status = a.Status,
                      technician = new TechnicianViewResponse
                      {
-                         id = a.TechnicianId,
-                         name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                         phone = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                         email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                          code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
-
+                         tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                      },
                      service = new ServiceViewResponse
                      {
@@ -592,10 +595,11 @@ namespace UPOD.SERVICES.Services
                     status = maintenanceSchedule.Status,
                     technician = new TechnicianViewResponse
                     {
-                        id = maintenanceSchedule.TechnicianId,
-                        name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        phone = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                        email = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
+                        tech_name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {
@@ -644,10 +648,11 @@ namespace UPOD.SERVICES.Services
                     status = maintenanceSchedule.Status,
                     technician = new TechnicianViewResponse
                     {
-                        id = maintenanceSchedule.TechnicianId,
-                        name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        phone = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                        email = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-
+                        tech_name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
                     service = new ServiceViewResponse
                     {

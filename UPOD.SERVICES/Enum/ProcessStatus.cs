@@ -22,14 +22,15 @@ namespace UPOD.SERVICES.Enum
     {
         //1:có service hư, 2: không có service hư (nên có 2 status này)
         PROBLEM,
-        NO_PROBLEM
+        NO_PROBLEM,
+        PROCESSING
     }
     public enum ScheduleStatus
     {
-       SCHEDULED,
-       MISSED,
-       MAINTAINING, 
-       COMPLETED,
-       NOTIFIED,
+        SCHEDULED,
+        MISSED,
+        MAINTAINING,
+        COMPLETED,
+        NOTIFIED,
     }
 }

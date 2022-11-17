@@ -22,24 +22,24 @@ var builder = WebApplication.CreateBuilder(args);
 #region authenticate
 //var tokenValidationParams = new TokenValidationParameters
 //{
-//ValidateIssuer = false,
-//ValidateAudience = false,
-//ValidateLifetime = true,
-//RequireExpirationTime = false,
-//ValidateIssuerSigningKey = true,
-//IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secretkey"]))
+//    ValidateIssuer = false,
+//    ValidateAudience = false,
+//    ValidateLifetime = true,
+//    RequireExpirationTime = false,
+//    ValidateIssuerSigningKey = true,
+//    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secretkey"]))
 //};
 //builder.Services.AddSingleton(tokenValidationParams);
 //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //                .AddJwtBearer(opt =>
 //                {
-//opt.SaveToken = true;
-//opt.TokenValidationParameters = tokenValidationParams;
-//});
+//                    opt.SaveToken = true;
+//                    opt.TokenValidationParameters = tokenValidationParams;
+//                });
 //builder.Services.AddMvc(opt =>
 //{
-//var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-//opt.Filters.Add(new AuthorizeFilter(policy));
+//    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+//    opt.Filters.Add(new AuthorizeFilter(policy));
 //});
 builder.Services.AddHttpContextAccessor();
 #endregion

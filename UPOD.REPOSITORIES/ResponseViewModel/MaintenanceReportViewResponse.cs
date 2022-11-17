@@ -10,6 +10,8 @@ namespace UPOD.REPOSITORIES.ResponseViewModel
     {
         public Guid? id { get; set; }
         public string? code { get; set; }
-        public string? name { get; set; }
+        public string? sche_name { get; set; }
+        public string? description { get; set; }
+        public DateTime? maintain_time { get; set; }
     }
 }
