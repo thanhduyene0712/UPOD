@@ -222,6 +222,10 @@ namespace UPOD.SERVICES.Services
                     update_date = a.UpdateDate,
                     maintain_time = a.MaintainTime,
                     status = a.Status,
+                    start_time = a.StartDate,
+                    end_time = a.EndDate,
+                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                    manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -291,6 +295,10 @@ namespace UPOD.SERVICES.Services
                      update_date = a.UpdateDate,
                      maintain_time = a.MaintainTime,
                      status = a.Status,
+                     start_time = a.StartDate,
+                     end_time = a.EndDate,
+                     cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                     manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                      technician = new TechnicianViewResponse
                      {
                          id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -344,6 +352,10 @@ namespace UPOD.SERVICES.Services
                     update_date = a.UpdateDate,
                     maintain_time = a.MaintainTime,
                     status = a.Status,
+                    start_time = a.StartDate,
+                    end_time = a.EndDate,
+                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                    manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -414,6 +426,10 @@ namespace UPOD.SERVICES.Services
                      update_date = a.UpdateDate,
                      maintain_time = a.MaintainTime,
                      status = a.Status,
+                     start_time = a.StartDate,
+                     end_time = a.EndDate,
+                     cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                     manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                      technician = new TechnicianViewResponse
                      {
                          id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -466,6 +482,10 @@ namespace UPOD.SERVICES.Services
                     update_date = a.UpdateDate,
                     maintain_time = a.MaintainTime,
                     status = a.Status,
+                    start_time = a.StartDate,
+                    end_time = a.EndDate,
+                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                    manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -490,7 +510,8 @@ namespace UPOD.SERVICES.Services
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.AgencyName).FirstOrDefault(),
                         address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.Address).FirstOrDefault(),
                         phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.Telephone).FirstOrDefault()
-                    }
+                    },
+
                 }).OrderByDescending(a => a.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             else
@@ -536,6 +557,10 @@ namespace UPOD.SERVICES.Services
                      update_date = a.UpdateDate,
                      maintain_time = a.MaintainTime,
                      status = a.Status,
+                     start_time = a.StartDate,
+                     end_time = a.EndDate,
+                     cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                     manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                      technician = new TechnicianViewResponse
                      {
                          id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),

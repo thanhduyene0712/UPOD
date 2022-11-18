@@ -33,7 +33,7 @@ namespace UPOD.SERVICES.Services
         public async Task<List<Guid>> GetContractNotify()
         {
 
-            var todayContracts = await _context.Contracts.Where(a => (a.EndDate!.Value.Date <= DateTime.UtcNow.AddHours(7) && a.IsDelete == false && a.IsExpire == false)).ToListAsync();
+            var todayContracts = await _context.Contracts.Where(a => (a.EndDate!.Value.Date <= DateTime.UtcNow.AddHours(7) && a.IsDelete == false)).ToListAsync();
             var rs = new List<Guid>();
             foreach (var item in todayContracts)
             {
