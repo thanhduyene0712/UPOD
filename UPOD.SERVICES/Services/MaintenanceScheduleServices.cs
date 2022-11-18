@@ -54,6 +54,8 @@ namespace UPOD.SERVICES.Services
                     update_date = maintenanceSchedule.UpdateDate,
                     maintain_time = maintenanceSchedule.MaintainTime,
                     status = maintenanceSchedule.Status,
+                    start_time = maintenanceSchedule.StartDate,
+                    end_time = maintenanceSchedule.EndDate,
                     service = new ServiceViewResponse
                     {
                         id = maintenanceSchedule.ServiceId,
@@ -146,6 +148,7 @@ namespace UPOD.SERVICES.Services
             foreach (var item in todaySchedules)
             {
                 item.Status = ScheduleStatus.NOTIFIED.ToString();
+                await _context.SaveChangesAsync();
             }
         }
         public async Task SetMaintenanceSchedulesNotifyMissing()
@@ -158,21 +161,10 @@ namespace UPOD.SERVICES.Services
                 if (date >= 5)
                 {
                     item.Status = ScheduleStatus.MISSED.ToString();
-                }
-            }
-            var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("SCHEDULED")).ToListAsync();
-            foreach (var item in maintainSchedules)
-            {
-                var missingDate = DateTime.UtcNow.AddHours(7) - item.MaintainTime;
-                var date = missingDate!.Value.Days;
-                if (date >= 5)
-                {
-                    item.Status = ScheduleStatus.MISSED.ToString();
+                    await _context.SaveChangesAsync();
                 }
             }
 
-
-            //return rs;
         }
         public async Task SetMaintenanceSchedulesMaintaining()
         {
@@ -183,24 +175,7 @@ namespace UPOD.SERVICES.Services
                 if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
                 {
                     item.Status = ScheduleStatus.MISSED.ToString();
-                }
-            }
-            var maintainScheduless = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("NOTIFIED")).ToListAsync();
-            foreach (var item in maintainScheduless)
-            {
-                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId) && a.IsDelete == false).FirstOrDefaultAsync();
-                if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
-                {
-                    item.Status = ScheduleStatus.MISSED.ToString();
-                }
-            }
-            var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("SCHEDULED")).ToListAsync();
-            foreach (var item in maintainSchedules)
-            {
-                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId) && a.IsDelete == false).FirstOrDefaultAsync();
-                if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
-                {
-                    item.Status = ScheduleStatus.MISSED.ToString();
+                    await _context.SaveChangesAsync();
                 }
             }
         }
@@ -224,8 +199,6 @@ namespace UPOD.SERVICES.Services
                     status = a.Status,
                     start_time = a.StartDate,
                     end_time = a.EndDate,
-                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
-                    manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -297,8 +270,6 @@ namespace UPOD.SERVICES.Services
                      status = a.Status,
                      start_time = a.StartDate,
                      end_time = a.EndDate,
-                     cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
-                     manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                      technician = new TechnicianViewResponse
                      {
                          id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -354,8 +325,6 @@ namespace UPOD.SERVICES.Services
                     status = a.Status,
                     start_time = a.StartDate,
                     end_time = a.EndDate,
-                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
-                    manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -428,8 +397,6 @@ namespace UPOD.SERVICES.Services
                      status = a.Status,
                      start_time = a.StartDate,
                      end_time = a.EndDate,
-                     cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
-                     manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                      technician = new TechnicianViewResponse
                      {
                          id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -484,8 +451,6 @@ namespace UPOD.SERVICES.Services
                     status = a.Status,
                     start_time = a.StartDate,
                     end_time = a.EndDate,
-                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
-                    manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -559,8 +524,6 @@ namespace UPOD.SERVICES.Services
                      status = a.Status,
                      start_time = a.StartDate,
                      end_time = a.EndDate,
-                     cus_name = _context.Customers.Where(x => x.Id.Equals(a.Agency!.CustomerId)).Select(a => a.Name).FirstOrDefault(),
-                     manager_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(a => a.ManagerName).FirstOrDefault(),
                      technician = new TechnicianViewResponse
                      {
                          id = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -618,6 +581,8 @@ namespace UPOD.SERVICES.Services
                     update_date = maintenanceSchedule.UpdateDate,
                     maintain_time = maintenanceSchedule.MaintainTime,
                     status = maintenanceSchedule.Status,
+                    start_time = maintenanceSchedule.StartDate,
+                    end_time = maintenanceSchedule.EndDate,
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -671,6 +636,8 @@ namespace UPOD.SERVICES.Services
                     update_date = maintenanceSchedule.UpdateDate,
                     maintain_time = maintenanceSchedule.MaintainTime,
                     status = maintenanceSchedule.Status,
+                    start_time = maintenanceSchedule.StartDate,
+                    end_time = maintenanceSchedule.EndDate,
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -709,6 +676,7 @@ namespace UPOD.SERVICES.Services
         {
             var maintainStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(scheduleId) && a.IsDelete == false).FirstOrDefaultAsync();
             maintainStatus!.Status = status.ToString();
+            
             await _context.SaveChangesAsync();
         }
     }

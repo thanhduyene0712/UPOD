@@ -386,19 +386,19 @@ namespace UPOD.SERVICES.Services
                     code = agency.Code,
                     customer = new CustomerViewResponse
                     {
-                        id = agency.CustomerId,
-                        code = agency.Customer!.Code,
-                        cus_name = agency.Customer.Name,
-                        address = agency.Customer.Address,
-                        phone = agency.Customer.Phone,
-                        description = agency.Customer.Description,
+                        id = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Code).FirstOrDefault(),
+                        cus_name = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                        address = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Address).FirstOrDefault(),
+                        phone = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Phone).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Description).FirstOrDefault(),
                     },
                     area = new AreaViewResponse
                     {
-                        id = agency.AreaId,
-                        code = agency.Area!.Code,
-                        area_name = agency.Area.AreaName,
-                        description = agency.Area.Description
+                        id = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Code).FirstOrDefault(),
+                        area_name = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.AreaName).FirstOrDefault(),
+                        description = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Description).FirstOrDefault(),
                     },
                     technician = new TechnicianViewResponse
                     {

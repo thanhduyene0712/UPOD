@@ -43,8 +43,17 @@ namespace UPOD.SERVICES.Services
         }
         public async Task SetExpire(Guid contractId)
         {
-            var maintainStatus = await _context.Contracts.Where(a => a.Id.Equals(contractId) && a.IsDelete == false).FirstOrDefaultAsync();
-            maintainStatus!.IsExpire = true;
+            var contract = await _context.Contracts.Where(a => a.Id.Equals(contractId) && a.IsDelete == false).FirstOrDefaultAsync();
+            contract!.IsExpire = true;
+            var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(contractId)).ToListAsync();
+            foreach (var item in maintainSchedules)
+            {
+                if (item.Status != "COMPLETE" && item.Status != "MISSED")
+                {
+                    item.IsDelete = true;
+                }
+                //item.IsDelete = false;
+            }
             await _context.SaveChangesAsync();
         }
         public async Task<ObjectModelResponse> DisableContract(Guid id)
@@ -257,6 +266,14 @@ namespace UPOD.SERVICES.Services
             foreach (var item in contract_services)
             {
                 item.IsDelete = true;
+            }
+            var schedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(contract.Id)).ToListAsync();
+            foreach (var item in schedule)
+            {
+                if (item.Status != "COMPLETE" && item.Status != "MISSED")
+                {
+                    item.IsDelete = true;
+                }
             }
             var data = new ContractResponse();
             var rs = await _context.SaveChangesAsync();
@@ -596,7 +613,7 @@ namespace UPOD.SERVICES.Services
                             CreateDate = DateTime.UtcNow.AddHours(7),
                             UpdateDate = DateTime.UtcNow.AddHours(7),
                             IsDelete = false,
-                            Name = "Maintenance of Agency: " + item.AgencyName + ", Service: " + service!.ServiceName + ", time " + i,
+                            Name = "Maintenance Schedule: " + /*item.AgencyName + ", Service: " + service!.ServiceName + */", time " + i,
                             Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
                             TechnicianId = item.TechnicianId,
                             MaintainTime = maintenanceDate,

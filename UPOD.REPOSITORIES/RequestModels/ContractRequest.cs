@@ -14,7 +14,6 @@ namespace UPOD.REPOSITORIES.RequestModels
         public DateTime? end_date { get; set; }
         public double? contract_price { get; set; }
         public string? attachment { get; set; }
-        public string? img { get; set; }
         public string? description { get; set; }
         public List<ServiceFrequencyRequest> service { get; set; } = null!;
 
