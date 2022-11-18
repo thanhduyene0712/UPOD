@@ -38,7 +38,7 @@ namespace UPOD.SERVICES.Services
                 var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(item!.Id)).ToListAsync();
                 foreach (var item1 in maintainSchedules)
                 {
-                    if (item1.Status != "COMPLETED" && item1.Status != "MISSED")\
+                    if (item1.Status != "COMPLETED" && item1.Status != "MISSED")
                     {
                         item1.IsDelete = true;
                     }
