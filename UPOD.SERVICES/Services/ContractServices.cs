@@ -38,7 +38,7 @@ namespace UPOD.SERVICES.Services
                 var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(item!.Id)).ToListAsync();
                 foreach (var item1 in maintainSchedules)
                 {
-                    if (item1.Status != "COMPLETE" && item1.Status != "MISSED")
+                    if (item1.Status != "COMPLETED" && item1.Status != "MISSED")\
                     {
                         item1.IsDelete = true;
                     }
@@ -61,7 +61,7 @@ namespace UPOD.SERVICES.Services
             var schedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(contract.Id)).ToListAsync();
             foreach (var item in schedule)
             {
-                if (item.Status != "COMPLETE" && item.Status != "MISSED")
+                if (item.Status != "COMPLETED" && item.Status != "MISSED")
                 {
                     item.IsDelete = true;
                 }
@@ -270,7 +270,7 @@ namespace UPOD.SERVICES.Services
             var schedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(contract.Id)).ToListAsync();
             foreach (var item in schedule)
             {
-                if (item.Status != "COMPLETE" && item.Status != "MISSED")
+                if (item.Status != "COMPLETED" && item.Status != "MISSED")
                 {
                     item.IsDelete = true;
                 }
