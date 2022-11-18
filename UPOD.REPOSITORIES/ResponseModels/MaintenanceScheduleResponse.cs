@@ -16,7 +16,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? code { get; set; }
         public string? status { get; set; }
         public TechnicianViewResponse technician { get; set; } = null!;
-        public ServiceViewResponse service { get; set; } = null!;
         public AgencyViewResponse agency { get; set; } = null!;
     }
 }

@@ -27,6 +27,7 @@ namespace UPOD.REPOSITORIES.Models
         public string? Code { get; set; }
         public string? TerminalContent { get; set; }
         public bool? IsExpire { get; set; }
+        public int? FrequencyMaintainTime { get; set; }
 
         public virtual Customer? Customer { get; set; }
         public virtual ICollection<ContractService> ContractServices { get; set; }

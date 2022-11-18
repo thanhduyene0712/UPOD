@@ -62,20 +62,6 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpPut]
-        [Route("update_contract_by_id")]
-        public async Task<ActionResult<ObjectModelResponse>> UpdateContract(Guid id,ContractRequest model)
-        {
-            try
-            {
-                return await _contract_service_sv.UpdateContract(id, model);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
         [HttpPut]
         [Route("terminal_contract_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> TerminationContract(Guid id, ContractTermanationRequest model)

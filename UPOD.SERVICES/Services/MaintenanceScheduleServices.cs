@@ -56,15 +56,6 @@ namespace UPOD.SERVICES.Services
                     status = maintenanceSchedule.Status,
                     start_time = maintenanceSchedule.StartDate,
                     end_time = maintenanceSchedule.EndDate,
-                    service = new ServiceViewResponse
-                    {
-                        id = maintenanceSchedule.ServiceId,
-                        service_name = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                        frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(maintenanceSchedule.ServiceId) && x.ContractId.Equals(maintenanceSchedule.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
-                    },
                     technician = new TechnicianViewResponse
                     {
                         id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -107,15 +98,6 @@ namespace UPOD.SERVICES.Services
                 end_time = maintenanceSchedule.EndDate,
                 maintain_time = maintenanceSchedule.MaintainTime,
                 status = maintenanceSchedule.Status,
-                service = new ServiceViewResponse
-                {
-                    id = maintenanceSchedule.ServiceId,
-                    service_name = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                    code = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                    description = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                    frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(maintenanceSchedule.ServiceId) && x.ContractId.Equals(maintenanceSchedule.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
-                },
                 technician = new TechnicianViewResponse
                 {
                     id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -144,7 +126,7 @@ namespace UPOD.SERVICES.Services
         public async Task SetMaintenanceSchedulesNotify()
         {
 
-            var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime!.Value.Date >= DateTime.UtcNow.AddHours(7).Date && a.MaintainTime!.Value.Date <= DateTime.UtcNow.AddHours(7).AddDays(1).Date) && a.IsDelete == false).ToListAsync();
+            var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime!.Value.Date >= DateTime.UtcNow.AddHours(7).Date && a.MaintainTime!.Value.Date <= DateTime.UtcNow.AddHours(7).AddDays(1).Date) && a.IsDelete == false && a!.Status.Equals("SCHEDULED")).ToListAsync();
             foreach (var item in todaySchedules)
             {
                 item.Status = ScheduleStatus.NOTIFIED.ToString();
@@ -168,10 +150,10 @@ namespace UPOD.SERVICES.Services
         }
         public async Task SetMaintenanceSchedulesMaintaining()
         {
-            var maintainSchedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.Status!.Equals("MAINTAINING")).ToListAsync();
+            var maintainSchedule = await _context.MaintenanceSchedules.Where(a=>a.Status!.Equals("MAINTAINING")).ToListAsync();
             foreach (var item in maintainSchedule)
             {
-                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId) && a.IsDelete == false).FirstOrDefaultAsync();
+                var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId)).FirstOrDefaultAsync();
                 if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
                 {
                     item.Status = ScheduleStatus.MISSED.ToString();
@@ -207,15 +189,6 @@ namespace UPOD.SERVICES.Services
                         code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
                         tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
-                    service = new ServiceViewResponse
-                    {
-                        id = a.ServiceId,
-                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                        frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId) && x.ContractId.Equals(a.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
-                    },
                     agency = new AgencyViewResponse
                     {
                         id = a.AgencyId,
@@ -248,16 +221,14 @@ namespace UPOD.SERVICES.Services
                  || a.Code!.Contains(value.search)
                  || a.AgencyId!.Equals(agency_name)
                  || a.TechnicianId!.Equals(technician_name)
-                 || a.ContractId!.Equals(contract_name)
-                 || a.ServiceId!.Equals(service_name)))).ToListAsync();
+                 || a.ContractId!.Equals(contract_name)))).ToListAsync();
                 maintenanceSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false
                  && (a.Status!.Contains(value.status)
                  && (a.Name!.Contains(value.search)
                  || a.Code!.Contains(value.search)
                  || a.AgencyId!.Equals(agency_name)
                  || a.TechnicianId!.Equals(technician_name)
-                 || a.ContractId!.Equals(contract_name)
-                 || a.ServiceId!.Equals(service_name)))).Select(a => new MaintenanceScheduleResponse
+                 || a.ContractId!.Equals(contract_name)))).Select(a => new MaintenanceScheduleResponse
                  {
                      id = a.Id,
                      code = a.Code,
@@ -277,15 +248,6 @@ namespace UPOD.SERVICES.Services
                          email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                          code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
                          tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                     },
-                     service = new ServiceViewResponse
-                     {
-                         id = a.ServiceId,
-                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                         code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                         frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId) && x.ContractId.Equals(a.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
                      },
                      agency = new AgencyViewResponse
                      {
@@ -333,15 +295,6 @@ namespace UPOD.SERVICES.Services
                         code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
                         tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
-                    service = new ServiceViewResponse
-                    {
-                        id = a.ServiceId,
-                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                        frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId) && x.ContractId.Equals(a.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
-                    },
                     agency = new AgencyViewResponse
                     {
                         id = a.AgencyId,
@@ -365,7 +318,6 @@ namespace UPOD.SERVICES.Services
                 var agency_name = await _context.Agencies.Where(a => a.AgencyName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 var customer_name = await _context.Customers.Where(a => a.Name!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 var contract_name = await _context.Contracts.Where(a => a.ContractName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
-                var service_name = await _context.Services.Where(a => a.ServiceName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 var technician_name = await _context.Technicians.Where(a => a.TechnicianName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false
                  && a.TechnicianId.Equals(id)
@@ -374,8 +326,7 @@ namespace UPOD.SERVICES.Services
                  || a.Code!.Contains(value.search)
                  || a.AgencyId!.Equals(agency_name)
                  || a.TechnicianId!.Equals(technician_name)
-                 || a.ContractId!.Equals(contract_name)
-                 || a.ServiceId!.Equals(service_name)))).ToListAsync();
+                 || a.ContractId!.Equals(contract_name)))).ToListAsync();
                 maintenanceSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false
                  && a.TechnicianId.Equals(id)
                  && (a.Status!.Contains(value.status)
@@ -383,8 +334,7 @@ namespace UPOD.SERVICES.Services
                  || a.Code!.Contains(value.search)
                  || a.AgencyId!.Equals(agency_name)
                  || a.TechnicianId!.Equals(technician_name)
-                 || a.ContractId!.Equals(contract_name)
-                 || a.ServiceId!.Equals(service_name)))).Select(a => new MaintenanceScheduleResponse
+                 || a.ContractId!.Equals(contract_name)))).Select(a => new MaintenanceScheduleResponse
                  {
                      id = a.Id,
                      code = a.Code,
@@ -404,15 +354,6 @@ namespace UPOD.SERVICES.Services
                          email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                          code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
                          tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                     },
-                     service = new ServiceViewResponse
-                     {
-                         id = a.ServiceId,
-                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                         code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                         frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId) && x.ContractId.Equals(a.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
                      },
                      agency = new AgencyViewResponse
                      {
@@ -459,15 +400,6 @@ namespace UPOD.SERVICES.Services
                         code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
                         tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
-                    service = new ServiceViewResponse
-                    {
-                        id = a.ServiceId,
-                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                        frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId) && x.ContractId.Equals(a.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
-                    },
                     agency = new AgencyViewResponse
                     {
                         id = a.AgencyId,
@@ -501,8 +433,7 @@ namespace UPOD.SERVICES.Services
                  || a.Code!.Contains(value.search)
                  || a.AgencyId!.Equals(agency_name)
                  || a.TechnicianId!.Equals(technician_name)
-                 || a.ContractId!.Equals(contract_name)
-                 || a.ServiceId!.Equals(service_name)))).ToListAsync();
+                 || a.ContractId!.Equals(contract_name)))).ToListAsync();
                 maintenanceSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false
                  && a.AgencyId.Equals(id)
                  && (a.Status!.Contains(value.status)
@@ -510,8 +441,7 @@ namespace UPOD.SERVICES.Services
                  || a.Code!.Contains(value.search)
                  || a.AgencyId!.Equals(agency_name)
                  || a.TechnicianId!.Equals(technician_name)
-                 || a.ContractId!.Equals(contract_name)
-                 || a.ServiceId!.Equals(service_name)))).Select(a => new MaintenanceScheduleResponse
+                 || a.ContractId!.Equals(contract_name)))).Select(a => new MaintenanceScheduleResponse
                  {
                      id = a.Id,
                      code = a.Code,
@@ -531,15 +461,6 @@ namespace UPOD.SERVICES.Services
                          email = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                          code = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
                          tech_name = _context.Technicians.Where(x => x.Id.Equals(a.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                     },
-                     service = new ServiceViewResponse
-                     {
-                         id = a.ServiceId,
-                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                         code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                         frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(a.ServiceId) && x.ContractId.Equals(a.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
                      },
                      agency = new AgencyViewResponse
                      {
@@ -591,15 +512,6 @@ namespace UPOD.SERVICES.Services
                         code = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
                         tech_name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     },
-                    service = new ServiceViewResponse
-                    {
-                        id = maintenanceSchedule.ServiceId,
-                        service_name = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                        frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(maintenanceSchedule.ServiceId) && x.ContractId.Equals(maintenanceSchedule.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
-                    },
                     agency = new AgencyViewResponse
                     {
                         id = maintenanceSchedule.AgencyId,
@@ -645,15 +557,6 @@ namespace UPOD.SERVICES.Services
                         email = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
                         code = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
                         tech_name = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                    },
-                    service = new ServiceViewResponse
-                    {
-                        id = maintenanceSchedule.ServiceId,
-                        service_name = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(maintenanceSchedule.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                        frequency_maintain = _context.ContractServices.Where(x => x.ServiceId.Equals(maintenanceSchedule.ServiceId) && x.ContractId.Equals(maintenanceSchedule.ContractId)).Select(a => a.FrequencyMaintain).FirstOrDefault(),
-
                     },
                     agency = new AgencyViewResponse
                     {

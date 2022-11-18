@@ -30,11 +30,8 @@ namespace UPOD.API.Controllers
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotify();
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotifyMissing();
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesMaintaining();
-                var listContract = await _contract_sv.GetContractNotify();
-                foreach (var item in listContract)
-                {
-                    await _contract_sv.SetExpire(item);
-                }
+                await _contract_sv.SetContractNotify();
+              
                 var timeShedule = DateTime.SpecifyKind(DateTime.UtcNow.AddHours(12), DateTimeKind.Utc);
                 BackgroundJob.Schedule(() => Notifications(), timeShedule);
                 return Ok();

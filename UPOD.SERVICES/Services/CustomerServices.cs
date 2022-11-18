@@ -62,13 +62,13 @@ namespace UPOD.SERVICES.Services
                     contract_price = a.ContractPrice,
                     description = a.Description,
                     attachment = a.Attachment,
+                    frequency_maintain_time = a.FrequencyMaintainTime,
                     service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
                         code = x.Service!.Code,
                         service_name = x.Service!.ServiceName,
                         description = x.Service!.Description,
-                        frequency_maintain = x.FrequencyMaintain,
                     }).ToList()
 
                 }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
@@ -112,13 +112,13 @@ namespace UPOD.SERVICES.Services
                     contract_price = a.ContractPrice,
                     description = a.Description,
                     attachment = a.Attachment,
+                    frequency_maintain_time = a.FrequencyMaintainTime,
                     service = _context.ContractServices.Where(x => x.ContractId.Equals(a.Id)).Select(x => new ServiceViewResponse
                     {
                         id = x.ServiceId,
                         code = x.Service!.Code,
                         service_name = x.Service!.ServiceName,
                         description = x.Service!.Description,
-                        frequency_maintain = x.FrequencyMaintain,
                     }).ToList()
 
                 }).OrderByDescending(x => x.create_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();

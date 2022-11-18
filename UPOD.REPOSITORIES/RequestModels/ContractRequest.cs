@@ -15,6 +15,8 @@ namespace UPOD.REPOSITORIES.RequestModels
         public double? contract_price { get; set; }
         public string? attachment { get; set; }
         public string? description { get; set; }
+        public int? frequency_maintain_time { get; set; }
+
         public List<ServiceFrequencyRequest> service { get; set; } = null!;
 
     }

@@ -8,7 +8,6 @@ namespace UPOD.REPOSITORIES.Models
         public Guid Id { get; set; }
         public Guid? ContractId { get; set; }
         public Guid? ServiceId { get; set; }
-        public int? FrequencyMaintain { get; set; }
         public bool? IsDelete { get; set; }
 
         public virtual Contract? Contract { get; set; }

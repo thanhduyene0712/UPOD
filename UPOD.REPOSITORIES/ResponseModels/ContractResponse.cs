@@ -20,9 +20,9 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
         public string? attachment { get; set; }
-        public string? img { get; set; }
         public string? description { get; set; }
         public string? terminal_content { get; set; }
+        public int? frequency_maintain_time { get; set; }
         public CustomerViewResponse customer { get; set; } = null!;
         public List<ServiceViewResponse> service { get; set; } = null!;
     }
