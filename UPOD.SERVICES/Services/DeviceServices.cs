@@ -105,6 +105,7 @@ namespace UPOD.SERVICES.Services
                 var cus = await _context.Customers.Where(a => a.Name!.Contains(value!.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 var agen = await _context.Agencies.Where(a => a.AgencyName!.Contains(value!.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 var ser = await _context.Services.Where(a => a.ServiceName!.Contains(value!.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var de = await _context.DeviceTypes.Where(a => a.DeviceTypeName!.Contains(value!.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 var tech = await _context.Technicians.Where(a => a.TechnicianName!.Contains(value!.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Devices.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
@@ -112,12 +113,14 @@ namespace UPOD.SERVICES.Services
                 || a.AgencyId!.Equals(agen)
                 || a.DeviceType!.ServiceId.Equals(ser)
                 || a.CreateBy!.Equals(tech)
+                || a.DeviceTypeId!.Equals(de)
                 || a.DeviceName!.Contains(value.search.Trim()))).ToListAsync();
                 devices = await _context.Devices.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
                 || a.Agency!.CustomerId.Equals(cus)
                 || a.AgencyId!.Equals(agen)
                 || a.DeviceType!.ServiceId.Equals(ser)
+                || a.DeviceTypeId!.Equals(de)
                 || a.CreateBy!.Equals(tech)
                 || a.DeviceName!.Contains(value.search.Trim()))).Include(a => a.DeviceType).Include(a => a.Agency).Select(a => new DeviceResponse
                 {
