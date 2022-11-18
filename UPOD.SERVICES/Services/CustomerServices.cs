@@ -80,13 +80,11 @@ namespace UPOD.SERVICES.Services
                 total = await _context.Contracts.Where(a => a.IsDelete == false
                 && a.CustomerId.Equals(id)
                  && (a.Code!.Contains(value.search.Trim())
-                 || a.Code!.Contains(value.search.Trim())
                  || a.ContractName!.Contains(value.search.Trim())
                  || a.CustomerId!.Equals(customer))).ToListAsync();
                 contracts = await _context.Contracts.Where(a => a.IsDelete == false
                 && a.CustomerId.Equals(id)
                 && (a.Code!.Contains(value.search.Trim())
-                || a.Code!.Contains(value.search.Trim())
                 || a.ContractName!.Contains(value.search.Trim())
                 || a.CustomerId!.Equals(customer))).Select(a => new ContractResponse
                 {
@@ -277,6 +275,7 @@ namespace UPOD.SERVICES.Services
                     && (a.RequestStatus!.Contains(value.status!.Trim())
                     && (a.RequestName!.Contains(value.search!.Trim())
                     || a.Code!.Contains(value.search!.Trim())
+                    || a.RequestDesciption!.Contains(value.search!.Trim())
                     || a.AgencyId!.Equals(agency_name)
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
@@ -285,6 +284,7 @@ namespace UPOD.SERVICES.Services
                     && a.CustomerId.Equals(id)
                     && (a.RequestName!.Contains(value.search!.Trim())
                     || a.Code!.Contains(value.search.Trim())
+                    || a.RequestDesciption!.Contains(value.search!.Trim())
                     || a.AgencyId!.Equals(agency_name)
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
@@ -385,12 +385,12 @@ namespace UPOD.SERVICES.Services
                 total = await _context.Customers.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
                 || a.Name!.Contains(value.search.Trim())
-                || a.Mail!.Contains(value.search.Trim())
+                || a.Address!.Contains(value.search.Trim())
                 || a.Phone!.Contains(value.search.Trim()))).ToListAsync();
                 customers = await _context.Customers.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
                 || a.Name!.Contains(value.search.Trim())
-                || a.Mail!.Contains(value.search.Trim())
+                || a.Address!.Contains(value.search.Trim())
                 || a.Phone!.Contains(value.search.Trim()))).Select(a => new CustomerResponse
                 {
                     id = a.Id,

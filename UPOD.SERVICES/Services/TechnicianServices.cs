@@ -103,22 +103,18 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                var area = await _context.Areas.Where(a => a.AreaName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
-                var account_name = await _context.Accounts.Where(a => a.Username!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Technicians.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
                 || a.TechnicianName!.Contains(value.search.Trim())
                 || a.Email!.Contains(value.search.Trim())
                 || a.Telephone!.Contains(value.search.Trim())
-                || a.AccountId!.Equals(account_name)
-                || a.AreaId!.Equals(area))).ToListAsync();
+                || a.Address!.Contains(value.search.Trim()))).ToListAsync();
                 technicians = await _context.Technicians.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
                 || a.TechnicianName!.Contains(value.search.Trim())
                 || a.Email!.Contains(value.search.Trim())
                 || a.Telephone!.Contains(value.search.Trim())
-                || a.AccountId!.Equals(account_name)
-                || a.AreaId!.Equals(area))).Select(a => new TechnicianResponse
+                || a.Address!.Contains(value.search.Trim()))).Select(a => new TechnicianResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -314,6 +310,7 @@ namespace UPOD.SERVICES.Services
                     && (a.RequestStatus!.Contains(value.status!.Trim())
                     && (a.RequestName!.Contains(value.search!.Trim())
                     || a.Code!.Contains(value.search!.Trim())
+                    || a.RequestDesciption!.Contains(value.search!.Trim())
                     || a.AgencyId!.Equals(agency_name)
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
@@ -322,6 +319,7 @@ namespace UPOD.SERVICES.Services
                     && a.CurrentTechnicianId.Equals(id)
                     && (a.RequestName!.Contains(value.search!.Trim())
                     || a.Code!.Contains(value.search.Trim())
+                    || a.RequestDesciption!.Contains(value.search!.Trim())
                     || a.AgencyId!.Equals(agency_name)
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)

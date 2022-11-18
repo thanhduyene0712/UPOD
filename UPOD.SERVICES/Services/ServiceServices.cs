@@ -67,9 +67,11 @@ namespace UPOD.SERVICES.Services
             {
                 total = await _context.Services.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
+                || a.Description!.Contains(value.search.Trim())
                 || a.ServiceName!.Contains(value.search.Trim()))).ToListAsync();
                 services = await _context.Services.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
+                || a.Description!.Contains(value.search.Trim())
                 || a.ServiceName!.Contains(value.search.Trim()))).Select(a => new ServiceResponse
                 {
                     id = a.Id,

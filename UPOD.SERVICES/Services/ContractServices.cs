@@ -163,12 +163,10 @@ namespace UPOD.SERVICES.Services
                 var customer = await _context.Customers.Where(a => a.Name!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Contracts.Where(a => a.IsDelete == false
                  && (a.Code!.Contains(value.search.Trim())
-                 || a.Code!.Contains(value.search.Trim())
                  || a.ContractName!.Contains(value.search.Trim())
                  || a.CustomerId!.Equals(customer))).ToListAsync();
                 contracts = await _context.Contracts.Where(a => a.IsDelete == false
                 && (a.Code!.Contains(value.search.Trim())
-                || a.Code!.Contains(value.search.Trim())
                 || a.ContractName!.Contains(value.search.Trim())
                 || a.CustomerId!.Equals(customer))).Select(a => new ContractResponse
                 {
@@ -262,11 +260,11 @@ namespace UPOD.SERVICES.Services
             contract!.TerminalTime = DateTime.UtcNow.AddHours(7);
             contract!.TerminalContent = model.terminal_content;
             contract!.IsExpire = true;
-            var contract_services = await _context.ContractServices.Where(a => a.IsDelete == false && a.ContractId.Equals(id)).ToListAsync();
-            foreach (var item in contract_services)
-            {
-                item.IsDelete = true;
-            }
+            //var contract_services = await _context.ContractServices.Where(a => a.IsDelete == false && a.ContractId.Equals(id)).ToListAsync();
+            //foreach (var item in contract_services)
+            //{
+            //    item.IsDelete = true;
+            //}
             var schedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(contract.Id)).ToListAsync();
             foreach (var item in schedule)
             {

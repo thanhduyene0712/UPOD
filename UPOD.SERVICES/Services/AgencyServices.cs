@@ -81,16 +81,17 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                var customer = await _context.Customers.Where(a => a.IsDelete == false && a.Name!.Contains(value!.search)).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Agencies.Where(a => a.IsDelete == false && a.TechnicianId.Equals(id)
                 && (a.Code!.Contains(value.search)
                 || a.AgencyName!.Contains(value.search)
-                || a.ManagerName!.Contains(value.search)
+                || a.CustomerId!.Equals(customer)
                 || a.Address!.Contains(value.search)
                 || a.Telephone!.Contains(value.search))).ToListAsync();
                 agencies = await _context.Agencies.Where(a => a.IsDelete == false && a.TechnicianId.Equals(id)
                 && (a.Code!.Contains(value.search)
                 || a.AgencyName!.Contains(value.search)
-                || a.ManagerName!.Contains(value.search)
+                || a.CustomerId!.Equals(customer)
                 || a.Address!.Contains(value.search)
                 || a.Telephone!.Contains(value.search))).Include(c => c.Customer).Include(a => a.Area).Select(a => new AgencyResponse
 
@@ -196,18 +197,19 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                var customer = await _context.Customers.Where(a => a.Name!.Contains(value!.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Agencies.Where(a => a.IsDelete == false
-               && (a.Code!.Contains(value.search)
-               || a.AgencyName!.Contains(value.search)
-               || a.ManagerName!.Contains(value.search)
-               || a.Address!.Contains(value.search)
-               || a.Telephone!.Contains(value.search))).ToListAsync();
+               && (a.Code!.Contains(value.search.Trim())
+               || a.AgencyName!.Contains(value.search.Trim())
+               || a.CustomerId!.Equals(customer)
+               || a.Address!.Contains(value.search.Trim())
+               || a.Telephone!.Contains(value.search.Trim()))).ToListAsync();
                 agencies = await _context.Agencies.Where(a => a.IsDelete == false
-                && (a.Code!.Contains(value.search)
-                || a.AgencyName!.Contains(value.search)
-                || a.ManagerName!.Contains(value.search)
-                || a.Address!.Contains(value.search)
-                || a.Telephone!.Contains(value.search))).Include(c => c.Customer).Include(a => a.Area).Select(a => new AgencyResponse
+                && (a.Code!.Contains(value.search.Trim())
+                || a.AgencyName!.Contains(value.search.Trim())
+                || a.CustomerId!.Equals(customer)
+                || a.Address!.Contains(value.search.Trim())
+                || a.Telephone!.Contains(value.search.Trim()))).Include(c => c.Customer).Include(a => a.Area).Select(a => new AgencyResponse
 
                 {
                     id = a.Id,

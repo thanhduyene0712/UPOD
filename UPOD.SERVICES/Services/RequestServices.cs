@@ -151,9 +151,9 @@ namespace UPOD.SERVICES.Services
                 if (value.search.ToLower().Trim().Contains("admin"))
                 {
                     total = await _context.Requests.Where(a => a.IsDelete == false
-                                        && a.AgencyId.Equals(id)
-                                        && (a.RequestStatus!.Contains(value.status!.Trim())
-                                        && (a.AdminId != null))).ToListAsync();
+                    && a.AgencyId.Equals(id)
+                    && (a.RequestStatus!.Contains(value.status!.Trim())
+                    && (a.AdminId != null))).ToListAsync();
                     requests = await _context.Requests.Where(a => a.IsDelete == false
                     && a.AgencyId.Equals(id)
                     && (a.RequestStatus!.Contains(value.status!.Trim())
@@ -220,6 +220,7 @@ namespace UPOD.SERVICES.Services
                     && (a.RequestStatus!.Contains(value.status!.Trim())
                     && (a.RequestName!.Contains(value.search!.Trim())
                     || a.Code!.Contains(value.search!.Trim())
+                    || a.RequestDesciption!.Contains(value.search!.Trim())
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
                     || a.ServiceId!.Equals(service_name)))).ToListAsync();
@@ -227,6 +228,7 @@ namespace UPOD.SERVICES.Services
                     && a.AgencyId.Equals(id)
                     && (a.RequestName!.Contains(value.search!.Trim())
                     || a.Code!.Contains(value.search.Trim())
+                    || a.RequestDesciption!.Contains(value.search!.Trim())
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
                     || a.ServiceId!.Equals(service_name))
@@ -435,6 +437,7 @@ namespace UPOD.SERVICES.Services
                     && (a.RequestStatus!.Contains(value.status!.Trim())
                     && (a.RequestName!.Contains(value.search!.Trim())
                     || a.Code!.Contains(value.search!.Trim())
+                    || a.RequestDesciption!.Contains(value.search!.Trim())
                     || a.AgencyId!.Equals(agency_name)
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
@@ -442,6 +445,7 @@ namespace UPOD.SERVICES.Services
                     requests = await _context.Requests.Where(a => a.IsDelete == false
                     && (a.RequestName!.Contains(value.search!.Trim())
                     || a.Code!.Contains(value.search.Trim())
+                    || a.RequestDesciption!.Contains(value.search!.Trim())
                     || a.AgencyId!.Equals(agency_name)
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
