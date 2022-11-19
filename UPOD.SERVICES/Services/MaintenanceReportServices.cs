@@ -554,6 +554,7 @@ namespace UPOD.SERVICES.Services
             {
                 var maintenanceScheduleStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).FirstOrDefaultAsync();
                 maintenanceScheduleStatus!.Status = ScheduleStatus.COMPLETED.ToString();
+                maintenanceScheduleStatus!.EndDate = DateTime.UtcNow.AddHours(7);
                 var technician = await _context.Technicians.Where(x => x.Id.Equals(maintenanceReport!.CreateBy)).FirstOrDefaultAsync();
                 await _context.MaintenanceReports.AddAsync(maintenanceReport);
                 technician!.IsBusy = false;
