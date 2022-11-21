@@ -1291,7 +1291,10 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(a => a.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
-            technician!.IsBusy = false;
+            if(technician != null)
+            {
+                technician!.IsBusy = false;
+            }
             request!.RequestStatus = ProcessStatus.CANCELED.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var report_service = await _context.MaintenanceReportServices.Where(a => a.RequestId.Equals(request.Id)).FirstOrDefaultAsync();
