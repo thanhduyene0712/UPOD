@@ -974,7 +974,10 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(request_id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician_current = await _context.Technicians.Where(a => a.Id.Equals(request!.CurrentTechnicianId) && a.IsDelete == false).FirstOrDefaultAsync();
-            technician_current!.IsBusy = false;
+            if(technician_current != null)
+            {
+                technician_current!.IsBusy = false;
+            }
             var technician = await _context.Technicians.Where(a => a.Id.Equals(technician_id) && a.IsDelete == false).FirstOrDefaultAsync();
             technician!.IsBusy = true;
             request!.CurrentTechnicianId = technician_id;
