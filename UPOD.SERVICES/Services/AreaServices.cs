@@ -102,7 +102,7 @@ namespace UPOD.SERVICES.Services
                 tech_name = a.TechnicianName,
                 phone = a.Telephone,
                 email = a.Email,
-            }).OrderBy(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderBy(x => x.tech_name).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<TechnicianViewResponse>(technician)
             {
                 Total = total.Count,
