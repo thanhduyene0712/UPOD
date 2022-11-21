@@ -1304,6 +1304,8 @@ namespace UPOD.SERVICES.Services
             && (a.RequestStatus!.Equals("PREPARING"))).FirstOrDefaultAsync();
             request!.RequestStatus = ProcessStatus.CANCELED.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
+            var report_service = await _context.MaintenanceReportServices.Where(a => a.RequestId.Equals(id)).FirstOrDefaultAsync();
+            report_service!.Created = false;
             _context.Requests.Update(request);
             var data = new ResolvingRequestResponse();
             var rs = await _context.SaveChangesAsync();
@@ -1351,6 +1353,7 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             request!.RequestStatus = ProcessStatus.REJECTED.ToString();
+            request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             request!.ReasonReject = value.reason;
 
             _context.Requests.Update(request);
