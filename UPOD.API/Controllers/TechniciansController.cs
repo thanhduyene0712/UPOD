@@ -151,11 +151,11 @@ namespace UPOD.API.Controllers
         
         [HttpPut]
         [Route("resolving_request_by_id")]
-        public async Task<ActionResult<ObjectModelResponse>> ResolvingRequest(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> ResolvingRequest(Guid id, Guid tech_id)
         {
             try
             {
-                return await _technician_sv.ResolvingRequest(id);
+                return await _technician_sv.ResolvingRequest(id, tech_id);
             }
             catch (Exception ex)
             {

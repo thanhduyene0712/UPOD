@@ -23,7 +23,7 @@ namespace UPOD.SERVICES.Services
         //Task<ResponseModel<DevicesOfRequestResponse>> AddTicket(Guid id, ListTicketRequest model);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterStatusRequest value);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
-        Task<ObjectModelResponse> ResolvingRequest(Guid id);
+        Task<ObjectModelResponse> ResolvingRequest(Guid id, Guid tech_id);
         //Task<ObjectModelResponse> ConfirmRequest(Guid id);
         Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, ListTicketRequest model);
         Task<ObjectModelResponse> DisableDeviceOfTicket(Guid id);
@@ -205,39 +205,39 @@ namespace UPOD.SERVICES.Services
             || a.RequestStatus!.Equals("PREPARING")
             || a.RequestStatus!.Equals("RESOLVING")
             || a.RequestStatus!.Equals("RESOLVED"))).Select(a => new RequestResponse
+            {
+                id = a.Id,
+                code = a.Code,
+                request_name = a.RequestName,
+                customer = new CustomerViewResponse
                 {
-                    id = a.Id,
-                    code = a.Code,
-                    request_name = a.RequestName,
-                    customer = new CustomerViewResponse
-                    {
-                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
-                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                        cus_name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-                        phone = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
-                        address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
-                        mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
-                    },
-                    agency = new AgencyViewResponse
-                    {
-                        id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
-                        code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
-                        agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
-                        address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
-                    },
-                    service = new ServiceViewResponse
-                    {
-                        id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                    },
-                    request_status = a.RequestStatus,
-                    create_date = a.CreateDate,
-                    update_date = a.UpdateDate,
+                    id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                    description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                    phone = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                    address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                    mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
+                },
+                agency = new AgencyViewResponse
+                {
+                    id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                    code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                    agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                },
+                service = new ServiceViewResponse
+                {
+                    id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                    code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                    service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                    description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                },
+                request_status = a.RequestStatus,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
 
-                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 
             else
@@ -830,32 +830,46 @@ namespace UPOD.SERVICES.Services
                 Type = "Device"
             };
         }
-        public async Task<ObjectModelResponse> ResolvingRequest(Guid id)
+        public async Task<ObjectModelResponse> ResolvingRequest(Guid id, Guid tech_id)
         {
             var request = await _context.Requests.Where(x => x.Id.Equals(id) && x.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
-            technician!.IsBusy = true;
-            request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
-            request.StartTime = DateTime.UtcNow.AddHours(7);
-            _context.Requests.Update(request);
-            _context.Technicians.Update(technician);
+            var message = "blank";
+            var status = 500;
             var data = new ResolvingRequestResponse();
-            var rs = await _context.SaveChangesAsync();
-            if (rs > 0)
+            if (request!.CurrentTechnicianId.Equals(tech_id))
             {
-                data = new ResolvingRequestResponse
+                message = "Successfully";
+                status = 200;
+                technician!.IsBusy = true;
+                request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
+                request.StartTime = DateTime.UtcNow.AddHours(7);
+                _context.Requests.Update(request);
+                _context.Technicians.Update(technician);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = id,
-                    code = request.Code,
-                    status = request.RequestStatus,
-                    name = request.RequestName,
-                    start_time = request.StartTime,
-                };
+                    data = new ResolvingRequestResponse
+                    {
+                        id = id,
+                        code = request.Code,
+                        status = request.RequestStatus,
+                        name = request.RequestName,
+                        start_time = request.StartTime,
+                    };
+                }
             }
+            else
+            {
+                message = "Error";
+                status = 401;
+            }
+
 
             return new ObjectModelResponse(data)
             {
-                Status = 201,
+                Status = status,
+                Message = message,
                 Type = "Request"
             };
         }

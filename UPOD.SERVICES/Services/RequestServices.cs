@@ -1289,10 +1289,12 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> CancelRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(a => a.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            technician!.IsBusy = false;
             request!.RequestStatus = ProcessStatus.CANCELED.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var report_service = await _context.MaintenanceReportServices.Where(a => a.RequestId.Equals(request.Id)).FirstOrDefaultAsync();
-            if(report_service != null)
+            if (report_service != null)
             {
                 report_service!.Created = false;
                 report_service!.RequestId = null;
