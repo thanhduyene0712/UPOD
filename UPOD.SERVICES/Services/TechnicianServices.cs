@@ -811,9 +811,11 @@ namespace UPOD.SERVICES.Services
             var message = "blank";
             var status = 500;
             var data = new TechnicianUpdateResponse();
-            if (technician!.IsBusy != true)
+            var request = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(id) && a.RequestStatus!.Equals("RESOLVING")).FirstOrDefaultAsync();
+            var maintain = await _context.MaintenanceSchedules.Where(a => a.TechnicianId.Equals(id) && a.Status!.Equals("MAINTAINING")).FirstOrDefaultAsync();
+            if (request != null || maintain != null)
             {
-                message = "You can't set is busy until your problems are solve";
+                message = "You can't set is busy until your problem is solved";
                 status = 401;
             }
             else
