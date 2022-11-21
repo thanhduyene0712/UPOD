@@ -1164,19 +1164,19 @@ namespace UPOD.SERVICES.Services
             var report_service = await _context.MaintenanceReportServices.Where(a => a.Id.Equals(model.report_service_id)).FirstOrDefaultAsync();
             report_service!.Created = true;
             report_service!.RequestId = request_id!;
-            var maintenance_report = await _context.MaintenanceReports.Where(a => a.MaintenanceScheduleId.Equals(report_service.MaintenanceReport!.MaintenanceScheduleId)).FirstOrDefaultAsync();
-            var maintenance_report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(maintenance_report!.Id)).ToListAsync();
-            foreach (var item in maintenance_report_services)
-            {
-                if (item.Created == false)
-                {
-                    maintenance_report!.Status = ReportStatus.PROCESSING.ToString();
-                }
-                else
-                {
-                    maintenance_report!.Status = ReportStatus.COMPLETED.ToString();
-                }
-            }
+            //var maintenance_report = await _context.MaintenanceReports.Where(a => a.MaintenanceScheduleId.Equals(report_service.MaintenanceReport!.MaintenanceScheduleId)).FirstOrDefaultAsync();
+            //var maintenance_report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(maintenance_report!.Id)).ToListAsync();
+            //foreach (var item in maintenance_report_services)
+            //{
+            //    if (item.Created == false)
+            //    {
+            //        maintenance_report!.Status = ReportStatus.PROCESSING.ToString();
+            //    }
+            //    else
+            //    {
+            //        maintenance_report!.Status = ReportStatus.COMPLETED.ToString();
+            //    }
+            //}
             var data = new RequestCreateResponse();
 
             await _context.Requests.AddAsync(request);
