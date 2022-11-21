@@ -980,8 +980,6 @@ namespace UPOD.SERVICES.Services
             request!.CurrentTechnicianId = technician_id;
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             request.RequestStatus = ProcessStatus.PREPARING.ToString();
-            _context.Requests.Update(request);
-            _context.Technicians.Update(technician);
             var data = new MappingTechnicianResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
