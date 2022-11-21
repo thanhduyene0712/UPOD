@@ -187,12 +187,24 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterStatusRequest value)
         {
-            var total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).ToListAsync();
+            var total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
+            && (a.RequestStatus!.Equals("EDITING")
+            || a.RequestStatus!.Equals("PREPARING")
+            || a.RequestStatus!.Equals("RESOLVING")
+            || a.RequestStatus!.Equals("RESOLVED"))).ToListAsync();
             var requests = new List<RequestResponse>();
             if (value.search == null && value.status == null)
             {
-                total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).ToListAsync();
-                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)).Select(a => new RequestResponse
+                total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
+            && (a.RequestStatus!.Equals("EDITING")
+            || a.RequestStatus!.Equals("PREPARING")
+            || a.RequestStatus!.Equals("RESOLVING")
+            || a.RequestStatus!.Equals("RESOLVED"))).ToListAsync();
+                requests = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
+            && (a.RequestStatus!.Equals("EDITING")
+            || a.RequestStatus!.Equals("PREPARING")
+            || a.RequestStatus!.Equals("RESOLVING")
+            || a.RequestStatus!.Equals("RESOLVED"))).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -334,7 +346,7 @@ namespace UPOD.SERVICES.Services
                             cus_name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                             description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
                             phone = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
-                            address= _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                            address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
                             mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                         },
                         agency = new AgencyViewResponse
@@ -468,7 +480,7 @@ namespace UPOD.SERVICES.Services
                     CreateDate = DateTime.UtcNow.AddHours(7),
                     UpdateDate = DateTime.UtcNow.AddHours(7)
                 };
-               
+
 
                 foreach (var item1 in item.img!)
                 {
@@ -563,7 +575,7 @@ namespace UPOD.SERVICES.Services
                     UpdateDate = DateTime.UtcNow.AddHours(7)
                 };
                 await _context.Tickets.AddAsync(ticket);
-               
+
                 foreach (var item1 in item.img!)
                 {
                     var img_id = Guid.NewGuid();
@@ -588,7 +600,7 @@ namespace UPOD.SERVICES.Services
                     await _context.Images.AddAsync(imgTicket);
 
                 }
-                 
+
                 await _context.SaveChangesAsync();
                 list.Add(new DevicesOfRequestResponse
                 {
