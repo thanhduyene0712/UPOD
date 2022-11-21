@@ -187,27 +187,40 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = DateTime.UtcNow.AddHours(7),
             }).FirstOrDefaultAsync();
             var data = new ServiceResponse();
-            _context.Services.Update(service!);
-            var rs = await _context.SaveChangesAsync();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var service_name = await _context.Services.Where(x => x.ServiceName!.Equals(service!.ServiceName)).FirstOrDefaultAsync();
+            if (service_name != null)
             {
-                data = new ServiceResponse
-                {
-                    id = service!.Id,
-                    code = service.Code,
-                    service_name = service.ServiceName,
-                    description = service.Description,
-                    is_delete = service.IsDelete,
-                    create_date = service.CreateDate,
-                    update_date = service.UpdateDate,
-                    guideline = service.Guideline,
-
-                };
+                status = 400;
+                message = "ServiceName is already exists!";
             }
+            else
+            {
+                message = "Successfully";
+                status = 200;
+                _context.Services.Update(service!);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    data = new ServiceResponse
+                    {
+                        id = service!.Id,
+                        code = service.Code,
+                        service_name = service.ServiceName,
+                        description = service.Description,
+                        is_delete = service.IsDelete,
+                        create_date = service.CreateDate,
+                        update_date = service.UpdateDate,
+                        guideline = service.Guideline,
 
+                    };
+                }
+            }
             return new ObjectModelResponse(data)
             {
-                Status = 201,
+                Status = status,
+                Message = message,
                 Type = "Service"
             };
         }

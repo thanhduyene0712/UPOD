@@ -151,27 +151,40 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new AreaResponse();
-            await _context.Areas.AddAsync(area);
-            var rs = await _context.SaveChangesAsync();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var area_name = await _context.Areas.Where(x => x.AreaName!.Equals(area!.AreaName)).FirstOrDefaultAsync();
+            if (area_name != null)
             {
-                data = new AreaResponse
-                {
-                    id = area.Id,
-                    code = area.Code,
-                    area_name = area.AreaName,
-                    description = area.Description,
-                    is_delete = area.IsDelete,
-                    create_date = area.CreateDate,
-                    update_date = area.UpdateDate
-                };
+                status = 400;
+                message = "Name is already exists!";
             }
+            else
+            {
+                message = "Successfully";
+                status = 200;
+                await _context.Areas.AddAsync(area);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    data = new AreaResponse
+                    {
+                        id = area.Id,
+                        code = area.Code,
+                        area_name = area.AreaName,
+                        description = area.Description,
+                        is_delete = area.IsDelete,
+                        create_date = area.CreateDate,
+                        update_date = area.UpdateDate
+                    };
+                }
 
-
+            }
 
             return new ObjectModelResponse(data)
             {
-
+                Message = message,
+                Status = status,
                 Type = "Area"
             };
         }
@@ -217,26 +230,40 @@ namespace UPOD.SERVICES.Services
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.UtcNow.AddHours(7)
             }).FirstOrDefaultAsync();
-            _context.Areas.Update(area!);
             var data = new AreaResponse();
-            var rs = await _context.SaveChangesAsync();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var area_name = await _context.Areas.Where(x => x.AreaName!.Equals(area!.AreaName)).FirstOrDefaultAsync();
+            if (area_name != null)
             {
-                data = new AreaResponse
+                status = 400;
+                message = "Name is already exists!";
+            }
+            else
+            {
+                message = "Successfully";
+                status = 200;
+                _context.Areas.Update(area!);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = area!.Id,
-                    code = area.Code,
-                    area_name = area.AreaName,
-                    description = area.Description,
-                    is_delete = area.IsDelete,
-                    create_date = area.CreateDate,
-                    update_date = area.UpdateDate
-                };
+                    data = new AreaResponse
+                    {
+                        id = area!.Id,
+                        code = area.Code,
+                        area_name = area.AreaName,
+                        description = area.Description,
+                        is_delete = area.IsDelete,
+                        create_date = area.CreateDate,
+                        update_date = area.UpdateDate
+                    };
+                }
             }
 
             return new ObjectModelResponse(data)
             {
-                Status = 201,
+                Status = status,
+                Message = message,
                 Type = "Area"
             };
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 using System.Linq.Dynamic.Core;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
@@ -377,59 +378,73 @@ namespace UPOD.SERVICES.Services
 
             };
             var data = new AgencyResponse();
-
-            await _context.Agencies.AddAsync(agency);
-            var rs = await _context.SaveChangesAsync();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var agency_phone = await _context.Agencies.Where(x => x.Telephone!.Equals(agency.Telephone)).FirstOrDefaultAsync();
+            if (agency_phone != null)
             {
-                data = new AgencyResponse
-                {
-                    id = agency!.Id,
-                    code = agency.Code,
-                    customer = new CustomerViewResponse
-                    {
-                        id = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Code).FirstOrDefault(),
-                        cus_name = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Name).FirstOrDefault(),
-                        address = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Address).FirstOrDefault(),
-                        phone = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Phone).FirstOrDefault(),
-                        description = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Description).FirstOrDefault(),
-                    },
-                    area = new AreaViewResponse
-                    {
-                        id = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Id).FirstOrDefault(),
-                        code = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Code).FirstOrDefault(),
-                        area_name = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.AreaName).FirstOrDefault(),
-                        description = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Description).FirstOrDefault(),
-                    },
-                    technician = new TechnicianViewResponse
-                    {
-                        id = agency.TechnicianId,
-                        email = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
-                        phone = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
-                        code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                        tech_name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                    },
-                    manager_name = agency.ManagerName,
-                    agency_name = agency.AgencyName,
-                    address = agency.Address,
-                    telephone = agency.Telephone,
-                    is_delete = agency.IsDelete,
-                    create_date = agency.CreateDate,
-                    update_date = agency.UpdateDate,
-                    device = _context.Devices.Where(x => x.AgencyId.Equals(agency.Id)).Select(x => new DeviceViewResponse
-                    {
-                        id = x.Id,
-                        code = x.Code,
-                        device_name = x.DeviceName
-                    }).ToList(),
-
-                };
-
+                status = 400;
+                message = "Phone is already exists!";
             }
+            else
+            {
+                message = "Successfully";
+                status = 200;
+                await _context.Agencies.AddAsync(agency);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    data = new AgencyResponse
+                    {
+                        id = agency!.Id,
+                        code = agency.Code,
+                        customer = new CustomerViewResponse
+                        {
+                            id = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Id).FirstOrDefault(),
+                            code = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Code).FirstOrDefault(),
+                            cus_name = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Name).FirstOrDefault(),
+                            address = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Address).FirstOrDefault(),
+                            phone = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Phone).FirstOrDefault(),
+                            description = _context.Customers.Where(x => x.Id.Equals(agency.CustomerId)).Select(a => a.Description).FirstOrDefault(),
+                        },
+                        area = new AreaViewResponse
+                        {
+                            id = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Id).FirstOrDefault(),
+                            code = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Code).FirstOrDefault(),
+                            area_name = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.AreaName).FirstOrDefault(),
+                            description = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Description).FirstOrDefault(),
+                        },
+                        technician = new TechnicianViewResponse
+                        {
+                            id = agency.TechnicianId,
+                            email = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
+                            phone = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                            code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                            tech_name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        },
+                        manager_name = agency.ManagerName,
+                        agency_name = agency.AgencyName,
+                        address = agency.Address,
+                        telephone = agency.Telephone,
+                        is_delete = agency.IsDelete,
+                        create_date = agency.CreateDate,
+                        update_date = agency.UpdateDate,
+                        device = _context.Devices.Where(x => x.AgencyId.Equals(agency.Id)).Select(x => new DeviceViewResponse
+                        {
+                            id = x.Id,
+                            code = x.Code,
+                            device_name = x.DeviceName
+                        }).ToList(),
+
+                    };
+
+                }
+            }
+
             return new ObjectModelResponse(data)
             {
-
+                Message = message,
+                Status = status,
                 Type = "Agency"
             };
         }
@@ -515,59 +530,72 @@ namespace UPOD.SERVICES.Services
                 CreateDate = x.CreateDate,
                 UpdateDate = DateTime.UtcNow.AddHours(7)
             }).FirstOrDefaultAsync();
-
-            _context.Agencies.Update(agency!);
-            var rs = await _context.SaveChangesAsync();
             var data = new AgencyResponse();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var agency_phone = await _context.Agencies.Where(x => x.Telephone!.Equals(agency!.Telephone)).FirstOrDefaultAsync();
+            if (agency_phone != null)
             {
-                data = new AgencyResponse
+                status = 400;
+                message = "Phone is already exists!";
+            }
+            else
+            {
+                message = "Successfully";
+                status = 200;
+                _context.Agencies.Update(agency!);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = agency!.Id,
-                    code = agency.Code,
-                    customer = new CustomerViewResponse
+                    data = new AgencyResponse
                     {
-                        id = agency.CustomerId,
-                        code = agency.Customer!.Code,
-                        cus_name = agency.Customer.Name,
-                        address = agency.Customer.Address,
-                        phone = agency.Customer.Phone,
-                        description = agency.Customer.Description,
-                    },
-                    area = new AreaViewResponse
-                    {
-                        id = agency.AreaId,
-                        code = agency.Area!.Code,
-                        area_name = agency.Area.AreaName,
-                        description = agency.Area.Description
-                    },
-                    technician = new TechnicianViewResponse
-                    {
-                        id = agency.TechnicianId,
-                        email = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
-                        phone = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
-                        code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                        tech_name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                    },
-                    manager_name = agency.ManagerName,
-                    agency_name = agency.AgencyName,
-                    address = agency.Address,
-                    telephone = agency.Telephone,
-                    is_delete = agency.IsDelete,
-                    create_date = agency.CreateDate,
-                    update_date = agency.UpdateDate,
-                    device = _context.Devices.Where(x => x.AgencyId.Equals(agency.Id)).Select(x => new DeviceViewResponse
-                    {
-                        id = x.Id,
-                        code = x.Code,
-                        device_name = x.DeviceName
-                    }).ToList(),
-                };
+                        id = agency!.Id,
+                        code = agency.Code,
+                        customer = new CustomerViewResponse
+                        {
+                            id = agency.CustomerId,
+                            code = agency.Customer!.Code,
+                            cus_name = agency.Customer.Name,
+                            address = agency.Customer.Address,
+                            phone = agency.Customer.Phone,
+                            description = agency.Customer.Description,
+                        },
+                        area = new AreaViewResponse
+                        {
+                            id = agency.AreaId,
+                            code = agency.Area!.Code,
+                            area_name = agency.Area.AreaName,
+                            description = agency.Area.Description
+                        },
+                        technician = new TechnicianViewResponse
+                        {
+                            id = agency.TechnicianId,
+                            email = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Email).FirstOrDefault(),
+                            phone = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                            code = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                            tech_name = _context.Technicians.Where(x => x.Id.Equals(agency.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        },
+                        manager_name = agency.ManagerName,
+                        agency_name = agency.AgencyName,
+                        address = agency.Address,
+                        telephone = agency.Telephone,
+                        is_delete = agency.IsDelete,
+                        create_date = agency.CreateDate,
+                        update_date = agency.UpdateDate,
+                        device = _context.Devices.Where(x => x.AgencyId.Equals(agency.Id)).Select(x => new DeviceViewResponse
+                        {
+                            id = x.Id,
+                            code = x.Code,
+                            device_name = x.DeviceName
+                        }).ToList(),
+                    };
+                }
             }
 
             return new ObjectModelResponse(data)
             {
-                Status = 201,
+                Status = status,
+                Message = message,
                 Type = "Agency"
             };
         }

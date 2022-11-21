@@ -457,12 +457,12 @@ namespace UPOD.SERVICES.Services
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
             && (x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7))
             || x.Contract.TerminalTime >= DateTime.UtcNow.AddHours(7)).Select(x => new ServiceViewResponse
-                {
-                    id = x.ServiceId,
-                    code = x.Service!.Code,
-                    service_name = x.Service!.ServiceName,
-                    description = x.Service!.Description,
-                }).Distinct().ToListAsync();
+            {
+                id = x.ServiceId,
+                code = x.Service!.Code,
+                service_name = x.Service!.ServiceName,
+                description = x.Service!.Description,
+            }).Distinct().ToListAsync();
             var total = _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
                 && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Distinct().ToList();
             return new ResponseModel<ServiceViewResponse>(services)
@@ -478,11 +478,11 @@ namespace UPOD.SERVICES.Services
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
             && (x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7))
             || x.Contract.TerminalTime >= DateTime.UtcNow.AddHours(7)).Select(a => new ServiceNotInContractViewResponse
-                {
-                    id = a.ServiceId,
-                    service_name = a.Service!.ServiceName,
-                    code = a.Service!.Code,
-                }).Distinct().ToListAsync();
+            {
+                id = a.ServiceId,
+                service_name = a.Service!.ServiceName,
+                code = a.Service!.Code,
+            }).Distinct().ToListAsync();
             var list_services = await _context.Services.Where(x => x.IsDelete == false).Select(a => new ServiceNotInContractViewResponse
             {
                 id = a.Id,
@@ -576,10 +576,22 @@ namespace UPOD.SERVICES.Services
             var status = 500;
             var data = new CustomerResponse();
             var customer_name = await _context.Customers.Where(x => x.Name!.Equals(customer.Name)).FirstOrDefaultAsync();
+            var customer_phone = await _context.Customers.Where(x => x.Phone!.Equals(customer.Phone)).FirstOrDefaultAsync();
+            var customer_mail = await _context.Customers.Where(x => x.Mail!.Equals(customer.Mail)).FirstOrDefaultAsync();
             if (customer_name != null)
             {
                 status = 400;
                 message = "CustomerName is already exists!";
+            }
+            else if (customer_phone != null)
+            {
+                status = 400;
+                message = "Phone is already exists!";
+            }
+            else if (customer_mail != null)
+            {
+                status = 400;
+                message = "Mail is already exists!";
             }
             else
             {
@@ -642,10 +654,10 @@ namespace UPOD.SERVICES.Services
                 item.IsDelete = true;
             }
             customer.UpdateDate = DateTime.UtcNow.AddHours(7);
+            var data = new CustomerResponse();
             _context.Customers.Update(customer);
             var rs = await _context.SaveChangesAsync();
 
-            var data = new CustomerResponse();
             if (rs > 0)
             {
                 var account = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).FirstOrDefault();
@@ -674,6 +686,7 @@ namespace UPOD.SERVICES.Services
                 };
             }
 
+
             return new ObjectModelResponse(data)
             {
                 Status = 201,
@@ -697,39 +710,63 @@ namespace UPOD.SERVICES.Services
                 UpdateDate = DateTime.UtcNow.AddHours(7),
 
             }).FirstOrDefaultAsync();
-            _context.Customers.Update(customer!);
-            var rs = await _context.SaveChangesAsync();
             var data = new CustomerResponse();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var customer_name = await _context.Customers.Where(x => x.Name!.Equals(customer.Name)).FirstOrDefaultAsync();
+            var customer_phone = await _context.Customers.Where(x => x.Phone!.Equals(customer.Phone)).FirstOrDefaultAsync();
+            var customer_mail = await _context.Customers.Where(x => x.Mail!.Equals(customer.Mail)).FirstOrDefaultAsync();
+            if (customer_name != null)
             {
-                var account = _context.Accounts.Where(x => x.Id.Equals(customer!.AccountId)).FirstOrDefault();
-                var role = _context.Roles.Where(x => x.Id.Equals(account!.RoleId)).FirstOrDefault();
-                data = new CustomerResponse
+                status = 400;
+                message = "CustomerName is already exists!";
+            }
+            else if (customer_phone != null)
+            {
+                status = 400;
+                message = "Phone is already exists!";
+            }
+            else if (customer_mail != null)
+            {
+                status = 400;
+                message = "Mail is already exists!";
+            }
+            else
+            {
+                _context.Customers.Update(customer!);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = customer!.Id,
-                    code = customer.Code,
-                    name = customer.Name,
-                    account = new AccountViewResponse
+                    var account = _context.Accounts.Where(x => x.Id.Equals(customer!.AccountId)).FirstOrDefault();
+                    var role = _context.Roles.Where(x => x.Id.Equals(account!.RoleId)).FirstOrDefault();
+                    data = new CustomerResponse
                     {
-                        id = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).Select(x => x.Id).FirstOrDefault(),
-                        code = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).Select(x => x.Code).FirstOrDefault(),
-                        role_name = role!.RoleName,
-                        username = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).Select(x => x.Username).FirstOrDefault(),
-                        password = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).Select(x => x.Password).FirstOrDefault(),
-                    },
-                    description = customer.Description,
-                    address = customer.Address,
-                    mail = customer.Mail,
-                    phone = customer.Phone,
-                    is_delete = customer.IsDelete,
-                    create_date = customer.CreateDate,
-                    update_date = customer.UpdateDate,
+                        id = customer!.Id,
+                        code = customer.Code,
+                        name = customer.Name,
+                        account = new AccountViewResponse
+                        {
+                            id = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).Select(x => x.Id).FirstOrDefault(),
+                            code = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).Select(x => x.Code).FirstOrDefault(),
+                            role_name = role!.RoleName,
+                            username = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).Select(x => x.Username).FirstOrDefault(),
+                            password = _context.Accounts.Where(x => x.Id.Equals(customer.AccountId)).Select(x => x.Password).FirstOrDefault(),
+                        },
+                        description = customer.Description,
+                        address = customer.Address,
+                        mail = customer.Mail,
+                        phone = customer.Phone,
+                        is_delete = customer.IsDelete,
+                        create_date = customer.CreateDate,
+                        update_date = customer.UpdateDate,
 
-                };
+                    };
+                }
             }
             return new ObjectModelResponse(data)
             {
-                Status = 201,
+                Status = status,
+                Message = message,
                 Type = "Customer"
             };
         }

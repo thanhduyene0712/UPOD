@@ -694,33 +694,54 @@ namespace UPOD.SERVICES.Services
                 _context.Skills.Add(skill);
             }
             var data = new TechnicianUpdateResponse();
-            await _context.Technicians.AddAsync(technician);
-            var rs = await _context.SaveChangesAsync();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var tech_mail = await _context.Technicians.Where(x => x.Email!.Equals(technician.Email)).FirstOrDefaultAsync();
+            var tech_phone = await _context.Technicians.Where(x => x.Telephone!.Equals(technician.Telephone)).FirstOrDefaultAsync();
+            if (tech_mail != null)
             {
-                data = new TechnicianUpdateResponse()
+                status = 400;
+                message = "Mail is already exists!";
+            }
+            else if (tech_phone != null)
+            {
+                status = 400;
+                message = "Phone is already exists!";
+            }
+            else
+            {
+                message = "Successfully";
+                status = 200;
+                await _context.Technicians.AddAsync(technician);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = technician!.Id,
-                    code = technician!.Code,
-                    area_id = technician.AreaId,
-                    technician_name = technician.TechnicianName,
-                    account_id = technician.AccountId,
-                    telephone = technician.Telephone,
-                    email = technician.Email,
-                    gender = technician.Gender,
-                    address = technician.Address,
-                    is_busy = technician.IsBusy,
-                    is_delete = technician.IsDelete,
-                    create_date = technician.CreateDate,
-                    update_date = technician.UpdateDate,
-                    service_id = _context.Skills.Where(a => a.TechnicianId.Equals(technician.Id)).Select(a => a.ServiceId).ToList(),
+                    data = new TechnicianUpdateResponse()
+                    {
+                        id = technician!.Id,
+                        code = technician!.Code,
+                        area_id = technician.AreaId,
+                        technician_name = technician.TechnicianName,
+                        account_id = technician.AccountId,
+                        telephone = technician.Telephone,
+                        email = technician.Email,
+                        gender = technician.Gender,
+                        address = technician.Address,
+                        is_busy = technician.IsBusy,
+                        is_delete = technician.IsDelete,
+                        create_date = technician.CreateDate,
+                        update_date = technician.UpdateDate,
+                        service_id = _context.Skills.Where(a => a.TechnicianId.Equals(technician.Id)).Select(a => a.ServiceId).ToList(),
 
-                };
+                    };
+                }
             }
 
 
             return new ObjectModelResponse(data)
             {
+                Message = message,
+                Status = status,
                 Type = "Technician"
             };
         }
@@ -956,32 +977,51 @@ namespace UPOD.SERVICES.Services
                 _context.Skills.Add(skill);
             }
             var data = new TechnicianUpdateResponse();
-            _context.Technicians.Update(technician!);
-            var rs = await _context.SaveChangesAsync();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var tech_mail = await _context.Technicians.Where(x => x.Email!.Equals(technician!.Email)).FirstOrDefaultAsync();
+            var tech_phone = await _context.Technicians.Where(x => x.Telephone!.Equals(technician!.Telephone)).FirstOrDefaultAsync();
+            if (tech_mail != null)
             {
-                data = new TechnicianUpdateResponse
-                {
-                    id = technician!.Id,
-                    code = technician!.Code,
-                    area_id = technician.AreaId,
-                    technician_name = technician.TechnicianName,
-                    account_id = technician.AccountId,
-                    telephone = technician.Telephone,
-                    email = technician.Email,
-                    gender = technician.Gender,
-                    address = technician.Address,
-                    is_busy = technician.IsBusy,
-                    is_delete = technician.IsDelete,
-                    create_date = technician.CreateDate,
-                    update_date = technician.UpdateDate,
-                    service_id = _context.Skills.Where(a => a.TechnicianId.Equals(technician.Id)).Select(a => a.ServiceId).ToList(),
-                };
+                status = 400;
+                message = "Mail is already exists!";
             }
-
+            else if (tech_phone != null)
+            {
+                status = 400;
+                message = "Phone is already exists!";
+            }
+            else
+            {
+                message = "Successfully";
+                status = 200;
+                _context.Technicians.Update(technician!);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    data = new TechnicianUpdateResponse
+                    {
+                        id = technician!.Id,
+                        code = technician!.Code,
+                        area_id = technician.AreaId,
+                        technician_name = technician.TechnicianName,
+                        account_id = technician.AccountId,
+                        telephone = technician.Telephone,
+                        email = technician.Email,
+                        gender = technician.Gender,
+                        address = technician.Address,
+                        is_busy = technician.IsBusy,
+                        is_delete = technician.IsDelete,
+                        create_date = technician.CreateDate,
+                        update_date = technician.UpdateDate,
+                        service_id = _context.Skills.Where(a => a.TechnicianId.Equals(technician.Id)).Select(a => a.ServiceId).ToList(),
+                    };
+                }
+            }
             return new ObjectModelResponse(data)
             {
-                Status = 201,
+                Status = status,
+                Message = message,
                 Type = "Technician"
             };
         }
