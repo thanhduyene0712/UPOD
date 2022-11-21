@@ -17,6 +17,7 @@ namespace UPOD.REPOSITORIES.Models
         public string? RequestStatus { get; set; }
         public string? RequestName { get; set; }
         public string? ReasonReject { get; set; }
+        public string? CancelReason { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public Guid? AgencyId { get; set; }

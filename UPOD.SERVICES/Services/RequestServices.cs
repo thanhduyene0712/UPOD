@@ -24,7 +24,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CreateRequestByAdmin(RequestAdminRequest model);
         Task<ObjectModelResponse> RejectRequest(Guid id, RejectRequest value);
         Task<ObjectModelResponse> ReOpenRequest(Guid id);
-        Task<ObjectModelResponse> CancelRequest(Guid id);
+        Task<ObjectModelResponse> CancelRequest(Guid id, RejectRequest model);
         Task<ObjectModelResponse> AutoFillRequestAdmin(Guid id);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfAgency(PaginationRequest model, Guid id, FilterStatusRequest value);
     }
@@ -870,6 +870,7 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    cancel_reason = a.CancelReason,
                     reject_reason = a.ReasonReject,
                     description = a.RequestDesciption,
                     request_status = a.RequestStatus,
@@ -1287,7 +1288,7 @@ namespace UPOD.SERVICES.Services
             };
         }
 
-        public async Task<ObjectModelResponse> CancelRequest(Guid id)
+        public async Task<ObjectModelResponse> CancelRequest(Guid id, RejectRequest model)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(a => a.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
@@ -1295,6 +1296,7 @@ namespace UPOD.SERVICES.Services
             {
                 technician!.IsBusy = false;
             }
+            request!.CancelReason = model.reason;
             request!.RequestStatus = ProcessStatus.CANCELED.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var report_service = await _context.MaintenanceReportServices.Where(a => a.RequestId.Equals(request.Id)).FirstOrDefaultAsync();

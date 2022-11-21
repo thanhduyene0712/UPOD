@@ -406,6 +406,8 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Code).HasMaxLength(255);
 
+                entity.Property(e => e.CancelReason).HasMaxLength(255);
+
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.CurrentTechnicianId).HasColumnName("CurrentTechnician_Id");
