@@ -980,7 +980,6 @@ namespace UPOD.SERVICES.Services
                 technician_current!.IsBusy = false;
             }
             var technician = await _context.Technicians.Where(a => a.Id.Equals(technician_id) && a.IsDelete == false).FirstOrDefaultAsync();
-            technician!.IsBusy = true;
             request!.CurrentTechnicianId = technician_id;
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             request.RequestStatus = ProcessStatus.PREPARING.ToString();

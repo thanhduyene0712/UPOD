@@ -176,6 +176,19 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPut]
+        [Route("is_busy_technician_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> IsBusyTechnician(Guid id)
+        {
+            try
+            {
+                return await _technician_sv.IsBusyTechnician(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
         [Route("disable_technician_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> DisableTechnician(Guid id)
         {

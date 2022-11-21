@@ -185,12 +185,12 @@ namespace UPOD.API.Controllers
         }
         [HttpPut]
         [Route("cancel_request_by_id")]
-        public async Task<ActionResult<ObjectModelResponse>> CancelRequest(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> CancelRequest(Guid id, RejectRequest model)
 
         {
             try
             {
-                return await _request_sv.CancelRequest(id);
+                return await _request_sv.CancelRequest(id, model);
             }
             catch (Exception ex)
             {

@@ -26,6 +26,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> ResolvingRequest(Guid id, Guid tech_id);
         //Task<ObjectModelResponse> ConfirmRequest(Guid id);
         Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, ListTicketRequest model);
+        Task<ObjectModelResponse> IsBusyTechnician(Guid id);
         Task<ObjectModelResponse> DisableDeviceOfTicket(Guid id);
     }
 
@@ -801,6 +802,39 @@ namespace UPOD.SERVICES.Services
             {
                 Message = message,
                 Status = status,
+                Type = "Technician"
+            };
+        }
+        public async Task<ObjectModelResponse> IsBusyTechnician(Guid id)
+        {
+            var technician = await _context.Technicians.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
+            technician!.IsBusy = true;
+            technician.UpdateDate = DateTime.UtcNow.AddHours(7);
+            var data = new TechnicianUpdateResponse();
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new TechnicianUpdateResponse
+                {
+                    id = technician!.Id,
+                    code = technician!.Code,
+                    area_id = technician.AreaId,
+                    technician_name = technician.TechnicianName,
+                    account_id = technician.AccountId,
+                    telephone = technician.Telephone,
+                    email = technician.Email,
+                    gender = technician.Gender,
+                    address = technician.Address,
+                    is_busy = technician.IsBusy,
+                    is_delete = technician.IsDelete,
+                    create_date = technician.CreateDate,
+                    update_date = technician.UpdateDate,
+                    service_id = _context.Skills.Where(a => a.TechnicianId.Equals(technician.Id)).Select(a => a.ServiceId).ToList(),
+                };
+            }
+
+            return new ObjectModelResponse(data)
+            {
                 Type = "Technician"
             };
         }
