@@ -821,7 +821,6 @@ namespace UPOD.SERVICES.Services
                 message = "Successfully";
                 status = 200;
                 technician!.IsBusy = model.is_busy;
-                technician.UpdateDate = DateTime.UtcNow.AddHours(7);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {
