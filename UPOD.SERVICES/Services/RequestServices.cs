@@ -1300,20 +1300,22 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ObjectModelResponse> CancelRequest(Guid id)
         {
-            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false
-            && (a.RequestStatus!.Equals("PREPARING"))).FirstOrDefaultAsync();
+            var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             request!.RequestStatus = ProcessStatus.CANCELED.ToString();
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
-            var report_service = await _context.MaintenanceReportServices.Where(a => a.RequestId.Equals(id)).FirstOrDefaultAsync();
-            report_service!.Created = false;
-            _context.Requests.Update(request);
+            var report_service = await _context.MaintenanceReportServices.Where(a => a.RequestId.Equals(request.Id)).FirstOrDefaultAsync();
+            if(report_service != null)
+            {
+                report_service!.Created = false;
+                report_service!.RequestId = null;
+            }
             var data = new ResolvingRequestResponse();
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
             {
                 data = new ResolvingRequestResponse
                 {
-                    id = request.Id,
+                    id = id,
                     code = request.Code,
                     name = request.RequestName,
                     status = request.RequestStatus,
