@@ -25,7 +25,6 @@ namespace UPOD.REPOSITORIES.Models
         public string? Feedback { get; set; }
         public bool? IsDelete { get; set; }
         public DateTime? CreateDate { get; set; }
-        public int? Priority { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string? Code { get; set; }
         public Guid? AdminId { get; set; }

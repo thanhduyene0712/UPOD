@@ -164,7 +164,7 @@ namespace UPOD.API.Controllers
         }
         [HttpPut]
         [Route("update_technician_by_id")]
-        public async Task<ActionResult<ObjectModelResponse>> UpdateTechnician(Guid id, TechnicianRequest model)
+        public async Task<ActionResult<ObjectModelResponse>> UpdateTechnician(Guid id, TechnicianUpdateRequest model)
         {
             try
             {

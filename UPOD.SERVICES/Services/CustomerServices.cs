@@ -16,7 +16,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, SearchRequest value, Guid id);
         Task<ObjectModelResponse> CreateCustomer(CustomerRequest model);
         Task<ObjectModelResponse> GetCustomerDetails(Guid id);
-        Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model);
+        Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerUpdateRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
         Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id);
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
@@ -174,7 +174,6 @@ namespace UPOD.SERVICES.Services
                     },
                     reject_reason = a.ReasonReject,
                     description = a.RequestDesciption,
-                    priority = a.Priority,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
@@ -246,7 +245,6 @@ namespace UPOD.SERVICES.Services
                         },
                         reject_reason = a.ReasonReject,
                         description = a.RequestDesciption,
-                        priority = a.Priority,
                         request_status = a.RequestStatus,
                         create_date = a.CreateDate,
                         update_date = a.UpdateDate,
@@ -327,7 +325,6 @@ namespace UPOD.SERVICES.Services
                         },
                         reject_reason = a.ReasonReject,
                         description = a.RequestDesciption,
-                        priority = a.Priority,
                         request_status = a.RequestStatus,
                         create_date = a.CreateDate,
                         update_date = a.UpdateDate,
@@ -458,7 +455,8 @@ namespace UPOD.SERVICES.Services
 
             var services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
-                && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Select(x => new ServiceViewResponse
+            && (x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7))
+            || x.Contract.TerminalTime >= DateTime.UtcNow.AddHours(7)).Select(x => new ServiceViewResponse
                 {
                     id = x.ServiceId,
                     code = x.Service!.Code,
@@ -478,7 +476,8 @@ namespace UPOD.SERVICES.Services
 
             var services_in_contract = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
-                && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Select(a => new ServiceNotInContractViewResponse
+            && (x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7))
+            || x.Contract.TerminalTime >= DateTime.UtcNow.AddHours(7)).Select(a => new ServiceNotInContractViewResponse
                 {
                     id = a.ServiceId,
                     service_name = a.Service!.ServiceName,
@@ -681,14 +680,14 @@ namespace UPOD.SERVICES.Services
                 Type = "Customer"
             };
         }
-        public async Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerRequest model)
+        public async Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerUpdateRequest model)
         {
             var customer = await _context.Customers.Where(a => a.Id.Equals(id)).Select(x => new Customer
             {
                 Id = id,
                 Code = x.Code,
                 Name = model.name,
-                AccountId = model.account_id,
+                AccountId = x.AccountId,
                 Description = model.description,
                 Address = model.address,
                 Mail = model.mail,

@@ -17,7 +17,7 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<TechnicianResponse>> GetListTechnicians(PaginationRequest model, SearchRequest value);
         Task<ObjectModelResponse> GetDetailsTechnician(Guid id);
         Task<ObjectModelResponse> CreateTechnician(TechnicianRequest model);
-        Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model);
+        Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianUpdateRequest model);
         Task<ObjectModelResponse> DisableTechnician(Guid id);
         Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model);
         //Task<ResponseModel<DevicesOfRequestResponse>> AddTicket(Guid id, ListTicketRequest model);
@@ -221,7 +221,6 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
-                    priority = a.Priority,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
@@ -285,7 +284,6 @@ namespace UPOD.SERVICES.Services
                         },
                         reject_reason = a.ReasonReject,
                         description = a.RequestDesciption,
-                        priority = a.Priority,
                         request_status = a.RequestStatus,
                         create_date = a.CreateDate,
                         update_date = a.UpdateDate,
@@ -361,7 +359,6 @@ namespace UPOD.SERVICES.Services
                         },
                         reject_reason = a.ReasonReject,
                         description = a.RequestDesciption,
-                        priority = a.Priority,
                         request_status = a.RequestStatus,
                         create_date = a.CreateDate,
                         update_date = a.UpdateDate,
@@ -850,7 +847,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Request"
             };
         }
-        public async Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianRequest model)
+        public async Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianUpdateRequest model)
         {
             var technician = await _context.Technicians.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(x => new Technician
             {
@@ -858,7 +855,7 @@ namespace UPOD.SERVICES.Services
                 Code = x.Code,
                 AreaId = model.area_id,
                 TechnicianName = model.technician_name,
-                AccountId = model.account_id,
+                AccountId = x.AccountId,
                 Telephone = model.telephone,
                 Address = model.address,
                 Email = model.email,

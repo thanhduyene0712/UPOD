@@ -764,6 +764,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = account.IsDelete,
                     create_date = account.CreateDate,
                     update_date = account.UpdateDate,
+                    is_assign = account.IsAssign,
                 };
             }
 
