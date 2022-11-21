@@ -177,11 +177,11 @@ namespace UPOD.API.Controllers
         }
         [HttpPut]
         [Route("is_busy_technician_by_id")]
-        public async Task<ActionResult<ObjectModelResponse>> IsBusyTechnician(Guid id)
+        public async Task<ActionResult<ObjectModelResponse>> IsBusyTechnician(Guid id, IsBusyRequest model)
         {
             try
             {
-                return await _technician_sv.IsBusyTechnician(id);
+                return await _technician_sv.IsBusyTechnician(id, model);
             }
             catch (Exception ex)
             {
