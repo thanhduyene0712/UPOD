@@ -796,12 +796,9 @@ namespace UPOD.SERVICES.Services
                 }
             }
             var maintain_techs = await _context.MaintenanceSchedules.Where(a => a.TechnicianId.Equals(id)).ToListAsync();
-            if(maintain_techs.Count > 0)
+            foreach (var item in maintain_techs)
             {
-                foreach (var item in maintain_techs)
-                {
-                    item.TechnicianId = null;
-                }
+                item.TechnicianId = null;
             }
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)

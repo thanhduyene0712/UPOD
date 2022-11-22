@@ -49,6 +49,7 @@ namespace UPOD.SERVICES.Services
                         address = a.Customer.Address,
                         phone = a.Customer.Phone,
                         description = a.Customer.Description,
+                        mail = a.Customer.Mail,
                     },
                     area = new AreaViewResponse
                     {
@@ -107,6 +108,7 @@ namespace UPOD.SERVICES.Services
                         address = a.Customer.Address,
                         phone = a.Customer.Phone,
                         description = a.Customer.Description,
+                        mail = a.Customer.Mail,
                     },
                     area = new AreaViewResponse
                     {
@@ -165,6 +167,7 @@ namespace UPOD.SERVICES.Services
                         address = a.Customer.Address,
                         phone = a.Customer.Phone,
                         description = a.Customer.Description,
+                        mail = a.Customer.Mail,
                     },
                     area = new AreaViewResponse
                     {
@@ -223,6 +226,7 @@ namespace UPOD.SERVICES.Services
                         address = a.Customer.Address,
                         phone = a.Customer.Phone,
                         description = a.Customer.Description,
+                        mail = a.Customer.Mail,
                     },
                     area = new AreaViewResponse
                     {
@@ -537,12 +541,9 @@ namespace UPOD.SERVICES.Services
                 agency!.Telephone = model.telephone;
                 agency!.UpdateDate = DateTime.UtcNow.AddHours(7);
                 var maintain_techs = await _context.MaintenanceSchedules.Where(a => a.AgencyId.Equals(agency.Id) && a.TechnicianId == null).ToListAsync();
-                if (maintain_techs.Count > 0)
+                foreach (var maintain_tech in maintain_techs)
                 {
-                    foreach (var maintain_tech in maintain_techs)
-                    {
-                        maintain_tech.TechnicianId = model.technician_id;
-                    }
+                    maintain_tech.TechnicianId = model.technician_id;
                 }
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)

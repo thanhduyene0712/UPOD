@@ -29,6 +29,12 @@ namespace UPOD.SERVICES.Services
         {
             var status = await _context.MaintenanceReports.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             status!.Status = ReportStatus.PROBLEM.ToString();
+            var report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(id)).ToListAsync();
+            foreach (var item in report_services)
+            {
+                var request = await _context.Requests.Where(a => a.Id.Equals(item.RequestId)).FirstOrDefaultAsync();
+                request!.RequestStatus = ProcessStatus.CANCELED.ToString();
+            }
             var rs = await _context.SaveChangesAsync();
             var data = new MaintenanceReportResponse();
             if (rs > 0)

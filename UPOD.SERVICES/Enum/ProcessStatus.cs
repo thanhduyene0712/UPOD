@@ -24,7 +24,7 @@ namespace UPOD.SERVICES.Enum
         PROBLEM,
         NO_PROBLEM,
         PROCESSING,
-        COMPLETED
+        CLOSED
     }
     public enum ScheduleStatus
     {
