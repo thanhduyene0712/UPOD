@@ -944,22 +944,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianUpdateRequest model)
         {
-            var technician = await _context.Technicians.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(x => new Technician
-            {
-                Id = id,
-                Code = x.Code,
-                AreaId = model.area_id,
-                TechnicianName = model.technician_name,
-                AccountId = x.AccountId,
-                Telephone = model.telephone,
-                Address = model.address,
-                Email = model.email,
-                Gender = model.gender,
-                IsBusy = x.IsBusy,
-                IsDelete = x.IsDelete,
-                CreateDate = x.CreateDate,
-                UpdateDate = DateTime.UtcNow.AddHours(7)
-            }).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var skill_remove = await _context.Skills.Where(a => a.TechnicianId.Equals(id)).ToListAsync();
             foreach (var item in skill_remove)
             {
@@ -995,7 +980,14 @@ namespace UPOD.SERVICES.Services
             {
                 message = "Successfully";
                 status = 200;
-                _context.Technicians.Update(technician!);
+                technician!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                technician!.TechnicianName = model.technician_name;
+                technician!.Address = model.address;
+                technician!.Telephone = model.telephone;
+                technician!.AreaId = model.area_id;
+                technician!.Gender = model.gender;
+                technician!.Email = model.email;
+
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {
