@@ -933,6 +933,7 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    cancel_reason = a.CancelReason,
                     reject_reason = a.ReasonReject,
                     description = a.RequestDesciption,
                     request_status = a.RequestStatus,
