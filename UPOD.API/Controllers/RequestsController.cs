@@ -158,6 +158,19 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPut]
+        [Route("update_request_admin_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> UpdateRequestAdmin([FromQuery] Guid id, RequestUpdateAdminRequest model)
+        {
+            try
+            {
+                return await _request_sv.UpdateRequestAdmin(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
         [Route("reject_request_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> RejectRequest(Guid id, [FromQuery] RejectRequest value)
         {

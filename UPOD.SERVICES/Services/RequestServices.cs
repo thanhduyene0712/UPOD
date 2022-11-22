@@ -16,6 +16,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> GetDetailsRequest(Guid id);
         Task<ObjectModelResponse> CreateRequest(RequestRequest model);
         Task<ObjectModelResponse> UpdateRequest(Guid id, RequestUpdateRequest model);
+        Task<ObjectModelResponse> UpdateRequestAdmin(Guid id, RequestUpdateAdminRequest model);
         Task<ObjectModelResponse> DisableRequest(Guid id);
         Task<ResponseModel<TechnicianRequestResponse>> GetTechnicianRequest(PaginationRequest model, Guid id);
         Task<ResponseModel<TechnicianRequestResponse>> GetTechnicianReport(PaginationRequest model, Guid id);
@@ -976,7 +977,7 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(request_id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician_current = await _context.Technicians.Where(a => a.Id.Equals(request!.CurrentTechnicianId) && a.IsDelete == false).FirstOrDefaultAsync();
-            if(technician_current != null)
+            if (technician_current != null)
             {
                 technician_current!.IsBusy = false;
             }
@@ -1246,6 +1247,7 @@ namespace UPOD.SERVICES.Services
                         request_name = request.RequestName,
                         request_description = request.RequestDesciption,
                         phone = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
+                        technician_name = _context.Technicians.Where(x => x.Id.Equals(request.CurrentTechnicianId)).Select(x => x.TechnicianName).FirstOrDefault(),
                         customer_name = _context.Customers.Where(x => x.Id.Equals(request.CustomerId)).Select(x => x.Name).FirstOrDefault(),
                         agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                         service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
@@ -1260,7 +1262,40 @@ namespace UPOD.SERVICES.Services
                 Type = "Request"
             };
         }
+        public async Task<ObjectModelResponse> UpdateRequestAdmin(Guid id, RequestUpdateAdminRequest model)
+        {
+            var request = await _context.Requests.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+            var data = new RequestCreateResponse();
+            request!.UpdateDate = DateTime.UtcNow.AddHours(7);
+            request!.CustomerId = model.customer_id;
+            request!.AgencyId = model.agency_id;
+            request!.CurrentTechnicianId = model.technician_id;
+            request!.RequestDesciption = model.request_description;
+            request!.ServiceId = model.service_id;
+            request!.RequestName = model.request_name;
+            var rs = await _context.SaveChangesAsync();
+            if (rs > 0)
+            {
+                data = new RequestCreateResponse
+                {
+                    id = request.Id,
+                    code = request.Code,
+                    request_name = request.RequestName,
+                    request_description = request.RequestDesciption,
+                    phone = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
+                    technician_name = _context.Technicians.Where(x => x.Id.Equals(request.CurrentTechnicianId)).Select(x => x.TechnicianName).FirstOrDefault(),
+                    customer_name = _context.Customers.Where(x => x.Id.Equals(request.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                    agency_name = _context.Agencies.Where(x => x.Id.Equals(request.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                    service_name = _context.Services.Where(x => x.Id.Equals(request.ServiceId)).Select(x => x.ServiceName).FirstOrDefault(),
+                };
+            }
 
+
+            return new ObjectModelResponse(data)
+            {
+                Type = "Request"
+            };
+        }
         public async Task<ObjectModelResponse> ReOpenRequest(Guid id)
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false && a.RequestStatus!.Equals("RESOLVED")).FirstOrDefaultAsync();
@@ -1292,7 +1327,7 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(a => a.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
-            if(technician != null)
+            if (technician != null)
             {
                 technician!.IsBusy = false;
             }
