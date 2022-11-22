@@ -979,14 +979,14 @@ namespace UPOD.SERVICES.Services
             var data = new TechnicianUpdateResponse();
             var message = "blank";
             var status = 500;
-            var tech_mail = await _context.Technicians.Where(x => x.Email!.Equals(technician!.Email)).FirstOrDefaultAsync();
-            var tech_phone = await _context.Technicians.Where(x => x.Telephone!.Equals(technician!.Telephone)).FirstOrDefaultAsync();
-            if (tech_mail != null)
+            var tech_mail = await _context.Technicians.Where(x => x.Email!.Equals(model.email)).FirstOrDefaultAsync();
+            var tech_phone = await _context.Technicians.Where(x => x.Telephone!.Equals(model.telephone)).FirstOrDefaultAsync();
+            if (tech_mail != null && technician!.Email != model.email)
             {
                 status = 400;
                 message = "Mail is already exists!";
             }
-            else if (tech_phone != null)
+            else if (tech_phone != null && technician!.Telephone != model.telephone)
             {
                 status = 400;
                 message = "Phone is already exists!";

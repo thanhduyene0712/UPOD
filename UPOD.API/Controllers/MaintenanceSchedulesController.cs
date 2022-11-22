@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json.Linq;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
@@ -27,11 +28,13 @@ namespace UPOD.API.Controllers
         {
             try
             {
+
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotify();
+                //var connection = new signalR.HubConnectionBuilder().withUrl("/notifyHub").build();
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotifyMissing();
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesMaintaining();
                 await _contract_sv.SetContractNotify();
-              
+
                 var timeShedule = DateTime.SpecifyKind(DateTime.UtcNow.AddHours(12), DateTimeKind.Utc);
                 BackgroundJob.Schedule(() => Notifications(), timeShedule);
                 return Ok();
@@ -70,7 +73,7 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_list_maintenance_schedules_by_technician_id")]
-        public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedulesTechnician([FromQuery] PaginationRequest model, Guid id,[FromQuery] FilterStatusRequest value)
+        public async Task<ActionResult<ResponseModel<MaintenanceScheduleResponse>>> GetListMaintenanceSchedulesTechnician([FromQuery] PaginationRequest model, Guid id, [FromQuery] FilterStatusRequest value)
         {
             try
             {
