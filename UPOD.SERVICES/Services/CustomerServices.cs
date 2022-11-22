@@ -575,9 +575,9 @@ namespace UPOD.SERVICES.Services
             var message = "blank";
             var status = 500;
             var data = new CustomerResponse();
-            var customer_name = await _context.Customers.Where(x => x.Name!.Equals(customer.Name)).FirstOrDefaultAsync();
-            var customer_phone = await _context.Customers.Where(x => x.Phone!.Equals(customer.Phone)).FirstOrDefaultAsync();
-            var customer_mail = await _context.Customers.Where(x => x.Mail!.Equals(customer.Mail)).FirstOrDefaultAsync();
+            var customer_name = await _context.Customers.Where(x => x.Name!.Equals(model.name)).FirstOrDefaultAsync();
+            var customer_phone = await _context.Customers.Where(x => x.Phone!.Equals(model.phone)).FirstOrDefaultAsync();
+            var customer_mail = await _context.Customers.Where(x => x.Mail!.Equals(model.mail)).FirstOrDefaultAsync();
             if (customer_name != null)
             {
                 status = 400;
@@ -695,45 +695,38 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerUpdateRequest model)
         {
-            var customer = await _context.Customers.Where(a => a.Id.Equals(id)).Select(x => new Customer
-            {
-                Id = id,
-                Code = x.Code,
-                Name = model.name,
-                AccountId = x.AccountId,
-                Description = model.description,
-                Address = model.address,
-                Mail = model.mail,
-                Phone = model.phone,
-                IsDelete = x.IsDelete,
-                CreateDate = x.CreateDate,
-                UpdateDate = DateTime.UtcNow.AddHours(7),
-
-            }).FirstOrDefaultAsync();
+            var customer = await _context.Customers.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             var data = new CustomerResponse();
             var message = "blank";
             var status = 500;
-            var customer_name = await _context.Customers.Where(x => x.Name!.Equals(customer.Name)).FirstOrDefaultAsync();
-            var customer_phone = await _context.Customers.Where(x => x.Phone!.Equals(customer.Phone)).FirstOrDefaultAsync();
-            var customer_mail = await _context.Customers.Where(x => x.Mail!.Equals(customer.Mail)).FirstOrDefaultAsync();
-            if (customer_name != null)
+            var customer_name = await _context.Customers.Where(x => x.Name!.Equals(model.name)).FirstOrDefaultAsync();
+            var customer_phone = await _context.Customers.Where(x => x.Phone!.Equals(model.phone)).FirstOrDefaultAsync();
+            var customer_mail = await _context.Customers.Where(x => x.Mail!.Equals(model.mail)).FirstOrDefaultAsync();
+            if (customer_name != null && customer!.Name != model.name)
             {
                 status = 400;
                 message = "CustomerName is already exists!";
             }
-            else if (customer_phone != null)
+            else if (customer_phone != null && customer!.Phone != model.phone)
             {
                 status = 400;
                 message = "Phone is already exists!";
             }
-            else if (customer_mail != null)
+            else if (customer_mail != null && customer!.Mail != model.mail)
             {
                 status = 400;
                 message = "Mail is already exists!";
             }
             else
             {
-                _context.Customers.Update(customer!);
+                status = 200;
+                message = "Successfully";
+                customer!.Name = model.name;
+                customer!.Description = model.description;
+                customer!.Address = model.address;
+                customer!.Mail = model.mail;
+                customer!.Phone = model.phone;
+                customer!.UpdateDate = DateTime.UtcNow.AddHours(7);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {

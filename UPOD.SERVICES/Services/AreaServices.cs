@@ -220,21 +220,13 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> UpdateArea(Guid id, AreaRequest model)
         {
-            var area = await _context.Areas.Where(a => a.Id.Equals(id)).Select(x => new Area
-            {
-                Id = id,
-                Code = x.Code,
-                AreaName = model.area_name,
-                Description = model.description,
-                IsDelete = x.IsDelete,
-                CreateDate = x.CreateDate,
-                UpdateDate = DateTime.UtcNow.AddHours(7)
-            }).FirstOrDefaultAsync();
+            var area = await _context.Areas.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
+
             var data = new AreaResponse();
             var message = "blank";
             var status = 500;
-            var area_name = await _context.Areas.Where(x => x.AreaName!.Equals(area!.AreaName)).FirstOrDefaultAsync();
-            if (area_name != null)
+            var area_name = await _context.Areas.Where(x => x.AreaName!.Equals(model!.area_name)).FirstOrDefaultAsync();
+            if (area!.AreaName != model.area_name && area_name != null)
             {
                 status = 400;
                 message = "Name is already exists!";
@@ -243,13 +235,15 @@ namespace UPOD.SERVICES.Services
             {
                 message = "Successfully";
                 status = 200;
-                _context.Areas.Update(area!);
+                area.AreaName = model.area_name;
+                area.Description = model.description;
+                area.UpdateDate = DateTime.UtcNow.AddHours(7);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {
                     data = new AreaResponse
                     {
-                        id = area!.Id,
+                        id = area.Id,
                         code = area.Code,
                         area_name = area.AreaName,
                         description = area.Description,

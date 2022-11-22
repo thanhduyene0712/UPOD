@@ -175,22 +175,12 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> UpdateService(Guid id, ServiceRequest model)
         {
-            var service = await _context.Services.Where(x => x.Id.Equals(id)).Select(x => new Service
-            {
-                Id = id,
-                Code = x.Code,
-                ServiceName = model.service_name,
-                Description = model.description,
-                IsDelete = x.IsDelete,
-                CreateDate = x.CreateDate,
-                Guideline = model.guideline,
-                UpdateDate = DateTime.UtcNow.AddHours(7),
-            }).FirstOrDefaultAsync();
+            var service = await _context.Services.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             var data = new ServiceResponse();
             var message = "blank";
             var status = 500;
-            var service_name = await _context.Services.Where(x => x.ServiceName!.Equals(service!.ServiceName)).FirstOrDefaultAsync();
-            if (service_name != null)
+            var service_name = await _context.Services.Where(x => x.ServiceName!.Equals(model.service_name)).FirstOrDefaultAsync();
+            if (service_name != null && service!.ServiceName != model.service_name)
             {
                 status = 400;
                 message = "ServiceName is already exists!";
@@ -199,7 +189,10 @@ namespace UPOD.SERVICES.Services
             {
                 message = "Successfully";
                 status = 200;
-                _context.Services.Update(service!);
+                service!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                service!.ServiceName = model.service_name;
+                service.Description = model.description;
+                service.Guideline = model.guideline;
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {

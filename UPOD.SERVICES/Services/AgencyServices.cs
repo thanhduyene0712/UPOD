@@ -515,26 +515,12 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> UpdateAgency(Guid id, AgencyUpdateRequest model)
         {
-            var agency = await _context.Agencies.Where(a => a.Id.Equals(id)).Include(x => x.Area).Include(x => x.Customer).Include(x => x.Devices).Select(x => new Agency
-            {
-                Id = id,
-                Code = x.Code,
-                CustomerId = x.CustomerId,
-                TechnicianId = model.technician_id,
-                AgencyName = model.agency_name,
-                AreaId = model.area_id,
-                ManagerName = model.manager_name,
-                Address = model.address,
-                Telephone = model.telephone,
-                IsDelete = x.IsDelete,
-                CreateDate = x.CreateDate,
-                UpdateDate = DateTime.UtcNow.AddHours(7)
-            }).FirstOrDefaultAsync();
+            var agency = await _context.Agencies.Where(a => a.Id.Equals(id)).Include(x => x.Area).Include(x => x.Customer).Include(x => x.Devices).FirstOrDefaultAsync();
             var data = new AgencyResponse();
             var message = "blank";
             var status = 500;
-            var agency_phone = await _context.Agencies.Where(x => x.Telephone!.Equals(agency!.Telephone)).FirstOrDefaultAsync();
-            if (agency_phone != null)
+            var agency_phone = await _context.Agencies.Where(x => x.Telephone!.Equals(model!.telephone)).FirstOrDefaultAsync();
+            if (agency_phone != null && agency!.Telephone != model.telephone)
             {
                 status = 400;
                 message = "Phone is already exists!";
@@ -543,7 +529,13 @@ namespace UPOD.SERVICES.Services
             {
                 message = "Successfully";
                 status = 200;
-                _context.Agencies.Update(agency!);
+                agency!.TechnicianId = model.technician_id;
+                agency!.AgencyName = model.agency_name;
+                agency!.AreaId = model.area_id;
+                agency!.ManagerName = model.manager_name;
+                agency!.Address = model.address;
+                agency!.Telephone = model.telephone;
+                agency!.UpdateDate = DateTime.UtcNow.AddHours(7);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {
@@ -556,6 +548,7 @@ namespace UPOD.SERVICES.Services
                             id = agency.CustomerId,
                             code = agency.Customer!.Code,
                             cus_name = agency.Customer.Name,
+                            mail = agency.Customer.Mail,
                             address = agency.Customer.Address,
                             phone = agency.Customer.Phone,
                             description = agency.Customer.Description,

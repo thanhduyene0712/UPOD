@@ -9,7 +9,6 @@ namespace UPOD.REPOSITORIES.RequestModels
     public class CustomerUpdateRequest
     {
             public string? name { get; set; }
-            public Guid? account_id { get; set; }
             public string? description { get; set; }
             public string? address { get; set; }
             public string? mail { get; set; }
