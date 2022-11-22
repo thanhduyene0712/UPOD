@@ -16,6 +16,8 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> SetStatusProcessingMaintenanceReport(Guid id);
         Task<ObjectModelResponse> SetUnProcessingMaintenanceReport(Guid id);
         Task<ObjectModelResponse> UpdateMaintenanceReport(Guid id, MaintenanceReportRequest model);
+        Task SetMaintenanceReportStatus();
+        Task SetMaintenanceReportStatusProcessing();
     }
 
     public class MaintenanceReportServices : IMaintenanceReportService
@@ -25,14 +27,55 @@ namespace UPOD.SERVICES.Services
         {
             _context = context;
         }
+        public async Task SetMaintenanceReportStatus()
+        {
+            var report_services = await _context.MaintenanceReports.Where(a => a.CreateDate!.Value.AddDays(2).Date <= DateTime.UtcNow.AddHours(7).Date).ToListAsync();
+            foreach (var item in report_services)
+            {
+                if (item.Status!.Equals("NO_PROBLEM"))
+                {
+                    item.Status = ReportStatus.CLOSED.ToString();     
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task SetMaintenanceReportStatusProcessing()
+        {
+            var maintenance_reports = await _context.MaintenanceReports.Where(a => a.Status!.Equals("PROCESSING")).ToListAsync();
+            foreach (var item in maintenance_reports)
+            {
+                int count = 0;
+                var date = DateTime.UtcNow;
+                var report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(item.Id)).ToListAsync();
+                foreach (var item1 in report_services)
+                {
+                    if(item1.Created == true)
+                    {
+                        count = count + 1;
+                    }
+                    date = item.UpdateDate!.Value.AddDays(2);
+                }
+                if(report_services.Count == count)
+                {
+                    if(date.Date <= DateTime.UtcNow.AddHours(7).Date)
+                    {
+                        item.Status = ReportStatus.CLOSED.ToString();
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
         public async Task<ObjectModelResponse> SetUnProcessingMaintenanceReport(Guid id)
         {
             var status = await _context.MaintenanceReports.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             status!.Status = ReportStatus.PROBLEM.ToString();
+            status!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(id)).ToListAsync();
             foreach (var item in report_services)
             {
                 var request = await _context.Requests.Where(a => a.Id.Equals(item.RequestId)).FirstOrDefaultAsync();
+                item.Created = false;
+                item.RequestId = null;
                 request!.RequestStatus = ProcessStatus.CANCELED.ToString();
             }
             var rs = await _context.SaveChangesAsync();
@@ -105,6 +148,7 @@ namespace UPOD.SERVICES.Services
         {
             var status = await _context.MaintenanceReports.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             status!.Status = ReportStatus.PROCESSING.ToString();
+            status!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var rs = await _context.SaveChangesAsync();
             var data = new MaintenanceReportResponse();
             if (rs > 0)

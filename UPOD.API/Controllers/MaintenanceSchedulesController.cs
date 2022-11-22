@@ -15,11 +15,13 @@ namespace UPOD.API.Controllers
     {
 
         private readonly IMaintenanceScheduleService _maintenanceSchedule_sv;
+        private readonly IMaintenanceReportService _maintenanceReport_sv;
         private readonly IContractServiceService _contract_sv;
-        public MaintenanceSchedulesController(IMaintenanceScheduleService maintenanceSchedule_sv, IContractServiceService contract_sv)
+        public MaintenanceSchedulesController(IMaintenanceScheduleService maintenanceSchedule_sv, IContractServiceService contract_sv, IMaintenanceReportService maintenanceReport_sv)
         {
             _maintenanceSchedule_sv = maintenanceSchedule_sv;
             _contract_sv = contract_sv;
+            _maintenanceReport_sv = maintenanceReport_sv;
         }
 
         [HttpPut]
@@ -34,7 +36,8 @@ namespace UPOD.API.Controllers
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotifyMissing();
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesMaintaining();
                 await _contract_sv.SetContractNotify();
-
+                await _maintenanceReport_sv.SetMaintenanceReportStatus();
+                await _maintenanceReport_sv.SetMaintenanceReportStatusProcessing();
                 var timeShedule = DateTime.SpecifyKind(DateTime.UtcNow.AddHours(12), DateTimeKind.Utc);
                 BackgroundJob.Schedule(() => Notifications(), timeShedule);
                 return Ok();
