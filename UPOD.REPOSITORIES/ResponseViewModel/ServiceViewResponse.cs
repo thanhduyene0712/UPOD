@@ -13,7 +13,7 @@ namespace UPOD.REPOSITORIES.ResponseViewModel
         public string? code { get; set; }
         public string? service_name { get; set; }
         public string? description { get; set; }
-
+        public string? MyProperty { get; set; }
     }
 
 }

@@ -18,7 +18,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> GetCustomerDetails(Guid id);
         Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerUpdateRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
-        Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id);
+        Task<ResponseModel<ServiceResponse>> GetServiceByCustomerId(Guid id);
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
         Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterStatusRequest value, Guid id);
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
@@ -450,22 +450,26 @@ namespace UPOD.SERVICES.Services
             };
         }
 
-        public async Task<ResponseModel<ServiceViewResponse>> GetServiceByCustomerId(Guid id)
+        public async Task<ResponseModel<ServiceResponse>> GetServiceByCustomerId(Guid id)
         {
 
             var services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
             && (x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7))
-            || x.Contract.TerminalTime >= DateTime.UtcNow.AddHours(7)).Select(x => new ServiceViewResponse
+            || x.Contract.TerminalTime >= DateTime.UtcNow.AddHours(7)).Select(x => new ServiceResponse
             {
                 id = x.ServiceId,
                 code = x.Service!.Code,
                 service_name = x.Service!.ServiceName,
                 description = x.Service!.Description,
+                create_date = x.Service!.CreateDate,
+                update_date = x.Service!.UpdateDate,
+                guideline = x.Service!.Guideline,
+                is_delete = x.Service!.IsDelete,
             }).Distinct().ToListAsync();
             var total = _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
                 && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Distinct().ToList();
-            return new ResponseModel<ServiceViewResponse>(services)
+            return new ResponseModel<ServiceResponse>(services)
             {
                 Total = total.Count,
                 Type = "Services"
