@@ -441,7 +441,7 @@ namespace UPOD.SERVICES.Services
             maintenanceReport!.MaintenanceScheduleId = model.maintenance_schedule_id;
             maintenanceReport!.Description = model.description;
             maintenanceReport!.UpdateDate = DateTime.UtcNow.AddHours(7);
-            maintenanceReport!.Status = ReportStatus.NO_PROBLEM.ToString();
+            maintenanceReport!.Status = ReportStatus.STABILIZE.ToString();
             if (model.service.Count == 0)
             {
                 var report_service_removes = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(maintenanceReport.Id)).ToListAsync();
@@ -598,7 +598,7 @@ namespace UPOD.SERVICES.Services
                 CustomerId = _context.Agencies.Where(a => a.Id.Equals(agencyId)).Select(a => a.CustomerId).FirstOrDefault(),
                 CreateBy = _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).Select(a => a.TechnicianId).FirstOrDefault(),
                 MaintenanceScheduleId = model.maintenance_schedule_id,
-                Status = ReportStatus.NO_PROBLEM.ToString(),
+                Status = ReportStatus.STABILIZE.ToString(),
             };
             if (model.service.Count == 0)
             {
