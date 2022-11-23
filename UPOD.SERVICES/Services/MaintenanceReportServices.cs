@@ -32,7 +32,7 @@ namespace UPOD.SERVICES.Services
             var report_services = await _context.MaintenanceReports.Where(a => a.CreateDate!.Value.AddDays(2).Date <= DateTime.UtcNow.AddHours(7).Date).ToListAsync();
             foreach (var item in report_services)
             {
-                if (item.Status!.Equals("NO_PROBLEM"))
+                if (item.Status!.Equals("STABILIZE"))
                 {
                     item.Status = ReportStatus.CLOSED.ToString();     
                 }
