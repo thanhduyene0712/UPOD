@@ -98,6 +98,12 @@ namespace UPOD.SERVICES.Services
                 end_time = maintenanceSchedule.EndDate,
                 maintain_time = maintenanceSchedule.MaintainTime,
                 status = maintenanceSchedule.Status,
+                contract = new ContractViewResponse
+                {
+                    id = _context.Contracts.Where(x => x.Id.Equals(maintenanceSchedule.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                    name = _context.Contracts.Where(x => x.Id.Equals(maintenanceSchedule.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
+                    code = _context.Contracts.Where(x => x.Id.Equals(maintenanceSchedule.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                },
                 technician = new TechnicianViewResponse
                 {
                     id = _context.Technicians.Where(x => x.Id.Equals(maintenanceSchedule.TechnicianId)).Select(a => a.Id).FirstOrDefault(),
