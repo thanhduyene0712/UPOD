@@ -66,6 +66,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddDbContext<Database_UPODContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
 //Authenticate
+
 #region authenticae
 builder.Services.AddSwaggerGen(c =>
 {
