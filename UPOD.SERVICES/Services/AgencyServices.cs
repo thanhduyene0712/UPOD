@@ -565,9 +565,9 @@ namespace UPOD.SERVICES.Services
                         area = new AreaViewResponse
                         {
                             id = agency.AreaId,
-                            code = _context.Areas.Where(x => x.Id.Equals(model.area_id)).Select(a => a.Code).FirstOrDefault(),
-                            area_name = _context.Areas.Where(x => x.Id.Equals(model.area_id)).Select(a => a.AreaName).FirstOrDefault(),
-                            description = _context.Areas.Where(x => x.Id.Equals(model.area_id)).Select(a => a.Description).FirstOrDefault(),
+                            code = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Code).FirstOrDefault(),
+                            area_name = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.AreaName).FirstOrDefault(),
+                            description = _context.Areas.Where(x => x.Id.Equals(agency.AreaId)).Select(a => a.Description).FirstOrDefault(),
                         },
                         technician = new TechnicianViewResponse
                         {
