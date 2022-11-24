@@ -733,20 +733,11 @@ namespace UPOD.SERVICES.Services
 
         public async Task<ObjectModelResponse> UpdateAccount(Guid id, AccountUpdateRequest model)
         {
-            var account = await _context.Accounts.Where(a => a.Id.Equals(id)).Select(x => new Account
-            {
-                Id = id,
-                Code = x.Code,
-                RoleId = model.role_id,
-                Username = x.Username,
-                Password = model.password,
-                IsAssign = x.IsAssign,
-                IsDelete = x.IsDelete,
-                CreateDate = x.CreateDate,
-                UpdateDate = DateTime.UtcNow.AddHours(7),
-            }).FirstOrDefaultAsync();
-            _context.Accounts.Update(account!);
+            var account = await _context.Accounts.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             var data = new AccountResponse();
+            account!.RoleId = model.role_id;
+            account!.Password = model.password;
+            account!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
             {
