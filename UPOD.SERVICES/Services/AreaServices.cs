@@ -15,7 +15,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateArea(Guid id, AreaRequest model);
         Task<ObjectModelResponse> DisableArea(Guid id);
         Task<ObjectModelResponse> GetDetailsArea(Guid id);
-        Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id);
+        Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id, Guid cus_id);
     }
 
     public class AreaServices : IAreaService
@@ -92,18 +92,57 @@ namespace UPOD.SERVICES.Services
                 Type = "Area"
             };
         }
-        public async Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id)
+        public async Task<ResponseModel<TechnicianViewResponse>> GetListTechniciansByAreaId(PaginationRequest model, Guid id, Guid cus_id)
         {
-            var total = await _context.Technicians.Where(a => a.IsDelete == false && a.AreaId.Equals(id)).ToListAsync();
-            var technician = await _context.Technicians.Where(a => a.IsDelete == false && a.AreaId.Equals(id)).Select(a => new TechnicianViewResponse
+            var customer_services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(cus_id)
+            && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
+            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date
+            && x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).Distinct().ToListAsync();
+            var customer_technicians = new List<TechnicianViewResponse>();
+            foreach (var item in customer_services)
+            {
+                var skill_techs = await _context.Skills.Where(a => a.IsDelete == false && a.ServiceId.Equals(item.ServiceId)).Select(a => new TechnicianViewResponse
+                {
+                    id = a.Technician.Id,
+                    code = a.Technician.Code,
+                    email = a.Technician.Email,
+                    tech_name = a.Technician.TechnicianName,
+                    phone = a.Technician.Telephone,
+                }).Distinct().ToListAsync();
+                foreach (var item1 in skill_techs)
+                {
+                    customer_technicians.Add(new TechnicianViewResponse
+                    {
+                        id = item1.id,
+                        code = item1.code,
+                        email = item1.email,
+                        tech_name = item1.tech_name,
+                        phone = item1.phone,
+                    });
+                }
+                
+            }
+            var skill_technicians = await _context.Skills.Where(a => a.IsDelete == false).Select(a => new TechnicianViewResponse
+            {
+                id = a.Technician.Id,
+                code = a.Technician.Code,
+                email = a.Technician.Email,
+                tech_name = a.Technician.TechnicianName,
+                phone = a.Technician.Telephone,
+            }).Distinct().ToListAsync();
+            var area_technicians = await _context.Technicians.Where(a => a.IsDelete == false && a.AreaId.Equals(id)).Select(a => new TechnicianViewResponse
             {
                 id = a.Id,
                 code = a.Code,
+                email = a.Email,
                 tech_name = a.TechnicianName,
                 phone = a.Telephone,
-                email = a.Email,
-            }).OrderBy(x => x.tech_name).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
-            return new ResponseModel<TechnicianViewResponse>(technician)
+            }).Distinct().ToListAsync();
+            var technicians = new List<TechnicianViewResponse>();
+            var technician_compares = customer_technicians.Where(i => skill_technicians.Contains(i)).ToList();
+            technicians = area_technicians.Where(i => technician_compares.Contains(i)).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToList();
+            var total = area_technicians.Where(i => technician_compares.Contains(i)).ToList();
+            return new ResponseModel<TechnicianViewResponse>(technicians)
             {
                 Total = total.Count,
                 Type = "Technicians"

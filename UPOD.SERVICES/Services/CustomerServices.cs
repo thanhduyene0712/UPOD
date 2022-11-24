@@ -455,8 +455,8 @@ namespace UPOD.SERVICES.Services
 
             var services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
-            && (x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7))
-            || x.Contract.TerminalTime >= DateTime.UtcNow.AddHours(7)).Select(x => new ServiceResponse
+            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date 
+            && x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).Select(x => new ServiceResponse
             {
                 id = x.ServiceId,
                 code = x.Service!.Code,
@@ -467,8 +467,10 @@ namespace UPOD.SERVICES.Services
                 guideline = x.Service!.Guideline,
                 is_delete = x.Service!.IsDelete,
             }).Distinct().ToListAsync();
-            var total = _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id) && x.Contract.IsDelete == false
-                && x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7)).Distinct().ToList();
+            var total = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
+            && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
+            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date 
+            && x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).ToListAsync();
             return new ResponseModel<ServiceResponse>(services)
             {
                 Total = total.Count,
@@ -480,8 +482,8 @@ namespace UPOD.SERVICES.Services
 
             var services_in_contract = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
-            && (x.Contract.StartDate <= DateTime.UtcNow.AddHours(7) && x.Contract.EndDate >= DateTime.UtcNow.AddHours(7))
-            || x.Contract.TerminalTime >= DateTime.UtcNow.AddHours(7)).Select(a => new ServiceNotInContractViewResponse
+            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date 
+            && x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).Select(a => new ServiceNotInContractViewResponse
             {
                 id = a.ServiceId,
                 service_name = a.Service!.ServiceName,

@@ -49,11 +49,11 @@ namespace UPOD.API.Controllers
        
         [HttpGet]
         [Route("get_list_technicians_by_area_id")]
-        public async Task<ActionResult<ResponseModel<TechnicianViewResponse>>> GetListTechniciansByAreaId([FromQuery]PaginationRequest model, Guid id)
+        public async Task<ActionResult<ResponseModel<TechnicianViewResponse>>> GetListTechniciansByAreaId([FromQuery]PaginationRequest model, Guid id, Guid cus_id)
         {
             try
             {
-                return await _area_sv.GetListTechniciansByAreaId(model, id);
+                return await _area_sv.GetListTechniciansByAreaId(model, id, cus_id);
 
             }
             catch (Exception ex)
