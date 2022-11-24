@@ -120,7 +120,7 @@ namespace UPOD.SERVICES.Services
                         phone = item1.phone,
                     });
                 }
-                
+
             }
             var skill_technicians = await _context.Skills.Where(a => a.IsDelete == false).Select(a => new TechnicianViewResponse
             {
@@ -139,9 +139,19 @@ namespace UPOD.SERVICES.Services
                 phone = a.Telephone,
             }).Distinct().ToListAsync();
             var technicians = new List<TechnicianViewResponse>();
+            var technician_check = new List<TechnicianViewResponse>();
             var technician_compares = customer_technicians.Where(i => skill_technicians.Contains(i)).ToList();
-            technicians = area_technicians.Where(i => technician_compares.Contains(i)).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToList();
+            technician_check = area_technicians.Where(i => technician_compares.Contains(i)).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToList();
             var total = area_technicians.Where(i => technician_compares.Contains(i)).ToList();
+            if (technician_check.Count > 0)
+            {
+                technicians = technician_check;
+            }
+            else
+            {
+                technicians = area_technicians;
+                total = area_technicians;
+            }
             return new ResponseModel<TechnicianViewResponse>(technicians)
             {
                 Total = total.Count,
