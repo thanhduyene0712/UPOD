@@ -627,7 +627,22 @@ namespace UPOD.SERVICES.Services
             if (contract_name != null)
             {
                 status = 400;
-                message = "ContractName is already exists!";
+                message = "Contract Name is already exists!";
+            }
+            else if (model.end_date <= model.start_date)
+            {
+                status = 400;
+                message = "End date must be longer than start end!";
+            }
+            else if (model.contract_price <= 0)
+            {
+                status = 400;
+                message = "Contract price must be greater than zero!";
+            }
+            else if (model.frequency_maintain_time < 0)
+            {
+                status = 400;
+                message = "Frequency maintain must not be smaller than zero!";
             }
             else
             {
