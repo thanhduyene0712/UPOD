@@ -639,10 +639,10 @@ namespace UPOD.SERVICES.Services
                 status = 400;
                 message = "Contract price must be greater than zero!";
             }
-            else if (model.frequency_maintain_time < 0)
+            else if (model.frequency_maintain_time <= 0)
             {
                 status = 400;
-                message = "Frequency maintain must not be smaller than zero!";
+                message = "Frequency maintain must be greater than zero!";
             }
             else
             {
