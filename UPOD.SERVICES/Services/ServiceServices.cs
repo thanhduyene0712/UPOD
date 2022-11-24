@@ -141,7 +141,7 @@ namespace UPOD.SERVICES.Services
             var data = new ServiceResponse();
             var message = "blank";
             var status = 500;
-            var service_name = await _context.Services.Where(x => x.ServiceName!.Equals(service.ServiceName)).FirstOrDefaultAsync();
+            var service_name = await _context.Services.Where(x => x.ServiceName!.Equals(service.ServiceName) && x.IsDelete == false).FirstOrDefaultAsync();
             if (service_name != null)
             {
                 status = 400;
@@ -179,7 +179,7 @@ namespace UPOD.SERVICES.Services
             var data = new ServiceResponse();
             var message = "blank";
             var status = 500;
-            var service_name = await _context.Services.Where(x => x.ServiceName!.Equals(model.service_name)).FirstOrDefaultAsync();
+            var service_name = await _context.Services.Where(x => x.ServiceName!.Equals(model.service_name) && x.IsDelete == false).FirstOrDefaultAsync();
             if (service_name != null && service!.ServiceName != model.service_name)
             {
                 status = 400;

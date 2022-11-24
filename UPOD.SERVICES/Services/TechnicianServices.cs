@@ -696,8 +696,8 @@ namespace UPOD.SERVICES.Services
             var data = new TechnicianUpdateResponse();
             var message = "blank";
             var status = 500;
-            var tech_mail = await _context.Technicians.Where(x => x.Email!.Equals(technician.Email)).FirstOrDefaultAsync();
-            var tech_phone = await _context.Technicians.Where(x => x.Telephone!.Equals(technician.Telephone)).FirstOrDefaultAsync();
+            var tech_mail = await _context.Technicians.Where(x => x.Email!.Equals(technician.Email) && x.IsDelete == false).FirstOrDefaultAsync();
+            var tech_phone = await _context.Technicians.Where(x => x.Telephone!.Equals(technician.Telephone) && x.IsDelete == false).FirstOrDefaultAsync();
             if (tech_mail != null)
             {
                 status = 400;
@@ -967,8 +967,8 @@ namespace UPOD.SERVICES.Services
             var data = new TechnicianUpdateResponse();
             var message = "blank";
             var status = 500;
-            var tech_mail = await _context.Technicians.Where(x => x.Email!.Equals(model.email)).FirstOrDefaultAsync();
-            var tech_phone = await _context.Technicians.Where(x => x.Telephone!.Equals(model.telephone)).FirstOrDefaultAsync();
+            var tech_mail = await _context.Technicians.Where(x => x.Email!.Equals(model.email) && x.IsDelete == false).FirstOrDefaultAsync();
+            var tech_phone = await _context.Technicians.Where(x => x.Telephone!.Equals(model.telephone) && x.IsDelete == false).FirstOrDefaultAsync();
             if (tech_mail != null && technician!.Email != model.email)
             {
                 status = 400;

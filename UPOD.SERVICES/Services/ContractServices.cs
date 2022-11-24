@@ -623,7 +623,7 @@ namespace UPOD.SERVICES.Services
             var data = new ContractResponse();
             var message = "blank";
             var status = 500;
-            var contract_name = await _context.Contracts.Where(x => x.ContractName!.Equals(contract.ContractName)).FirstOrDefaultAsync();
+            var contract_name = await _context.Contracts.Where(x => x.ContractName!.Equals(contract.ContractName) && x.IsDelete == false && x.IsExpire == false).FirstOrDefaultAsync();
             if (contract_name != null)
             {
                 status = 400;

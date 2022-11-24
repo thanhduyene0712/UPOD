@@ -153,7 +153,7 @@ namespace UPOD.SERVICES.Services
             var data = new AreaResponse();
             var message = "blank";
             var status = 500;
-            var area_name = await _context.Areas.Where(x => x.AreaName!.Equals(area!.AreaName)).FirstOrDefaultAsync();
+            var area_name = await _context.Areas.Where(x => x.AreaName!.Equals(area!.AreaName) && x.IsDelete == false).FirstOrDefaultAsync();
             if (area_name != null)
             {
                 status = 400;
@@ -225,7 +225,7 @@ namespace UPOD.SERVICES.Services
             var data = new AreaResponse();
             var message = "blank";
             var status = 500;
-            var area_name = await _context.Areas.Where(x => x.AreaName!.Equals(model!.area_name)).FirstOrDefaultAsync();
+            var area_name = await _context.Areas.Where(x => x.AreaName!.Equals(model!.area_name) && x.IsDelete == false).FirstOrDefaultAsync();
             if (area!.AreaName != model.area_name && area_name != null)
             {
                 status = 400;

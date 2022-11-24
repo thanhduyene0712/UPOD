@@ -384,7 +384,7 @@ namespace UPOD.SERVICES.Services
             var data = new AgencyResponse();
             var message = "blank";
             var status = 500;
-            var agency_phone = await _context.Agencies.Where(x => x.Telephone!.Equals(agency.Telephone)).FirstOrDefaultAsync();
+            var agency_phone = await _context.Agencies.Where(x => x.Telephone!.Equals(agency.Telephone) && x.IsDelete == false).FirstOrDefaultAsync();
             if (agency_phone != null)
             {
                 status = 400;
@@ -523,7 +523,7 @@ namespace UPOD.SERVICES.Services
             var data = new AgencyResponse();
             var message = "blank";
             var status = 500;
-            var agency_phone = await _context.Agencies.Where(x => x.Telephone!.Equals(model!.telephone)).FirstOrDefaultAsync();
+            var agency_phone = await _context.Agencies.Where(x => x.Telephone!.Equals(model!.telephone) && x.IsDelete == false).FirstOrDefaultAsync();
             if (agency_phone != null && agency!.Telephone != model.telephone)
             {
                 status = 400;

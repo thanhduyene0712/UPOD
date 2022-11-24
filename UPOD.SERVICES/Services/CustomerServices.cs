@@ -579,9 +579,9 @@ namespace UPOD.SERVICES.Services
             var message = "blank";
             var status = 500;
             var data = new CustomerResponse();
-            var customer_name = await _context.Customers.Where(x => x.Name!.Equals(model.name)).FirstOrDefaultAsync();
-            var customer_phone = await _context.Customers.Where(x => x.Phone!.Equals(model.phone)).FirstOrDefaultAsync();
-            var customer_mail = await _context.Customers.Where(x => x.Mail!.Equals(model.mail)).FirstOrDefaultAsync();
+            var customer_name = await _context.Customers.Where(x => x.Name!.Equals(model.name) && x.IsDelete == false).FirstOrDefaultAsync();
+            var customer_phone = await _context.Customers.Where(x => x.Phone!.Equals(model.phone) && x.IsDelete == false).FirstOrDefaultAsync();
+            var customer_mail = await _context.Customers.Where(x => x.Mail!.Equals(model.mail) && x.IsDelete == false).FirstOrDefaultAsync();
             if (customer_name != null)
             {
                 status = 400;
