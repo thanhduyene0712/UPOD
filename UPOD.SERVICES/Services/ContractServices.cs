@@ -629,7 +629,7 @@ namespace UPOD.SERVICES.Services
                 status = 400;
                 message = "Contract Name is already exists!";
             }
-            else if (model.end_date <= model.start_date)
+            else if (model.end_date!.Value.Date <= model.start_date!.Value.Date)
             {
                 status = 400;
                 message = "End date must be longer than start end!";
