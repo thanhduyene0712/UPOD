@@ -537,107 +537,13 @@ namespace UPOD.SERVICES.Services
                 IsExpire = false,
                 FrequencyMaintainTime = model.frequency_maintain_time,
             };
-            foreach (var item in model.service)
-            {
-                var contract_service_id = Guid.NewGuid();
-                while (true)
-                {
-                    var contract_service_dup = await _context.ContractServices.Where(x => x.Id.Equals(contract_service_id)).FirstOrDefaultAsync();
-                    if (contract_service_dup == null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        contract_service_id = Guid.NewGuid();
-                    }
-                }
-                var contract_service = new ContractService
-                {
-                    Id = contract_service_id,
-                    ContractId = contract.Id,
-                    ServiceId = item.service_id,
-                    IsDelete = false
-                };
-                _context.ContractServices.Add(contract_service);
-            }
-            var lastTime = model.end_date - model.start_date;
-            var lastDay = lastTime!.Value.Days - 15;
-            var listAgency = await _context.Agencies.Where(a => a.CustomerId.Equals(model.customer_id) && a.IsDelete == false).ToListAsync();
-            var code_number1 = await GetLastCode1();
-            var maintenanceTime = lastDay / model.frequency_maintain_time;
-
-            foreach (var item in listAgency)
-            {
-                var maintenanceDate = model.start_date;
-                for (int i = 1; i <= model.frequency_maintain_time; i++)
-                {
-                    maintenanceDate = maintenanceDate!.Value.AddDays(maintenanceTime!.Value);
-                    var maintenance_id = Guid.NewGuid();
-                    while (true)
-                    {
-                        var maintenance_dup = await _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenance_id)).FirstOrDefaultAsync();
-                        if (maintenance_dup == null)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            maintenance_id = Guid.NewGuid();
-                        }
-                    }
-                    var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
-                    while (true)
-                    {
-                        var code_dup = await _context.MaintenanceSchedules.Where(x => x.Code.Equals(code1)).FirstOrDefaultAsync();
-                        if (code_dup == null)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            code1 = "MS-" + code_number1++.ToString();
-                        }
-                    }
-                    var maintenanceSchedule = new MaintenanceSchedule
-                    {
-                        Id = maintenance_id,
-                        Code = code1,
-                        AgencyId = item.Id,
-                        CreateDate = DateTime.UtcNow.AddHours(7),
-                        UpdateDate = DateTime.UtcNow.AddHours(7),
-                        IsDelete = false,
-                        Name = "Maintenance Schedule: " + i,
-                        Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
-                        TechnicianId = item.TechnicianId,
-                        MaintainTime = maintenanceDate,
-                        StartDate = null,
-                        EndDate = null,
-                        ContractId = contract.Id
-
-                    };
-                    await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
-                }
-            }
-
             var data = new ContractResponse();
             var message = "blank";
             var status = 500;
-            var contract_name = await _context.Contracts.Where(x => x.ContractName!.Equals(contract.ContractName) && x.IsDelete == false && x.IsExpire == false).FirstOrDefaultAsync();
-            if (contract_name != null)
+            if (model.service.Count <= 0)
             {
                 status = 400;
-                message = "Contract Name is already exists!";
-            }
-            else if (model.end_date!.Value.Date <= model.start_date!.Value.Date)
-            {
-                status = 400;
-                message = "End date must be longer than start end!";
-            }
-            else if (model.contract_price <= 0)
-            {
-                status = 400;
-                message = "Contract price must be greater than zero!";
+                message = "Service must be required!";
             }
             else if (model.frequency_maintain_time <= 0)
             {
@@ -646,49 +552,151 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                message = "Successfully";
-                status = 200;
-                await _context.Contracts.AddAsync(contract);
-                var rs = await _context.SaveChangesAsync();
-                if (rs > 0)
+                foreach (var item in model.service)
                 {
-                    data = new ContractResponse
+                    var contract_service_id = Guid.NewGuid();
+                    while (true)
                     {
-                        id = contract.Id,
-                        code = contract.Code,
-                        contract_name = contract.ContractName,
-                        customer = new CustomerViewResponse
+                        var contract_service_dup = await _context.ContractServices.Where(x => x.Id.Equals(contract_service_id)).FirstOrDefaultAsync();
+                        if (contract_service_dup == null)
                         {
-                            id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
-                            code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                            cus_name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                            description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-                            phone = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
-                            address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
-                            mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
-                        },
-                        start_date = contract.StartDate,
-                        end_date = contract.EndDate,
-                        is_delete = contract.IsDelete,
-                        create_date = contract.CreateDate,
-                        update_date = contract.UpdateDate,
-                        contract_price = contract.ContractPrice,
-                        description = contract.Description,
-                        is_expire = contract.IsExpire,
-                        attachment = contract.Attachment,
-                        terminal_content = contract.TerminalContent,
-                        frequency_maintain_time = contract.FrequencyMaintainTime,
-                        service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
+                            break;
+                        }
+                        else
                         {
-                            id = x.ServiceId,
-                            code = x.Service!.Code,
-                            service_name = x.Service!.ServiceName,
-                            description = x.Service!.Description,
-                        }).ToList(),
+                            contract_service_id = Guid.NewGuid();
+                        }
+                    }
+                    var contract_service = new ContractService
+                    {
+                        Id = contract_service_id,
+                        ContractId = contract.Id,
+                        ServiceId = item.service_id,
+                        IsDelete = false
                     };
+                    _context.ContractServices.Add(contract_service);
+                }
+                var lastTime = model.end_date - model.start_date;
+                var lastDay = lastTime!.Value.Days - 15;
+                var listAgency = await _context.Agencies.Where(a => a.CustomerId.Equals(model.customer_id) && a.IsDelete == false).ToListAsync();
+                var code_number1 = await GetLastCode1();
+                var maintenanceTime = lastDay / model.frequency_maintain_time;
+
+                foreach (var item in listAgency)
+                {
+                    var maintenanceDate = model.start_date;
+                    for (int i = 1; i <= model.frequency_maintain_time; i++)
+                    {
+                        maintenanceDate = maintenanceDate!.Value.AddDays(maintenanceTime!.Value);
+                        var maintenance_id = Guid.NewGuid();
+                        while (true)
+                        {
+                            var maintenance_dup = await _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenance_id)).FirstOrDefaultAsync();
+                            if (maintenance_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                maintenance_id = Guid.NewGuid();
+                            }
+                        }
+                        var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
+                        while (true)
+                        {
+                            var code_dup = await _context.MaintenanceSchedules.Where(x => x.Code.Equals(code1)).FirstOrDefaultAsync();
+                            if (code_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                code1 = "MS-" + code_number1++.ToString();
+                            }
+                        }
+                        var maintenanceSchedule = new MaintenanceSchedule
+                        {
+                            Id = maintenance_id,
+                            Code = code1,
+                            AgencyId = item.Id,
+                            CreateDate = DateTime.UtcNow.AddHours(7),
+                            UpdateDate = DateTime.UtcNow.AddHours(7),
+                            IsDelete = false,
+                            Name = "Maintenance Schedule: " + i,
+                            Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
+                            TechnicianId = item.TechnicianId,
+                            MaintainTime = maintenanceDate,
+                            StartDate = null,
+                            EndDate = null,
+                            ContractId = contract.Id
+
+                        };
+                        await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
+                    }
+                }
+
+
+                var contract_name = await _context.Contracts.Where(x => x.ContractName!.Equals(contract.ContractName) && x.IsDelete == false && x.IsExpire == false).FirstOrDefaultAsync();
+                if (contract_name != null)
+                {
+                    status = 400;
+                    message = "Contract Name is already exists!";
+                }
+                else if (model.end_date!.Value.Date <= model.start_date!.Value.Date)
+                {
+                    status = 400;
+                    message = "End date must be longer than start end!";
+                }
+                else if (model.contract_price <= 0)
+                {
+                    status = 400;
+                    message = "Contract price must be greater than zero!";
+                }
+                else
+                {
+                    message = "Successfully";
+                    status = 200;
+                    await _context.Contracts.AddAsync(contract);
+                    var rs = await _context.SaveChangesAsync();
+                    if (rs > 0)
+                    {
+                        data = new ContractResponse
+                        {
+                            id = contract.Id,
+                            code = contract.Code,
+                            contract_name = contract.ContractName,
+                            customer = new CustomerViewResponse
+                            {
+                                id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                                code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                                cus_name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                                description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                                phone = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                                address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                                mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
+                            },
+                            start_date = contract.StartDate,
+                            end_date = contract.EndDate,
+                            is_delete = contract.IsDelete,
+                            create_date = contract.CreateDate,
+                            update_date = contract.UpdateDate,
+                            contract_price = contract.ContractPrice,
+                            description = contract.Description,
+                            is_expire = contract.IsExpire,
+                            attachment = contract.Attachment,
+                            terminal_content = contract.TerminalContent,
+                            frequency_maintain_time = contract.FrequencyMaintainTime,
+                            service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
+                            {
+                                id = x.ServiceId,
+                                code = x.Service!.Code,
+                                service_name = x.Service!.ServiceName,
+                                description = x.Service!.Description,
+                            }).ToList(),
+                        };
+                    }
                 }
             }
-
 
             return new ObjectModelResponse(data)
             {
