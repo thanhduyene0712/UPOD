@@ -43,8 +43,8 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<RoleResponse>> GetAllRoles(PaginationRequest model)
         {
-            var total = await _context.Roles.Where(a => a.IsDelete == false).ToListAsync();
-            var roles = await _context.Roles.Where(a => a.IsDelete == false).Select(a => new RoleResponse
+            var total = await _context.Roles.Where(a => a.IsDelete == false && a.RoleName != "Admin").ToListAsync();
+            var roles = await _context.Roles.Where(a => a.IsDelete == false && a.RoleName != "Admin").Select(a => new RoleResponse
             {
 
                 id = a.Id,
@@ -266,7 +266,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ResponseModel<AccountResponse>> GetAll(PaginationRequest model, SearchRequest value)
         {
-            var total = await _context.Accounts.Where(a => a.IsDelete == false).ToListAsync();
+            var total = await _context.Accounts.Where(a => a.IsDelete == false && a.Role!.RoleName != "Admin").ToListAsync();
             var accounts = new List<AccountResponse>();
             if (value.search == null)
             {

@@ -260,6 +260,7 @@ namespace UPOD.SERVICES.Services
             contract!.TerminalTime = DateTime.UtcNow.AddHours(7);
             contract!.TerminalContent = model.terminal_content;
             contract!.IsExpire = true;
+            contract!.UpdateDate = DateTime.UtcNow.AddHours(7);
             //var contract_services = await _context.ContractServices.Where(a => a.IsDelete == false && a.ContractId.Equals(id)).ToListAsync();
             //foreach (var item in contract_services)
             //{
