@@ -490,6 +490,7 @@ namespace UPOD.SERVICES.Services
         //        Type = "Contract"
         //    };
         //}
+
         public async Task<ObjectModelResponse> CreateContract(ContractRequest model)
         {
             var contract_id = Guid.NewGuid();

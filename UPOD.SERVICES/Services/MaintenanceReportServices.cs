@@ -68,7 +68,7 @@ namespace UPOD.SERVICES.Services
         public async Task<ObjectModelResponse> SetUnProcessingMaintenanceReport(Guid id)
         {
             var status = await _context.MaintenanceReports.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
-            status!.Status = ReportStatus.PROBLEM.ToString();
+            status!.Status = ReportStatus.TROUBLED.ToString();
             status!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(id)).ToListAsync();
             foreach (var item in report_services)
@@ -452,7 +452,7 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                maintenanceReport!.Status = ReportStatus.PROBLEM.ToString();
+                maintenanceReport!.Status = ReportStatus.TROUBLED.ToString();
                 var report_service_removes = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(maintenanceReport.Id)).ToListAsync();
                 foreach (var item in report_service_removes)
                 {
@@ -617,7 +617,7 @@ namespace UPOD.SERVICES.Services
                 maintenanceScheduleStatus!.EndDate = DateTime.UtcNow.AddHours(7);
                 await _context.MaintenanceReports.AddAsync(maintenanceReport);
                 var technician = await _context.Technicians.Where(x => x.Id.Equals(maintenanceReport!.CreateBy)).FirstOrDefaultAsync();
-                maintenanceReport!.Status = ReportStatus.PROBLEM.ToString();
+                maintenanceReport!.Status = ReportStatus.TROUBLED.ToString();
                 technician!.IsBusy = false;
                 _context.Technicians.Update(technician);
                 foreach (var item in model.service)

@@ -21,7 +21,7 @@ namespace UPOD.SERVICES.Enum
     public enum ReportStatus
     {
         //1:có service hư, 2: không có service hư (nên có 2 status này)
-        PROBLEM,
+        TROUBLED,
         STABILIZE,
         PROCESSING,
         CLOSED
