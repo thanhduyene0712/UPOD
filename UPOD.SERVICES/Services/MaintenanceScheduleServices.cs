@@ -53,6 +53,7 @@ namespace UPOD.SERVICES.Services
                 technician!.IsBusy = true;
                 maintenanceSchedule!.Status = ScheduleStatus.MAINTAINING.ToString();
                 maintenanceSchedule.StartDate = DateTime.UtcNow.AddHours(7);
+                maintenanceSchedule!.UpdateDate = DateTime.UtcNow.AddHours(7);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {
