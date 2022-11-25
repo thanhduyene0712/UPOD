@@ -530,7 +530,7 @@ namespace UPOD.SERVICES.Services
                     phone = a.Telephone,
                     manager_name = a.ManagerName,
 
-                }).ToListAsync();
+                }).OrderByDescending(a => a.code).ToListAsync();
             }
             else
             {
@@ -550,7 +550,7 @@ namespace UPOD.SERVICES.Services
                      phone = a.Telephone,
                      manager_name = a.ManagerName,
 
-                 }).ToListAsync();
+                 }).OrderByDescending(a => a.code).ToListAsync();
             }
             return new ResponseModel<AgencyOfCustomerResponse>(agencies!)
             {
