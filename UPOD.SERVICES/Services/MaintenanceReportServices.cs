@@ -32,7 +32,7 @@ namespace UPOD.SERVICES.Services
             var report_services = await _context.MaintenanceReports.Where(a => a.CreateDate!.Value.AddDays(2).Date <= DateTime.UtcNow.AddHours(7).Date).ToListAsync();
             foreach (var item in report_services)
             {
-                if (item.Status!.Equals("STABILIZE"))
+                if (item.Status!.Equals("STABILIZED"))
                 {
                     item.Status = ReportStatus.CLOSED.ToString();     
                 }
@@ -51,7 +51,7 @@ namespace UPOD.SERVICES.Services
                 {
                     if(item1.Created == true)
                     {
-                        count = count + 1;
+                        count = count++;
                     }
                     date = item.UpdateDate!.Value.AddDays(2);
                 }
@@ -441,7 +441,7 @@ namespace UPOD.SERVICES.Services
             maintenanceReport!.MaintenanceScheduleId = model.maintenance_schedule_id;
             maintenanceReport!.Description = model.description;
             maintenanceReport!.UpdateDate = DateTime.UtcNow.AddHours(7);
-            maintenanceReport!.Status = ReportStatus.STABILIZE.ToString();
+            maintenanceReport!.Status = ReportStatus.STABILIZED.ToString();
             if (model.service.Count == 0)
             {
                 var report_service_removes = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(maintenanceReport.Id)).ToListAsync();
@@ -598,7 +598,7 @@ namespace UPOD.SERVICES.Services
                 CustomerId = _context.Agencies.Where(a => a.Id.Equals(agencyId)).Select(a => a.CustomerId).FirstOrDefault(),
                 CreateBy = _context.MaintenanceSchedules.Where(a => a.Id.Equals(model.maintenance_schedule_id)).Select(a => a.TechnicianId).FirstOrDefault(),
                 MaintenanceScheduleId = model.maintenance_schedule_id,
-                Status = ReportStatus.STABILIZE.ToString(),
+                Status = ReportStatus.STABILIZED.ToString(),
             };
             if (model.service.Count == 0)
             {
