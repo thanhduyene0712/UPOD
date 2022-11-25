@@ -530,7 +530,7 @@ namespace UPOD.SERVICES.Services
                     phone = a.Telephone,
                     manager_name = a.ManagerName,
 
-                }).OrderByDescending(a => a.code).ToListAsync();
+                }).OrderByDescending(a => a.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             else
             {
@@ -550,7 +550,7 @@ namespace UPOD.SERVICES.Services
                      phone = a.Telephone,
                      manager_name = a.ManagerName,
 
-                 }).OrderByDescending(a => a.code).ToListAsync();
+                 }).OrderByDescending(a => a.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
             return new ResponseModel<AgencyOfCustomerResponse>(agencies!)
             {
