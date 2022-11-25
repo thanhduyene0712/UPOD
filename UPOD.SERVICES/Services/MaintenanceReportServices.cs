@@ -71,12 +71,15 @@ namespace UPOD.SERVICES.Services
             status!.Status = ReportStatus.TROUBLED.ToString();
             status!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(id)).ToListAsync();
-            foreach (var item in report_services)
+            if(report_services != null)
             {
-                var request = await _context.Requests.Where(a => a.Id.Equals(item.RequestId)).FirstOrDefaultAsync();
-                item.Created = false;
-                item.RequestId = null;
-                request!.RequestStatus = ProcessStatus.CANCELED.ToString();
+                foreach (var item in report_services)
+                {
+                    var request = await _context.Requests.Where(a => a.Id.Equals(item.RequestId)).FirstOrDefaultAsync();
+                    item.Created = false;
+                    item.RequestId = null;
+                    request!.RequestStatus = ProcessStatus.CANCELED.ToString();
+                }
             }
             var rs = await _context.SaveChangesAsync();
             var data = new MaintenanceReportResponse();
