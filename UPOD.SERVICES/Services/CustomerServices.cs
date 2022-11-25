@@ -537,11 +537,13 @@ namespace UPOD.SERVICES.Services
                 total = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false
                 && a.CustomerId.Equals(id)
                  && (a.Code!.Contains(value.search)
-                 || a.AgencyName!.Contains(value.search))).ToListAsync();
+                 || a.AgencyName!.Contains(value.search)
+                 || a.ManagerName!.Contains(value.search))).ToListAsync();
                 agencies = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false
                  && a.CustomerId.Equals(id)
                  && (a.Code!.Contains(value.search)
-                 || a.AgencyName!.Contains(value.search))).Select(a => new AgencyOfCustomerResponse
+                 || a.AgencyName!.Contains(value.search)
+                 || a.ManagerName!.Contains(value.search))).Select(a => new AgencyOfCustomerResponse
                  {
                      id = a.Id,
                      code = a.Code,
