@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Linq.Dynamic.Core;
 using System.Numerics;
@@ -19,7 +20,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateCustomer(Guid id, CustomerUpdateRequest model);
         Task<ObjectModelResponse> DisableCustomer(Guid id);
         Task<ResponseModel<ServiceResponse>> GetServiceByCustomerId(Guid id);
-        Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id);
+        Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id, PaginationRequest model, SearchRequest value);
         Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterStatusRequest value, Guid id);
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
     }
@@ -455,7 +456,7 @@ namespace UPOD.SERVICES.Services
 
             var services = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
-            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date 
+            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date
             && x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).Select(x => new ServiceResponse
             {
                 id = x.ServiceId,
@@ -469,7 +470,7 @@ namespace UPOD.SERVICES.Services
             }).Distinct().ToListAsync();
             var total = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
-            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date 
+            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date
             && x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).ToListAsync();
             return new ResponseModel<ServiceResponse>(services)
             {
@@ -482,7 +483,7 @@ namespace UPOD.SERVICES.Services
 
             var services_in_contract = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
             && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
-            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date 
+            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date
             && x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).Select(a => new ServiceNotInContractViewResponse
             {
                 id = a.ServiceId,
@@ -514,19 +515,43 @@ namespace UPOD.SERVICES.Services
                 Type = "Services"
             };
         }
-        public async Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id)
+        public async Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id, PaginationRequest model, SearchRequest value)
         {
             var total = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false).ToListAsync();
-            var agencies = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false).Select(a => new AgencyOfCustomerResponse
+            var agencies = new List<AgencyOfCustomerResponse>();
+            if (value.search == null)
             {
-                id = a.Id,
-                code = a.Code,
-                agency_name = a.AgencyName,
-                address = a.Address,
-                phone = a.Telephone,
-                manager_name = a.ManagerName,
+                agencies = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false).Select(a => new AgencyOfCustomerResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    agency_name = a.AgencyName,
+                    address = a.Address,
+                    phone = a.Telephone,
+                    manager_name = a.ManagerName,
 
-            }).ToListAsync();
+                }).ToListAsync();
+            }
+            else
+            {
+                total = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false
+                && a.CustomerId.Equals(id)
+                 && (a.Code!.Contains(value.search)
+                 || a.AgencyName!.Contains(value.search))).ToListAsync();
+                agencies = await _context.Agencies.Where(a => a.CustomerId.Equals(id) && a.IsDelete == false
+                 && a.CustomerId.Equals(id)
+                 && (a.Code!.Contains(value.search)
+                 || a.AgencyName!.Contains(value.search))).Select(a => new AgencyOfCustomerResponse
+                 {
+                     id = a.Id,
+                     code = a.Code,
+                     agency_name = a.AgencyName,
+                     address = a.Address,
+                     phone = a.Telephone,
+                     manager_name = a.ManagerName,
+
+                 }).ToListAsync();
+            }
             return new ResponseModel<AgencyOfCustomerResponse>(agencies!)
             {
                 Type = "Agencies",

@@ -45,11 +45,11 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_agencies_by_customer_id")]
-        public async Task<ActionResult<ResponseModel<AgencyOfCustomerResponse>>> GetAgenciesByCustomerId(Guid id)
+        public async Task<ActionResult<ResponseModel<AgencyOfCustomerResponse>>> GetAgenciesByCustomerId(Guid id, [FromQuery] PaginationRequest model, [FromQuery] SearchRequest value)
         {
             try
             {
-                return await _customer_sv.GetAgenciesByCustomerId(id);
+                return await _customer_sv.GetAgenciesByCustomerId(id, model, value);
             }
             catch (Exception ex)
             {
