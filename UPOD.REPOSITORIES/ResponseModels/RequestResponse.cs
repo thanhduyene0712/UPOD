@@ -14,7 +14,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public Guid id { get; set; }
         public string? code { get; set; }
         public string? request_name { get; set; }
-        public int? priority { get; set; }
         public string? request_status { get; set; }
         public string? reject_reason { get; set; }
         public string? description { get; set; }

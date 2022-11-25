@@ -224,6 +224,7 @@ namespace UPOD.SERVICES.Services
                 {
                     id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
                     code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                    phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                     agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                     address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                 },
@@ -235,6 +236,23 @@ namespace UPOD.SERVICES.Services
                     description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                 },
                 request_status = a.RequestStatus,
+                description = a.RequestDesciption,
+                admin_id = a.AdminId,
+                contract = new ContractViewResponse
+                {
+                    id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                    code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                    name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
+                },
+                reject_reason=a.ReasonReject,
+                technicican = new TechnicianViewResponse
+                {
+                    id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                    phone = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                    email = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Email).FirstOrDefault(),
+                    code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                    tech_name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                },
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
 
@@ -279,6 +297,7 @@ namespace UPOD.SERVICES.Services
                         {
                             id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
                             code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                            phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                             agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                             address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                         },
@@ -354,6 +373,7 @@ namespace UPOD.SERVICES.Services
                         {
                             id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
                             code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                            phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
                             agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
                             address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
                         },
@@ -778,6 +798,7 @@ namespace UPOD.SERVICES.Services
                     {
                         item.CurrentTechnicianId = null;
                         item.RequestStatus = ProcessStatus.PENDING.ToString();
+                        item.UpdateDate = DateTime.UtcNow.AddHours(7);
                         _context.Requests.Update(item);
                         foreach (var item1 in technician_default)
                         {
@@ -839,8 +860,8 @@ namespace UPOD.SERVICES.Services
             var maintain = await _context.MaintenanceSchedules.Where(a => a.TechnicianId.Equals(id) && a.Status!.Equals("MAINTAINING")).FirstOrDefaultAsync();
             if (request != null || maintain != null)
             {
-                message = "You can't set is busy until your problem is solved";
-                status = 401;
+                message = "You have a request or maintenance schedule that needs to solve";
+                status = 400;
             }
             else
             {
@@ -909,15 +930,21 @@ namespace UPOD.SERVICES.Services
             var message = "blank";
             var status = 500;
             var data = new ResolvingRequestResponse();
-            if (request!.CurrentTechnicianId.Equals(tech_id))
+            var request_resolving = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(tech_id) && a.RequestStatus!.Equals("RESOLVING")).FirstOrDefaultAsync();
+            var maintain = await _context.MaintenanceSchedules.Where(a => a.TechnicianId.Equals(tech_id) && a.Status!.Equals("MAINTAINING")).FirstOrDefaultAsync();
+            if (request_resolving != null || maintain != null)
+            {
+                message = "You have a request or maintenance schedule that needs to solve";
+                status = 400;
+            }
+            else if (request!.CurrentTechnicianId.Equals(tech_id))
             {
                 message = "Successfully";
                 status = 200;
                 technician!.IsBusy = true;
                 request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
+                request!.UpdateDate = DateTime.UtcNow.AddHours(7);
                 request.StartTime = DateTime.UtcNow.AddHours(7);
-                _context.Requests.Update(request);
-                _context.Technicians.Update(technician);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {
@@ -934,7 +961,7 @@ namespace UPOD.SERVICES.Services
             else
             {
                 message = "Error";
-                status = 401;
+                status = 400;
             }
 
 
