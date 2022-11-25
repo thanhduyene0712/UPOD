@@ -563,15 +563,15 @@ namespace UPOD.SERVICES.Services
             var technicians = new List<TechnicianOfRequestResponse>();
             var technicianList = new List<TechnicianOfRequestResponse>();
             var total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-            && a.Technician!.AreaId.Equals(area!.Id)
+            && a.Technician.AreaId.Equals(area!.Id)
             && a.Technician.IsBusy == false
             && a.Technician.IsDelete == false
             && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).ToListAsync();
             var technicianDefault = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-            && a.Technician!.AreaId.Equals(area!.Id)
+            && a.Technician.AreaId.Equals(area!.Id)
             && a.Technician.IsBusy == false
             && a.Technician.IsDelete == false
-            && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).FirstOrDefaultAsync();
+            && a.TechnicianId.Equals(agency!.TechnicianId)).FirstOrDefaultAsync();
             DateTime date = DateTime.UtcNow.AddHours(7);
             if (technicianDefault != null)
             {
@@ -594,13 +594,13 @@ namespace UPOD.SERVICES.Services
             else
             {
                 total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                && a.Technician!.AreaId.Equals(area!.Id)
+                && a.Technician.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).ToListAsync();
                 if (total.Count > 0)
                 {
                     total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician!.AreaId.Equals(area!.Id)
+                    && a.Technician.AreaId.Equals(area!.Id)
                     && a.Technician.IsBusy == false
                     && a.Technician.IsDelete == false).ToListAsync();
                     foreach (var item in total)
@@ -624,7 +624,7 @@ namespace UPOD.SERVICES.Services
                 else
                 {
                     total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician!.IsBusy == false
+                    && a.Technician.IsBusy == false
                     && a.Technician.IsDelete == false).ToListAsync();
                     foreach (var item in total)
                     {
@@ -660,20 +660,19 @@ namespace UPOD.SERVICES.Services
 
             var reportService = await _context.MaintenanceReportServices.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             var maintainReport = await _context.MaintenanceReports.Where(a => a.Id.Equals(reportService!.MaintenanceReportId)).FirstOrDefaultAsync();
-            var maintainSchedule = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(maintainReport!.MaintenanceScheduleId)).FirstOrDefaultAsync();
-            var agency = await _context.Agencies.Where(a => a.Id.Equals(maintainSchedule!.AgencyId)).FirstOrDefaultAsync();
+            var agency = await _context.Agencies.Where(a => a.Id.Equals(maintainReport!.AgencyId)).FirstOrDefaultAsync();
             var area = await _context.Areas.Where(a => a.Id.Equals(agency!.AreaId)).FirstOrDefaultAsync();
             var service = await _context.Services.Where(a => a.Id.Equals(reportService!.ServiceId)).FirstOrDefaultAsync();
             var technicians = new List<TechnicianOfRequestResponse>();
             var technicianList = new List<TechnicianOfRequestResponse>();
             var total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-            && a.Technician!.AreaId.Equals(area!.Id)
-            && a.Technician!.IsBusy == false
+            && a.Technician.AreaId.Equals(area!.Id)
+            && a.Technician.IsBusy == false
             && a.Technician.IsDelete == false
             && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).ToListAsync();
             var technicianDefault = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-            && a.Technician!.AreaId.Equals(area!.Id)
-            && a.Technician!.IsBusy == false
+            && a.Technician.AreaId.Equals(area!.Id)
+            && a.Technician.IsBusy == false
             && a.Technician.IsDelete == false
             && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).FirstOrDefaultAsync();
             DateTime date = DateTime.UtcNow.AddHours(7);
@@ -698,13 +697,13 @@ namespace UPOD.SERVICES.Services
             else
             {
                 total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                && a.Technician!.AreaId.Equals(area!.Id)
+                && a.Technician.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).ToListAsync();
                 if (total.Count > 0)
                 {
                     total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician!.AreaId.Equals(area!.Id)
+                    && a.Technician.AreaId.Equals(area!.Id)
                     && a.Technician.IsBusy == false
                     && a.Technician.IsDelete == false).ToListAsync();
                     foreach (var item in total)
@@ -728,7 +727,7 @@ namespace UPOD.SERVICES.Services
                 else
                 {
                     total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician!.IsBusy == false
+                    && a.Technician.IsBusy == false
                     && a.Technician.IsDelete == false).ToListAsync();
                     foreach (var item in total)
                     {
