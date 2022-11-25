@@ -46,7 +46,7 @@ namespace UPOD.SERVICES.Services
                 message = "You have a request or maintenance schedule that needs to solve";
                 status = 400;
             }
-            else if (maintenanceSchedule!.TechnicianId.Equals(id))
+            else if (maintenanceSchedule!.TechnicianId.Equals(tech_id))
             {
                 message = "Successfully";
                 status = 200;
