@@ -597,7 +597,31 @@ namespace UPOD.SERVICES.Services
                 && a.Technician!.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).ToListAsync();
-                if (total!.Count <= 0)
+                if(total.Count > 0)
+                {
+                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                    && a.Technician!.AreaId.Equals(area!.Id)
+                    && a.Technician.IsBusy == false
+                    && a.Technician.IsDelete == false).ToListAsync();
+                    foreach (var item in total)
+                    {
+                        date = date.AddDays((-date.Day) + 1).Date;
+                        var requests = await _context.Requests.Where(a => a.IsDelete == false
+                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
+                        && a.RequestStatus != "CANCELED"
+                        && a.CreateDate!.Value.Date >= date
+                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+                        var count = requests.Count;
+                        technicians.Add(new TechnicianOfRequestResponse
+                        {
+                            id = item.TechnicianId,
+                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                            number_of_requests = count,
+                        });
+                    }
+                } 
+                else
                 {
                     total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
                     && a.Technician!.IsBusy == false
@@ -621,30 +645,7 @@ namespace UPOD.SERVICES.Services
                     }
 
                 }
-                else
-                {
-                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician!.AreaId.Equals(area!.Id)
-                    && a.Technician.IsBusy == false
-                    && a.Technician.IsDelete == false).ToListAsync();
-                    foreach (var item in total)
-                    {
-                        date = date.AddDays((-date.Day) + 1).Date;
-                        var requests = await _context.Requests.Where(a => a.IsDelete == false
-                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
-                        && a.RequestStatus != "CANCELED"
-                        && a.CreateDate!.Value.Date >= date
-                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
-                        var count = requests.Count;
-                        technicians.Add(new TechnicianOfRequestResponse
-                        {
-                            id = item.TechnicianId,
-                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                            number_of_requests = count,
-                        });
-                    }
-                }
+                
 
             }
             technicianList = technicians.OrderBy(x => x.number_of_requests).ToList();
@@ -694,38 +695,13 @@ namespace UPOD.SERVICES.Services
                 });
                 technicianList = technicians;
             }
-
             else
             {
                 total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
                 && a.Technician!.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).ToListAsync();
-                if (total!.Count <= 0)
-                {
-                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician!.IsBusy == false
-                    && a.Technician.IsDelete == false).ToListAsync();
-                    foreach (var item in total)
-                    {
-                        date = date.AddDays((-date.Day) + 1).Date;
-                        var requests = await _context.Requests.Where(a => a.IsDelete == false
-                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
-                        && a.RequestStatus != "CANCELED"
-                        && a.CreateDate!.Value.Date >= date
-                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
-                        var count = requests.Count;
-                        technicians.Add(new TechnicianOfRequestResponse
-                        {
-                            id = item.TechnicianId,
-                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                            number_of_requests = count,
-                        });
-                    }
-
-                }
-                else
+                if (total.Count > 0)
                 {
                     total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
                     && a.Technician!.AreaId.Equals(area!.Id)
@@ -749,6 +725,31 @@ namespace UPOD.SERVICES.Services
                         });
                     }
                 }
+                else
+                {
+                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                    && a.Technician!.IsBusy == false
+                    && a.Technician.IsDelete == false).ToListAsync();
+                    foreach (var item in total)
+                    {
+                        date = date.AddDays((-date.Day) + 1).Date;
+                        var requests = await _context.Requests.Where(a => a.IsDelete == false
+                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
+                        && a.RequestStatus != "CANCELED"
+                        && a.CreateDate!.Value.Date >= date
+                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+                        var count = requests.Count;
+                        technicians.Add(new TechnicianOfRequestResponse
+                        {
+                            id = item.TechnicianId,
+                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                            number_of_requests = count,
+                        });
+                    }
+
+                }
+
 
             }
             technicianList = technicians.OrderBy(x => x.number_of_requests).ToList();

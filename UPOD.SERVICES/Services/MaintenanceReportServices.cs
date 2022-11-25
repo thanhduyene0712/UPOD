@@ -34,7 +34,7 @@ namespace UPOD.SERVICES.Services
             {
                 if (item.Status!.Equals("STABILIZED"))
                 {
-                    item.Status = ReportStatus.CLOSED.ToString();     
+                    item.Status = ReportStatus.CLOSED.ToString();
                 }
             }
             await _context.SaveChangesAsync();
@@ -49,15 +49,15 @@ namespace UPOD.SERVICES.Services
                 var report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(item.Id)).ToListAsync();
                 foreach (var item1 in report_services)
                 {
-                    if(item1.Created == true)
+                    if (item1.Created == true)
                     {
-                        count = count++;
+                        count = count + 1;
                     }
                     date = item.UpdateDate!.Value.AddDays(2);
                 }
-                if(report_services.Count == count)
+                if (report_services.Count == count)
                 {
-                    if(date.Date <= DateTime.UtcNow.AddHours(7).Date)
+                    if (date.Date <= DateTime.UtcNow.AddHours(7).Date)
                     {
                         item.Status = ReportStatus.CLOSED.ToString();
                     }
@@ -71,11 +71,11 @@ namespace UPOD.SERVICES.Services
             status!.Status = ReportStatus.TROUBLED.ToString();
             status!.UpdateDate = DateTime.UtcNow.AddHours(7);
             var report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(id)).ToListAsync();
-            if(report_services != null)
+            foreach (var item in report_services)
             {
-                foreach (var item in report_services)
+                var request = await _context.Requests.Where(a => a.Id.Equals(item.RequestId)).FirstOrDefaultAsync();
+                if (request != null)
                 {
-                    var request = await _context.Requests.Where(a => a.Id.Equals(item.RequestId)).FirstOrDefaultAsync();
                     item.Created = false;
                     item.RequestId = null;
                     request!.RequestStatus = ProcessStatus.CANCELED.ToString();
