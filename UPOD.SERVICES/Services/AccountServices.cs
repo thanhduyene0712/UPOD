@@ -290,17 +290,17 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
-                var role = await _context.Roles.Where(a => a.IsDelete == false && a.RoleName!.Contains(value.search.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var role = await _context.Roles.Where(a => a.IsDelete == false && a.RoleName!.Contains(value.search)).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Accounts.Where(a => a.IsDelete == false
                 && a.Role!.RoleName != "Admin"
                 && (a.RoleId.Equals(role)
-                || a.Username!.Contains(value.search.Trim())
-                || a.Code!.Contains(value.search.Trim()))).ToListAsync();
+                || a.Username!.Contains(value.search)
+                || a.Code!.Contains(value.search))).ToListAsync();
                 accounts = await _context.Accounts.Where(a => a.IsDelete == false
                 && a.Role!.RoleName != "Admin"
                 && (a.RoleId.Equals(role)
-                || a.Username!.Contains(value.search.Trim())
-                || a.Code!.Contains(value.search.Trim()))).Select(p => new AccountResponse
+                || a.Username!.Contains(value.search)
+                || a.Code!.Contains(value.search))).Select(p => new AccountResponse
                 {
                     id = p.Id,
                     code = p.Code,

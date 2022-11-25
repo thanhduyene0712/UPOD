@@ -49,13 +49,13 @@ namespace UPOD.SERVICES.Services
             else
             {
                 total = await _context.Areas.Where(a => a.IsDelete == false
-                && (a.Code!.Contains(value.search.Trim())
-                || a.AreaName!.Contains(value.search.Trim())
-                || a.Description!.Contains(value.search.Trim()))).ToListAsync();
+                && (a.Code!.Contains(value.search)
+                || a.AreaName!.Contains(value.search)
+                || a.Description!.Contains(value.search))).ToListAsync();
                 areas = await _context.Areas.Where(a => a.IsDelete == false
-                && (a.Code!.Contains(value.search.Trim())
-                || a.AreaName!.Contains(value.search.Trim())
-                || a.Description!.Contains(value.search.Trim()))).Select(a => new AreaResponse
+                && (a.Code!.Contains(value.search)
+                || a.AreaName!.Contains(value.search)
+                || a.Description!.Contains(value.search))).Select(a => new AreaResponse
                 {
                     id = a.Id,
                     code = a.Code,

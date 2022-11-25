@@ -66,13 +66,13 @@ namespace UPOD.SERVICES.Services
             else
             {
                 total = await _context.Services.Where(a => a.IsDelete == false
-                && (a.Code!.Contains(value.search.Trim())
-                || a.Description!.Contains(value.search.Trim())
-                || a.ServiceName!.Contains(value.search.Trim()))).ToListAsync();
+                && (a.Code!.Contains(value.search)
+                || a.Description!.Contains(value.search)
+                || a.ServiceName!.Contains(value.search))).ToListAsync();
                 services = await _context.Services.Where(a => a.IsDelete == false
-                && (a.Code!.Contains(value.search.Trim())
-                || a.Description!.Contains(value.search.Trim())
-                || a.ServiceName!.Contains(value.search.Trim()))).Select(a => new ServiceResponse
+                && (a.Code!.Contains(value.search)
+                || a.Description!.Contains(value.search)
+                || a.ServiceName!.Contains(value.search))).Select(a => new ServiceResponse
                 {
                     id = a.Id,
                     code = a.Code,

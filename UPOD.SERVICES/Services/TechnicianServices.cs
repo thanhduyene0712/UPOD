@@ -105,17 +105,17 @@ namespace UPOD.SERVICES.Services
             else
             {
                 total = await _context.Technicians.Where(a => a.IsDelete == false
-                && (a.Code!.Contains(value.search.Trim())
-                || a.TechnicianName!.Contains(value.search.Trim())
-                || a.Email!.Contains(value.search.Trim())
-                || a.Telephone!.Contains(value.search.Trim())
-                || a.Address!.Contains(value.search.Trim()))).ToListAsync();
+                && (a.Code!.Contains(value.search)
+                || a.TechnicianName!.Contains(value.search)
+                || a.Email!.Contains(value.search)
+                || a.Telephone!.Contains(value.search)
+                || a.Address!.Contains(value.search))).ToListAsync();
                 technicians = await _context.Technicians.Where(a => a.IsDelete == false
-                && (a.Code!.Contains(value.search.Trim())
-                || a.TechnicianName!.Contains(value.search.Trim())
-                || a.Email!.Contains(value.search.Trim())
-                || a.Telephone!.Contains(value.search.Trim())
-                || a.Address!.Contains(value.search.Trim()))).Select(a => new TechnicianResponse
+                && (a.Code!.Contains(value.search)
+                || a.TechnicianName!.Contains(value.search)
+                || a.Email!.Contains(value.search)
+                || a.Telephone!.Contains(value.search)
+                || a.Address!.Contains(value.search))).Select(a => new TechnicianResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -269,15 +269,15 @@ namespace UPOD.SERVICES.Services
                 {
                     value.status = "";
                 }
-                if (value.search.ToLower().Trim().Contains("admin"))
+                if (value.search.ToLower().Contains("admin"))
                 {
                     total = await _context.Requests.Where(a => a.IsDelete == false
                     && a.CurrentTechnicianId.Equals(id)
-                    && (a.RequestStatus!.Contains(value.status!.Trim())
+                    && (a.RequestStatus!.Contains(value.status!)
                     && a.AdminId != null)).ToListAsync();
                     requests = await _context.Requests.Where(a => a.IsDelete == false
                    && a.CurrentTechnicianId.Equals(id)
-                    && (a.RequestStatus!.Contains(value.status!.Trim())
+                    && (a.RequestStatus!.Contains(value.status!)
                     && a.AdminId != null)).Select(a => new RequestResponse
                     {
                         id = a.Id,
@@ -331,30 +331,30 @@ namespace UPOD.SERVICES.Services
                 }
                 else
                 {
-                    var agency_name = await _context.Agencies.Where(a => a.AgencyName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
-                    var customer_name = await _context.Customers.Where(a => a.Name!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
-                    var contract_name = await _context.Contracts.Where(a => a.ContractName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
-                    var service_name = await _context.Services.Where(a => a.ServiceName!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                    var agency_name = await _context.Agencies.Where(a => a.AgencyName!.Contains(value.search!)).Select(a => a.Id).FirstOrDefaultAsync();
+                    var customer_name = await _context.Customers.Where(a => a.Name!.Contains(value.search!)).Select(a => a.Id).FirstOrDefaultAsync();
+                    var contract_name = await _context.Contracts.Where(a => a.ContractName!.Contains(value.search!)).Select(a => a.Id).FirstOrDefaultAsync();
+                    var service_name = await _context.Services.Where(a => a.ServiceName!.Contains(value.search!)).Select(a => a.Id).FirstOrDefaultAsync();
                     total = await _context.Requests.Where(a => a.IsDelete == false
                     && a.CurrentTechnicianId.Equals(id)
-                    && (a.RequestStatus!.Contains(value.status!.Trim())
-                    && (a.RequestName!.Contains(value.search!.Trim())
-                    || a.Code!.Contains(value.search!.Trim())
-                    || a.RequestDesciption!.Contains(value.search!.Trim())
+                    && (a.RequestStatus!.Contains(value.status!)
+                    && (a.RequestName!.Contains(value.search!)
+                    || a.Code!.Contains(value.search!)
+                    || a.RequestDesciption!.Contains(value.search!)
                     || a.AgencyId!.Equals(agency_name)
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
                     || a.ServiceId!.Equals(service_name)))).ToListAsync();
                     requests = await _context.Requests.Where(a => a.IsDelete == false
                     && a.CurrentTechnicianId.Equals(id)
-                    && (a.RequestName!.Contains(value.search!.Trim())
-                    || a.Code!.Contains(value.search.Trim())
-                    || a.RequestDesciption!.Contains(value.search!.Trim())
+                    && (a.RequestName!.Contains(value.search!)
+                    || a.Code!.Contains(value.search)
+                    || a.RequestDesciption!.Contains(value.search!)
                     || a.AgencyId!.Equals(agency_name)
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
                     || a.ServiceId!.Equals(service_name))
-                    && (a.RequestStatus!.Contains(value.status!.Trim()))).Select(a => new RequestResponse
+                    && (a.RequestStatus!.Contains(value.status!))).Select(a => new RequestResponse
                     {
                         id = a.Id,
                         code = a.Code,

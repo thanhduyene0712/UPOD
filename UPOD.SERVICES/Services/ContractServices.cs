@@ -160,15 +160,15 @@ namespace UPOD.SERVICES.Services
             else
             {
 
-                var customer = await _context.Customers.Where(a => a.Name!.Contains(value.search!.Trim())).Select(a => a.Id).FirstOrDefaultAsync();
+                var customer = await _context.Customers.Where(a => a.Name!.Contains(value.search)).Select(a => a.Id).FirstOrDefaultAsync();
                 total = await _context.Contracts.Where(a => a.IsDelete == false
-                 && (a.Code!.Contains(value.search.Trim())
-                 || a.ContractName!.Contains(value.search.Trim())
-                 || a.CustomerId!.Equals(customer))).ToListAsync();
+                 && (a.Code!.Contains(value.search)
+                 || a.ContractName!.Contains(value.search)
+                 || a.CustomerId.Equals(customer))).ToListAsync();
                 contracts = await _context.Contracts.Where(a => a.IsDelete == false
-                && (a.Code!.Contains(value.search.Trim())
-                || a.ContractName!.Contains(value.search.Trim())
-                || a.CustomerId!.Equals(customer))).Select(a => new ContractResponse
+                && (a.Code!.Contains(value.search)
+                || a.ContractName!.Contains(value.search)
+                || a.CustomerId.Equals(customer))).Select(a => new ContractResponse
                 {
                     id = a.Id,
                     terminal_content = a.TerminalContent,
