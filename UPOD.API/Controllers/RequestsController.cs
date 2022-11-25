@@ -77,11 +77,11 @@ namespace UPOD.API.Controllers
         }
         [HttpGet]
         [Route("get_technicians_by_id_request")]
-        public async Task<ActionResult<ResponseModel<TechnicianRequestResponse>>> GetTechnicianRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
+        public async Task<ActionResult<ResponseModel<TechnicianOfRequestResponse>>> GetTechnicianRequest(Guid id)
         {
             try
             {
-                return await _request_sv.GetTechnicianRequest(model, id);
+                return await _request_sv.GetTechnicianRequest(id);
             }
             catch (Exception ex)
             {
