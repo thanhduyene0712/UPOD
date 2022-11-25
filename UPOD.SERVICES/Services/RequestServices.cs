@@ -597,7 +597,7 @@ namespace UPOD.SERVICES.Services
                 && a.Technician!.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).ToListAsync();
-                if(total.Count > 0)
+                if (total.Count > 0)
                 {
                     total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
                     && a.Technician!.AreaId.Equals(area!.Id)
@@ -620,7 +620,7 @@ namespace UPOD.SERVICES.Services
                             number_of_requests = count,
                         });
                     }
-                } 
+                }
                 else
                 {
                     total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
@@ -645,7 +645,7 @@ namespace UPOD.SERVICES.Services
                     }
 
                 }
-                
+
 
             }
             technicianList = technicians.OrderBy(x => x.number_of_requests).ToList();
