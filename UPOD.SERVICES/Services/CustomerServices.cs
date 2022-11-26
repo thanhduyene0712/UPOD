@@ -468,13 +468,13 @@ namespace UPOD.SERVICES.Services
                 guideline = x.Service!.Guideline,
                 is_delete = x.Service!.IsDelete,
             }).Distinct().ToListAsync();
-            var total = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
-            && x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
-            && (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date
-            && x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).ToListAsync();
+            //var total = await _context.ContractServices.Where(x => x.Contract!.CustomerId.Equals(id)
+            //&& x.Contract.IsDelete == false && x.Contract.IsExpire == false && x.IsDelete == false
+            //&& (x.Contract.StartDate!.Value.Date <= DateTime.UtcNow.AddHours(7).Date
+            //&& x.Contract.EndDate!.Value.Date >= DateTime.UtcNow.AddHours(7).Date)).Distinct().ToListAsync();
             return new ResponseModel<ServiceResponse>(services)
             {
-                Total = total.Count,
+                Total = services.Count,
                 Type = "Services"
             };
         }

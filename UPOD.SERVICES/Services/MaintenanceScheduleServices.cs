@@ -19,7 +19,6 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> DisableMaintenanceSchedule(Guid id);
         Task<ObjectModelResponse> MaintenanceScheduleDetails(Guid id);
         Task SetMaintenanceSchedulesNotify();
-        Task SetStatus(ScheduleStatus status, Guid scheduleId);
         Task SetMaintenanceSchedulesNotifyMissing();
         Task SetMaintenanceSchedulesMaintaining();
     }
@@ -156,6 +155,7 @@ namespace UPOD.SERVICES.Services
             var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime!.Value.Date >= DateTime.UtcNow.AddHours(7).Date && a.MaintainTime!.Value.Date <= DateTime.UtcNow.AddHours(7).AddDays(1).Date) && a.IsDelete == false && a!.Status.Equals("SCHEDULED")).ToListAsync();
             foreach (var item in todaySchedules)
             {
+                item.UpdateDate = DateTime.UtcNow.AddHours(7);
                 item.Status = ScheduleStatus.NOTIFIED.ToString();
                 await _context.SaveChangesAsync();
             }
@@ -170,6 +170,7 @@ namespace UPOD.SERVICES.Services
                 var date = missingDate!.Value.Days;
                 if (date >= 5)
                 {
+                    item.UpdateDate = DateTime.UtcNow.AddHours(7);
                     item.Status = ScheduleStatus.MISSED.ToString();
                     await _context.SaveChangesAsync();
                 }
@@ -184,6 +185,7 @@ namespace UPOD.SERVICES.Services
                 var contractDate = await _context.Contracts.Where(a => a.Id.Equals(item.ContractId)).FirstOrDefaultAsync();
                 if (DateTime.UtcNow.AddHours(7).Date > contractDate!.EndDate!.Value.Date)
                 {
+                    item.UpdateDate = DateTime.UtcNow.AddHours(7);
                     item.Status = ScheduleStatus.MISSED.ToString();
                     await _context.SaveChangesAsync();
                 }
@@ -615,12 +617,6 @@ namespace UPOD.SERVICES.Services
             };
         }
 
-        public async Task SetStatus(ScheduleStatus status, Guid scheduleId)
-        {
-            var maintainStatus = await _context.MaintenanceSchedules.Where(a => a.Id.Equals(scheduleId) && a.IsDelete == false).FirstOrDefaultAsync();
-            maintainStatus!.Status = status.ToString();
 
-            await _context.SaveChangesAsync();
-        }
     }
 }

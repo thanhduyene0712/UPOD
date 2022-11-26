@@ -34,6 +34,7 @@ namespace UPOD.SERVICES.Services
             {
                 if (item.Status!.Equals("STABILIZED"))
                 {
+                    item.UpdateDate = DateTime.UtcNow.AddHours(7);
                     item.Status = ReportStatus.CLOSED.ToString();
                 }
             }
@@ -45,7 +46,7 @@ namespace UPOD.SERVICES.Services
             foreach (var item in maintenance_reports)
             {
                 int count = 0;
-                var date = DateTime.UtcNow;
+                var date = DateTime.UtcNow.AddHours(7);
                 var report_services = await _context.MaintenanceReportServices.Where(a => a.MaintenanceReportId.Equals(item.Id)).ToListAsync();
                 foreach (var item1 in report_services)
                 {
@@ -59,6 +60,7 @@ namespace UPOD.SERVICES.Services
                 {
                     if (date.Date <= DateTime.UtcNow.AddHours(7).Date)
                     {
+                        item.UpdateDate = DateTime.UtcNow.AddHours(7);
                         item.Status = ReportStatus.CLOSED.ToString();
                     }
                 }
@@ -78,6 +80,7 @@ namespace UPOD.SERVICES.Services
                 {
                     item.Created = false;
                     item.RequestId = null;
+                    request!.UpdateDate = DateTime.UtcNow.AddHours(7);
                     request!.RequestStatus = ProcessStatus.CANCELED.ToString();
                 }
             }

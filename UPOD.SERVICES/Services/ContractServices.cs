@@ -35,6 +35,7 @@ namespace UPOD.SERVICES.Services
             foreach (var item in todayContracts)
             {
                 item!.IsExpire = true;
+                item!.UpdateDate = DateTime.UtcNow.AddHours(7);
                 var maintainSchedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(item!.Id)).ToListAsync();
                 foreach (var item1 in maintainSchedules)
                 {
