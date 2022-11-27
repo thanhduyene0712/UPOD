@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using System.Linq.Dynamic.Core;
 using System.Net.Sockets;
 using UPOD.REPOSITORIES.Models;
@@ -644,7 +645,13 @@ namespace UPOD.SERVICES.Services
             var data = new DeviceResponse();
             var message = "blank";
             var status = 500;
-            if (model.guaranty_end_date!.Value.Date <= model.guaranty_start_date!.Value.Date)
+            var device_name = await _context.Devices.Where(x => x.DeviceName!.Equals(device.DeviceName) && x.AgencyId.Equals(device.AgencyId) && x.IsDelete == false).FirstOrDefaultAsync();
+            if (device_name != null)
+            {
+                status = 400;
+                message = "Name is already exists!";
+            }
+            else if (model.guaranty_end_date!.Value.Date <= model.guaranty_start_date!.Value.Date)
             {
                 status = 400;
                 message = "Guaranty end date must be longer than Guaranty start end!";
@@ -775,27 +782,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task<ObjectModelResponse> UpdateDevice(Guid id, DeviceUpdateRequest model)
         {
-            var device = await _context.Devices.Where(a => a.Id.Equals(id)).Select(x => new Device
-            {
-                Id = id,
-                Code = x.Code,
-                AgencyId = x.AgencyId,
-                DeviceTypeId = model.devicetype_id,
-                DeviceName = model.device_name,
-                GuarantyStartDate = model.guaranty_start_date,
-                GuarantyEndDate = model.guaranty_end_date,
-                Ip = model.ip,
-                Port = model.port,
-                DeviceAccount = model.device_account,
-                DevicePassword = model.device_password,
-                SettingDate = model.setting_date,
-                Other = model.other,
-                IsDelete = x.IsDelete,
-                CreateDate = x.CreateDate,
-                UpdateDate = DateTime.UtcNow.AddHours(7)
-
-            }).FirstOrDefaultAsync();
-            _context.Devices.Update(device!);
+            var device = await _context.Devices.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var imgs = await _context.Images.Where(a => a.CurrentObject_Id.Equals(device!.Id)).ToListAsync();
             foreach (var item in imgs)
             {
@@ -826,59 +813,94 @@ namespace UPOD.SERVICES.Services
 
             }
             var data = new DeviceResponse();
-            var rs = await _context.SaveChangesAsync();
-            if (rs > 0)
+            var message = "blank";
+            var status = 500;
+            var device_name = await _context.Devices.Where(x => x.DeviceName!.Equals(model.device_name) && x.AgencyId.Equals(device.AgencyId) && x.IsDelete == false).FirstOrDefaultAsync();
+            if (device_name != null && device!.DeviceName != model.device_name)
             {
-                data = new DeviceResponse
+                status = 400;
+                message = "Name is already exists!";
+            }
+            else if (model.guaranty_end_date!.Value.Date <= model.guaranty_start_date!.Value.Date)
+            {
+                status = 400;
+                message = "Guaranty end date must be longer than Guaranty start end!";
+            }
+            else if (model.setting_date!.Value.Date < model.guaranty_start_date!.Value.Date)
+            {
+                status = 400;
+                message = "Setting date must be longer than Guaranty start end!";
+            }
+            else
+            {
+                device!.DeviceTypeId = model.devicetype_id;
+                device!.DeviceName = model.device_name;
+                device!.GuarantyStartDate = model.guaranty_start_date;
+                device!.GuarantyEndDate = model.guaranty_end_date;
+                device!.Ip = model.ip;
+                device!.Port = model.port;
+                device!.DeviceAccount = model.device_account;
+                device!.DevicePassword = model.device_password;
+                device!.SettingDate = model.setting_date;
+                device!.Other = model.other;
+                device!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
                 {
-                    id = device!.Id,
-                    code = device.Code,
-                    agency = new AgencyViewResponse
+                    message = "Successfully";
+                    status = 200;
+                    data = new DeviceResponse
                     {
-                        id = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Id).FirstOrDefault(),
-                        code = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Code).FirstOrDefault(),
-                        agency_name = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
-                        address = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Address).FirstOrDefault(),
-                    },
-                    devicetype = new DeviceTypeViewResponse
-                    {
-                        id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
-                        service_id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
-                        device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
-                        code = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
-                    },
-                    technician = new TechnicianViewResponse
-                    {
-                        id = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Id).FirstOrDefault(),
-                        email = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Email).FirstOrDefault(),
-                        phone = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Telephone).FirstOrDefault(),
-                        tech_name = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
-                        code = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Code).FirstOrDefault(),
-                    },
-                    device_name = device.DeviceName,
-                    guaranty_start_date = device.GuarantyStartDate,
-                    guaranty_end_date = device.GuarantyEndDate,
-                    ip = device.Ip,
-                    port = device.Port,
+                        id = device!.Id,
+                        code = device.Code,
+                        agency = new AgencyViewResponse
+                        {
+                            id = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                            code = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                            agency_name = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                            address = _context.Agencies.Where(x => x.Id.Equals(device.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                        },
+                        devicetype = new DeviceTypeViewResponse
+                        {
+                            id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Id).FirstOrDefault(),
+                            service_id = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.ServiceId).FirstOrDefault(),
+                            device_type_name = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.DeviceTypeName).FirstOrDefault(),
+                            code = _context.DeviceTypes.Where(x => x.Id.Equals(device.DeviceTypeId)).Select(x => x.Code).FirstOrDefault(),
+                        },
+                        technician = new TechnicianViewResponse
+                        {
+                            id = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Id).FirstOrDefault(),
+                            email = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Email).FirstOrDefault(),
+                            phone = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Telephone).FirstOrDefault(),
+                            tech_name = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.TechnicianName).FirstOrDefault(),
+                            code = _context.Technicians.Where(x => x.Id.Equals(device.CreateBy)).Select(x => x.Code).FirstOrDefault(),
+                        },
+                        device_name = device.DeviceName,
+                        guaranty_start_date = device.GuarantyStartDate,
+                        guaranty_end_date = device.GuarantyEndDate,
+                        ip = device.Ip,
+                        port = device.Port,
 
-                    device_account = device.DeviceAccount,
-                    device_password = device.DevicePassword,
-                    setting_date = device.SettingDate,
-                    other = device.Other,
-                    is_delete = device.IsDelete,
-                    create_date = device.CreateDate,
-                    update_date = device.UpdateDate,
-                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).Select(x => new ImageResponse
-                    {
-                        id = x.Id,
-                        link = x.Link,
-                        object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
-                    }).ToList(),
-                };
-            };
+                        device_account = device.DeviceAccount,
+                        device_password = device.DevicePassword,
+                        setting_date = device.SettingDate,
+                        other = device.Other,
+                        is_delete = device.IsDelete,
+                        create_date = device.CreateDate,
+                        update_date = device.UpdateDate,
+                        img = _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).Select(x => new ImageResponse
+                        {
+                            id = x.Id,
+                            link = x.Link,
+                            object_name = _context.Devices.Where(a => a.Id.Equals(x.CurrentObject_Id)).Select(a => a.DeviceName).FirstOrDefault(),
+                        }).ToList(),
+                    };
+                }
+            }
             return new ObjectModelResponse(data)
             {
-                Status = 201,
+                Status = status,
+                Message = message,
                 Type = "Device"
             };
         }
