@@ -244,7 +244,7 @@ namespace UPOD.SERVICES.Services
                     code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
                     name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
                 },
-                reject_reason=a.ReasonReject,
+                reject_reason = a.ReasonReject,
                 technicican = new TechnicianViewResponse
                 {
                     id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
@@ -472,79 +472,91 @@ namespace UPOD.SERVICES.Services
             request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
             request.EndTime = DateTime.UtcNow.AddHours(7);
             var list = new List<DevicesOfRequestResponse>();
-
-            foreach (var item in model.ticket)
+            var message = "blank";
+            var status = 500;
+            if (model.ticket == null)
             {
-                var device_id = Guid.NewGuid();
-                while (true)
+                message = "Device must not be empty!";
+                status = 400;
+            }
+            else
+            {
+                message = "Successfully";
+                status = 200;
+                foreach (var item in model.ticket)
                 {
-                    var ticket_id = await _context.Tickets.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
-                    if (ticket_id == null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        device_id = Guid.NewGuid();
-                    }
-                }
-                var ticket = new Ticket
-                {
-                    Id = device_id,
-                    RequestId = request.Id,
-                    DeviceId = item.device_id,
-                    Description = item.description,
-                    Solution = item.solution,
-                    IsDelete = false,
-                    CreateBy = technician!.Id,
-                    CreateDate = DateTime.UtcNow.AddHours(7),
-                    UpdateDate = DateTime.UtcNow.AddHours(7)
-                };
-
-
-                foreach (var item1 in item.img!)
-                {
-                    var img_id = Guid.NewGuid();
+                    var device_id = Guid.NewGuid();
                     while (true)
                     {
-                        var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
-                        if (img_dup == null)
+                        var ticket_id = await _context.Tickets.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
+                        if (ticket_id == null)
                         {
                             break;
                         }
                         else
                         {
-                            img_id = Guid.NewGuid();
+                            device_id = Guid.NewGuid();
                         }
                     }
-                    var imgTicket = new Image
+                    var ticket = new Ticket
                     {
-                        Id = img_id,
-                        Link = item1,
-                        CurrentObject_Id = ticket.Id,
-                        ObjectName = ObjectName.TI.ToString(),
+                        Id = device_id,
+                        RequestId = request.Id,
+                        DeviceId = item.device_id,
+                        Description = item.description,
+                        Solution = item.solution,
+                        IsDelete = false,
+                        CreateBy = technician!.Id,
+                        CreateDate = DateTime.UtcNow.AddHours(7),
+                        UpdateDate = DateTime.UtcNow.AddHours(7)
                     };
-                    await _context.Tickets.AddAsync(ticket);
-                    await _context.Images.AddAsync(imgTicket);
 
+
+                    foreach (var item1 in item.img!)
+                    {
+                        var img_id = Guid.NewGuid();
+                        while (true)
+                        {
+                            var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                            if (img_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                img_id = Guid.NewGuid();
+                            }
+                        }
+                        var imgTicket = new Image
+                        {
+                            Id = img_id,
+                            Link = item1,
+                            CurrentObject_Id = ticket.Id,
+                            ObjectName = ObjectName.TI.ToString(),
+                        };
+                        await _context.Tickets.AddAsync(ticket);
+                        await _context.Images.AddAsync(imgTicket);
+
+                    }
+
+                    await _context.SaveChangesAsync();
+                    list.Add(new DevicesOfRequestResponse
+                    {
+                        ticket_id = ticket.Id,
+                        device_id = ticket.DeviceId,
+                        code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        solution = ticket.Solution,
+                        description = ticket.Description,
+                        create_date = ticket.CreateDate,
+                        img = _context.Images.Where(a => a.CurrentObject_Id.Equals(ticket.Id) && a.ObjectName!.Equals(ObjectName.TI.ToString())).Select(x => x.Link).ToList()!,
+                    });
                 }
-
-                await _context.SaveChangesAsync();
-                list.Add(new DevicesOfRequestResponse
-                {
-                    ticket_id = ticket.Id,
-                    device_id = ticket.DeviceId,
-                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
-                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
-                    solution = ticket.Solution,
-                    description = ticket.Description,
-                    create_date = ticket.CreateDate,
-                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(ticket.Id) && a.ObjectName!.Equals(ObjectName.TI.ToString())).Select(x => x.Link).ToList()!,
-                });
-
             }
             return new ResponseModel<DevicesOfRequestResponse>(list)
             {
+                Message = message,
+                Status = status,
                 Total = list.Count,
                 Type = "Devices"
             };
@@ -560,87 +572,101 @@ namespace UPOD.SERVICES.Services
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
             var list = new List<DevicesOfRequestResponse>();
-            foreach (var device in devices)
+            var message = "blank";
+            var status = 500;
+            if (model.ticket == null)
             {
-                _context.Tickets.Remove(device);
-                var imgs = await _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).ToListAsync();
-                foreach (var item in imgs)
-                {
-                    _context.Images.Remove(item);
-                }
+                message = "Device must not be empty!";
+                status = 400;
             }
-            foreach (var item in model.ticket)
+            else
             {
-                var device_id = Guid.NewGuid();
-                while (true)
+                message = "Successfully";
+                status = 201;
+                foreach (var device in devices)
                 {
-                    var ticket_id = await _context.Tickets.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
-                    if (ticket_id == null)
+                    _context.Tickets.Remove(device);
+                    var imgs = await _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).ToListAsync();
+                    foreach (var item in imgs)
                     {
-                        break;
-                    }
-                    else
-                    {
-                        device_id = Guid.NewGuid();
+                        _context.Images.Remove(item);
                     }
                 }
-                var ticket = new Ticket
+                foreach (var item in model.ticket)
                 {
-                    Id = device_id,
-                    RequestId = request!.Id,
-                    DeviceId = item.device_id,
-                    Description = item.description,
-                    Solution = item.solution,
-                    IsDelete = false,
-                    CreateBy = technician!.Id,
-                    CreateDate = DateTime.UtcNow.AddHours(7),
-                    UpdateDate = DateTime.UtcNow.AddHours(7)
-                };
-                await _context.Tickets.AddAsync(ticket);
-
-                foreach (var item1 in item.img!)
-                {
-                    var img_id = Guid.NewGuid();
+                    var device_id = Guid.NewGuid();
                     while (true)
                     {
-                        var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id) && x.ObjectName.Equals(ObjectName.TI.ToString())).FirstOrDefaultAsync();
-                        if (img_dup == null)
+                        var ticket_id = await _context.Tickets.Where(x => x.Id.Equals(device_id)).FirstOrDefaultAsync();
+                        if (ticket_id == null)
                         {
                             break;
                         }
                         else
                         {
-                            img_id = Guid.NewGuid();
+                            device_id = Guid.NewGuid();
                         }
                     }
-                    var imgTicket = new Image
+                    var ticket = new Ticket
                     {
-                        Id = img_id,
-                        Link = item1,
-                        CurrentObject_Id = ticket.Id,
-                        ObjectName = ObjectName.TI.ToString(),
+                        Id = device_id,
+                        RequestId = request!.Id,
+                        DeviceId = item.device_id,
+                        Description = item.description,
+                        Solution = item.solution,
+                        IsDelete = false,
+                        CreateBy = technician!.Id,
+                        CreateDate = DateTime.UtcNow.AddHours(7),
+                        UpdateDate = DateTime.UtcNow.AddHours(7)
                     };
-                    await _context.Images.AddAsync(imgTicket);
+                    await _context.Tickets.AddAsync(ticket);
+
+                    foreach (var item1 in item.img!)
+                    {
+                        var img_id = Guid.NewGuid();
+                        while (true)
+                        {
+                            var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id) && x.ObjectName.Equals(ObjectName.TI.ToString())).FirstOrDefaultAsync();
+                            if (img_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                img_id = Guid.NewGuid();
+                            }
+                        }
+                        var imgTicket = new Image
+                        {
+                            Id = img_id,
+                            Link = item1,
+                            CurrentObject_Id = ticket.Id,
+                            ObjectName = ObjectName.TI.ToString(),
+                        };
+                        await _context.Images.AddAsync(imgTicket);
+
+                    }
+
+                    await _context.SaveChangesAsync();
+                    list.Add(new DevicesOfRequestResponse
+                    {
+                        ticket_id = ticket.Id,
+                        device_id = ticket.DeviceId,
+                        code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
+                        solution = ticket.Solution,
+                        description = ticket.Description,
+                        create_date = ticket.CreateDate,
+                        img = _context.Images.Where(a => a.CurrentObject_Id.Equals(ticket.Id)).Select(x => x.Link).ToList()!,
+                    });
 
                 }
-
-                await _context.SaveChangesAsync();
-                list.Add(new DevicesOfRequestResponse
-                {
-                    ticket_id = ticket.Id,
-                    device_id = ticket.DeviceId,
-                    code = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.Code).FirstOrDefault(),
-                    name = _context.Devices.Where(a => a.Id.Equals(ticket.DeviceId)).Select(a => a.DeviceName).FirstOrDefault(),
-                    solution = ticket.Solution,
-                    description = ticket.Description,
-                    create_date = ticket.CreateDate,
-                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(ticket.Id)).Select(x => x.Link).ToList()!,
-                });
-
             }
+
             return new ObjectModelResponse(list!)
             {
-                Status = 201,
+                Status = status,
+                Message = message,
                 Type = "Device"
             };
         }
