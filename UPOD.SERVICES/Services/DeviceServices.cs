@@ -795,7 +795,7 @@ namespace UPOD.SERVICES.Services
                 var img_id = Guid.NewGuid();
                 while (true)
                 {
-                    var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                    var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id) && x.ObjectName.Equals(ObjectName.DE.ToString())).FirstOrDefaultAsync();
                     if (img_dup == null)
                     {
                         break;
@@ -810,6 +810,7 @@ namespace UPOD.SERVICES.Services
                     Id = img_id,
                     Link = item,
                     CurrentObject_Id = device!.Id,
+                    ObjectName = ObjectName.DE.ToString(),
                 };
                 await _context.Images.AddAsync(imgTicket);
 

@@ -603,7 +603,7 @@ namespace UPOD.SERVICES.Services
                     var img_id = Guid.NewGuid();
                     while (true)
                     {
-                        var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                        var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id) && x.ObjectName.Equals(ObjectName.TI.ToString())).FirstOrDefaultAsync();
                         if (img_dup == null)
                         {
                             break;
@@ -618,6 +618,7 @@ namespace UPOD.SERVICES.Services
                         Id = img_id,
                         Link = item1,
                         CurrentObject_Id = ticket.Id,
+                        ObjectName = ObjectName.TI.ToString(),
                     };
                     await _context.Images.AddAsync(imgTicket);
 
