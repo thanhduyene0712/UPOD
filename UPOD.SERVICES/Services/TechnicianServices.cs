@@ -474,7 +474,7 @@ namespace UPOD.SERVICES.Services
             var list = new List<DevicesOfRequestResponse>();
             var message = "blank";
             var status = 500;
-            if (model.ticket == null)
+            if (model.ticket.Count <= 0)
             {
                 message = "Device must not be empty!";
                 status = 400;
@@ -574,7 +574,7 @@ namespace UPOD.SERVICES.Services
             var list = new List<DevicesOfRequestResponse>();
             var message = "blank";
             var status = 500;
-            if (model.ticket == null)
+            if (model.ticket.Count <= 0)
             {
                 message = "Device must not be empty!";
                 status = 400;
