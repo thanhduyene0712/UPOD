@@ -34,4 +34,19 @@ namespace UPOD.SERVICES.Enum
         COMPLETED,
         NOTIFIED,
     }
+    public enum ObjectName
+    {
+        DE, //Device
+        TI, //Ticket
+        TE, //Technician
+        CU, //Customer
+        SE, //Service
+        AG, //Agency
+        RE, //Request
+        AR, //Area
+        CON, //Contract
+        MR, //Maintenance report
+        AD, //Admin
+        MS, //Maintenance Schedule
+    }
 }

@@ -1,7 +1,10 @@
-﻿using Hangfire;
+﻿using Firebase.Auth;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json.Linq;
+using UPOD.API.HubService;
+using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.SERVICES.Enum;
@@ -16,12 +19,20 @@ namespace UPOD.API.Controllers
 
         private readonly IMaintenanceScheduleService _maintenanceSchedule_sv;
         private readonly IMaintenanceReportService _maintenanceReport_sv;
+        private readonly IHubContext<NotifyHub> _notifyHub;
+        private readonly INotificationService _notification_Sv;
         private readonly IContractServiceService _contract_sv;
-        public MaintenanceSchedulesController(IMaintenanceScheduleService maintenanceSchedule_sv, IContractServiceService contract_sv, IMaintenanceReportService maintenanceReport_sv)
+        public MaintenanceSchedulesController(IMaintenanceScheduleService maintenanceSchedule_sv
+            , IContractServiceService contract_sv
+            , IMaintenanceReportService maintenanceReport_sv
+            , IHubContext<NotifyHub> notifyHub
+            , INotificationService notification_Sv)
         {
             _maintenanceSchedule_sv = maintenanceSchedule_sv;
             _contract_sv = contract_sv;
             _maintenanceReport_sv = maintenanceReport_sv;
+            _notifyHub = notifyHub;
+            _notification_Sv = notification_Sv;
         }
 
         [HttpPut]
@@ -31,8 +42,19 @@ namespace UPOD.API.Controllers
             try
             {
 
-                await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotify();
-                //var connection = new signalR.HubConnectionBuilder().withUrl("/notifyHub").build();
+                var listMaintenanceSchedule = await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotify();
+                foreach (var item in listMaintenanceSchedule)
+                {
+                   await _notification_Sv.createNotification(new Notification
+                    {
+                        isRead = false,
+                        CurrentObject_Id = item.Id,
+                        NotificationContent = "You have a maintenance schedule for today!",
+                        UserId = item.TechnicianId,
+                        ObjectName = ObjectName.MS.ToString(),
+                    });
+                    await _notifyHub.Clients.All.SendAsync("NotifyMessage", item.TechnicianId);
+                }
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotifyMissing();
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesMaintaining();
                 await _contract_sv.SetContractNotify();

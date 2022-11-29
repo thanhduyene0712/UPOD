@@ -18,7 +18,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> MaintainingSchedule(Guid id, Guid tech_id);
         Task<ObjectModelResponse> DisableMaintenanceSchedule(Guid id);
         Task<ObjectModelResponse> MaintenanceScheduleDetails(Guid id);
-        Task SetMaintenanceSchedulesNotify();
+        Task<List<MaintenanceSchedule>> SetMaintenanceSchedulesNotify();
         Task SetMaintenanceSchedulesNotifyMissing();
         Task SetMaintenanceSchedulesMaintaining();
     }
@@ -149,9 +149,8 @@ namespace UPOD.SERVICES.Services
                 Type = "MaintenanceSchedule"
             };
         }
-        public async Task SetMaintenanceSchedulesNotify()
+        public async Task<List<MaintenanceSchedule>> SetMaintenanceSchedulesNotify()
         {
-
             var todaySchedules = await _context.MaintenanceSchedules.Where(a => (a.MaintainTime!.Value.Date >= DateTime.UtcNow.AddHours(7).Date && a.MaintainTime!.Value.Date <= DateTime.UtcNow.AddHours(7).AddDays(1).Date) && a.IsDelete == false && a!.Status.Equals("SCHEDULED")).ToListAsync();
             foreach (var item in todaySchedules)
             {
@@ -159,7 +158,8 @@ namespace UPOD.SERVICES.Services
                 item.Status = ScheduleStatus.NOTIFIED.ToString();
                 await _context.SaveChangesAsync();
             }
-            //return "Notity";
+            
+            return todaySchedules;
         }
         public async Task SetMaintenanceSchedulesNotifyMissing()
         {

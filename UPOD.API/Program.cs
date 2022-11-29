@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Reso.Core.Extension;
 using System.Text;
 using System.Text.Json.Serialization;
+using UPOD.API.HubService;
 using UPOD.REPOSITORIES.Models;
 using UPOD.SERVICES.App_Start;
 using UPOD.SERVICES.Handlers;
@@ -104,7 +105,7 @@ builder.Services.ConfigureAutoMapper();
 builder.Services.ConfigureDI();
 builder.Services.ConfigureServiceWorkers();
 builder.Services.ConfigDataProtection();
-//builder.Services.AddSignalR();
+builder.Services.AddSignalR();
 
 
 var port = Environment.GetEnvironmentVariable("PORT");
@@ -147,9 +148,11 @@ app.UseAuthentication(); //authenticate
 
 app.UseAuthorization();
 
-//app.UseEndpoints(endpoint=>
+app.MapHub<NotifyHub>("/notifyHub");
+
+//app.UseEndpoints(endpoint =>
 //{
-//    endpoint.MapHub<NotificationsHub>("/notifyHub");
+//    endpoint.MapHub<NotifyHub>("/notifyHub");
 //});
 
 app.MapControllers();

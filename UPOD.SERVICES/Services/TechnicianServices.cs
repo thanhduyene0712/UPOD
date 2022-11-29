@@ -49,7 +49,7 @@ namespace UPOD.SERVICES.Services
                 solution = a.Solution,
                 description = a.Description,
                 create_date = a.CreateDate,
-                img = _context.Images.Where(x => x.CurrentObject_Id.Equals(a.Id)).Select(a => a.Link).ToList()!,
+                img = _context.Images.Where(x => x.CurrentObject_Id.Equals(a.Id) && x.ObjectName!.Equals(ObjectName.TI.ToString())).Select(a => a.Link).ToList()!,
 
             }).OrderByDescending(x => x.code).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             return new ResponseModel<DevicesOfRequestResponse>(device_of_request)
@@ -522,6 +522,7 @@ namespace UPOD.SERVICES.Services
                         Id = img_id,
                         Link = item1,
                         CurrentObject_Id = ticket.Id,
+                        ObjectName = ObjectName.TI.ToString(),
                     };
                     await _context.Tickets.AddAsync(ticket);
                     await _context.Images.AddAsync(imgTicket);
@@ -538,7 +539,7 @@ namespace UPOD.SERVICES.Services
                     solution = ticket.Solution,
                     description = ticket.Description,
                     create_date = ticket.CreateDate,
-                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(ticket.Id)).Select(x => x.Link).ToList()!,
+                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(ticket.Id) && a.ObjectName!.Equals(ObjectName.TI.ToString())).Select(x => x.Link).ToList()!,
                 });
 
             }

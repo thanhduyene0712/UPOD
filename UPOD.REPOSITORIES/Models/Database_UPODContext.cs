@@ -26,6 +26,7 @@ namespace UPOD.REPOSITORIES.Models
         public virtual DbSet<Device> Devices { get; set; } = null!;
         public virtual DbSet<DeviceType> DeviceTypes { get; set; } = null!;
         public virtual DbSet<Image> Images { get; set; } = null!;
+        public virtual DbSet<Notification> Notifications { get; set; } = null!;
         public virtual DbSet<MaintenanceReport> MaintenanceReports { get; set; } = null!;
         public virtual DbSet<MaintenanceReportService> MaintenanceReportServices { get; set; } = null!;
         public virtual DbSet<MaintenanceSchedule> MaintenanceSchedules { get; set; } = null!;
@@ -299,7 +300,22 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Link).HasMaxLength(255);
 
+                entity.Property(e => e.ObjectName).HasMaxLength(255);
+
                 entity.Property(e => e.Id).ValueGeneratedNever();
+            });
+
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.ToTable("Notification");
+
+                entity.Property(e => e.NotificationContent).HasMaxLength(255);
+
+                entity.Property(e => e.ObjectName).HasMaxLength(255);
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedTime).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<MaintenanceReport>(entity =>

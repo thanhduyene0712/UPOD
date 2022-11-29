@@ -6,6 +6,7 @@ using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
+using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
@@ -93,7 +94,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
@@ -179,7 +180,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
@@ -257,7 +258,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
@@ -328,7 +329,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
@@ -406,7 +407,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
@@ -483,7 +484,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = a.IsDelete,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
@@ -556,7 +557,7 @@ namespace UPOD.SERVICES.Services
                 is_delete = a.IsDelete,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
-                img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id)).Select(x => new ImageResponse
+                img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                 {
                     id = x.Id,
                     link = x.Link,
@@ -639,6 +640,7 @@ namespace UPOD.SERVICES.Services
                     Id = img_id,
                     Link = item,
                     CurrentObject_Id = device.Id,
+                    ObjectName = ObjectName.DE.ToString(),
                 };
                 await _context.Images.AddAsync(imgTicket);
             }
@@ -707,7 +709,7 @@ namespace UPOD.SERVICES.Services
                         is_delete = device.IsDelete,
                         create_date = device.CreateDate,
                         update_date = device.UpdateDate,
-                        img = _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).Select(x => new ImageResponse
+                        img = _context.Images.Where(d => d.CurrentObject_Id.Equals(device.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                         {
                             id = x.Id,
                             link = x.Link,
@@ -765,7 +767,7 @@ namespace UPOD.SERVICES.Services
                     is_delete = device.IsDelete,
                     create_date = device.CreateDate,
                     update_date = device.UpdateDate,
-                    img = _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).Select(x => new ImageResponse
+                    img = _context.Images.Where(d => d.CurrentObject_Id.Equals(device.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                     {
                         id = x.Id,
                         link = x.Link,
@@ -815,7 +817,7 @@ namespace UPOD.SERVICES.Services
             var data = new DeviceResponse();
             var message = "blank";
             var status = 500;
-            var device_name = await _context.Devices.Where(x => x.DeviceName!.Equals(model.device_name) && x.AgencyId.Equals(device.AgencyId) && x.IsDelete == false).FirstOrDefaultAsync();
+            var device_name = await _context.Devices.Where(x => x.DeviceName!.Equals(model.device_name) && x.AgencyId.Equals(device!.AgencyId) && x.IsDelete == false).FirstOrDefaultAsync();
             if (device_name != null && device!.DeviceName != model.device_name)
             {
                 status = 400;
@@ -888,7 +890,7 @@ namespace UPOD.SERVICES.Services
                         is_delete = device.IsDelete,
                         create_date = device.CreateDate,
                         update_date = device.UpdateDate,
-                        img = _context.Images.Where(a => a.CurrentObject_Id.Equals(device.Id)).Select(x => new ImageResponse
+                        img = _context.Images.Where(d => d.CurrentObject_Id.Equals(device.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => new ImageResponse
                         {
                             id = x.Id,
                             link = x.Link,
