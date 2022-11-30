@@ -89,6 +89,19 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpGet]
+        [Route("get_ticket_details_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> GetTicketDetails(Guid id)
+        {
+            try
+            {
+                return await _request_sv.GetTicketDetails(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
         [Route("get_technicians_by_id_report_service")]
         public async Task<ActionResult<ResponseModel<TechnicianOfRequestResponse>>> GetTechnicianReport(Guid id)
         {

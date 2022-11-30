@@ -11,7 +11,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
 
     {
         public Guid id { get; set; }
-        public string? code { get; set; }
         public Guid? request_id { get; set; } = null!;
         public Guid? device_id { get; set; } = null!;
         public string? description { get; set; }
@@ -20,5 +19,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public DateTime? update_date { get; set; }
         public string? solution { get; set; }
         public Guid? create_by { get; set; } = null!;
+        public List<string>? img { get; set; }
     }
 }

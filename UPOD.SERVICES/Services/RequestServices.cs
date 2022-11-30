@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq.Dynamic.Core;
+using System.Net.Sockets;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
@@ -27,6 +28,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> ReOpenRequest(Guid id);
         Task<ObjectModelResponse> CancelRequest(Guid id, RejectRequest model);
         Task<ObjectModelResponse> AutoFillRequestAdmin(Guid id);
+        Task<ObjectModelResponse> GetTicketDetails(Guid id);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfAgency(PaginationRequest model, Guid id, FilterStatusRequest value);
     }
     public class RequestServices : IRequestService
@@ -36,6 +38,27 @@ namespace UPOD.SERVICES.Services
         public RequestServices(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ObjectModelResponse> GetTicketDetails(Guid id)
+        {
+            var ticket = await _context.Tickets.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new TicketResponse
+            {
+                id = a.Id,
+                create_by = a.CreateBy,
+                create_date = a.CreateDate,
+                update_date = a.UpdateDate,
+                description = a.Description,
+                solution = a.Solution,
+                device_id = a.DeviceId,
+                is_delete = a.IsDelete,
+                request_id = a.RequestId,
+                img = _context.Images.Where(x => x.CurrentObject_Id.Equals(a.Id) && x.ObjectName!.Equals(ObjectName.TI.ToString())).Select(x => x.Link).ToList()!,
+            }).FirstOrDefaultAsync();
+
+            return new ObjectModelResponse(ticket!)
+            {
+                Type = "Ticket",
+            };
         }
         public async Task<ObjectModelResponse> AutoFillRequestAdmin(Guid id)
         {
