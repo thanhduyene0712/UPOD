@@ -44,12 +44,12 @@ namespace UPOD.SERVICES.Services
             var ticket = await _context.Tickets.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new TicketResponse
             {
                 id = a.Id,
-                create_by = a.CreateBy,
+                create_by = _context.Technicians.Where(x => x.Id.Equals(a.CreateBy) && a.IsDelete == false).Select(a => a.TechnicianName).FirstOrDefault(),
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
                 description = a.Description,
                 solution = a.Solution,
-                device_id = a.DeviceId,
+                device_name = _context.Devices.Where(x => x.Id.Equals(a.DeviceId) && a.IsDelete == false).Select(a => a.DeviceName).FirstOrDefault(),
                 is_delete = a.IsDelete,
                 request_id = a.RequestId,
                 img = _context.Images.Where(x => x.CurrentObject_Id.Equals(a.Id) && x.ObjectName!.Equals(ObjectName.TI.ToString())).Select(x => x.Link).ToList()!,
