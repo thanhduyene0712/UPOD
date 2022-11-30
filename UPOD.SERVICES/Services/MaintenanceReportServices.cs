@@ -34,7 +34,7 @@ namespace UPOD.SERVICES.Services
             {
                 if (item.Status!.Equals("STABILIZED"))
                 {
-                    item.UpdateDate = DateTime.UtcNow.AddHours(7);
+                    //item.UpdateDate = DateTime.UtcNow.AddHours(7);
                     item.Status = ReportStatus.CLOSED.ToString();
                 }
             }
@@ -60,7 +60,7 @@ namespace UPOD.SERVICES.Services
                 {
                     if (date.Date <= DateTime.UtcNow.AddHours(7).Date)
                     {
-                        item.UpdateDate = DateTime.UtcNow.AddHours(7);
+                        //item.UpdateDate = DateTime.UtcNow.AddHours(7);
                         item.Status = ReportStatus.CLOSED.ToString();
                     }
                 }

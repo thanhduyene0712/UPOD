@@ -21,18 +21,21 @@ namespace UPOD.API.Controllers
         private readonly IMaintenanceReportService _maintenanceReport_sv;
         private readonly IHubContext<NotifyHub> _notifyHub;
         private readonly INotificationService _notification_Sv;
+        private readonly IRequestService _request_Sv;
         private readonly IContractServiceService _contract_sv;
         public MaintenanceSchedulesController(IMaintenanceScheduleService maintenanceSchedule_sv
             , IContractServiceService contract_sv
             , IMaintenanceReportService maintenanceReport_sv
             , IHubContext<NotifyHub> notifyHub
-            , INotificationService notification_Sv)
+            , INotificationService notification_Sv
+            , IRequestService request_Sv)
         {
             _maintenanceSchedule_sv = maintenanceSchedule_sv;
             _contract_sv = contract_sv;
             _maintenanceReport_sv = maintenanceReport_sv;
             _notifyHub = notifyHub;
             _notification_Sv = notification_Sv;
+            _request_Sv = request_Sv;
         }
 
         [HttpPut]
@@ -55,6 +58,7 @@ namespace UPOD.API.Controllers
                     });
                     await _notifyHub.Clients.All.SendAsync("NotifyMessage", item.TechnicianId);
                 }
+                await _request_Sv.SetClosedRequest();
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesNotifyMissing();
                 await _maintenanceSchedule_sv.SetMaintenanceSchedulesMaintaining();
                 await _contract_sv.SetContractNotify();

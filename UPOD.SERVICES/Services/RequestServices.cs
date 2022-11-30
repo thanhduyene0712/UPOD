@@ -29,6 +29,7 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> CancelRequest(Guid id, RejectRequest model);
         Task<ObjectModelResponse> AutoFillRequestAdmin(Guid id);
         Task<ObjectModelResponse> GetTicketDetails(Guid id);
+        Task SetClosedRequest();
         Task<ResponseModel<RequestResponse>> GetListRequestsOfAgency(PaginationRequest model, Guid id, FilterStatusRequest value);
     }
     public class RequestServices : IRequestService
@@ -38,6 +39,19 @@ namespace UPOD.SERVICES.Services
         public RequestServices(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task SetClosedRequest()
+        {
+            var requests = await _context.Requests.Where(a => a.UpdateDate!.Value.AddDays(5).Date <= DateTime.UtcNow.AddHours(7).Date).ToListAsync();
+            foreach (var item in requests)
+            {
+                if (item.RequestStatus!.Equals("RESOLVED"))
+                {
+                    //item.UpdateDate = DateTime.UtcNow.AddHours(7);
+                    item.RequestStatus = ProcessStatus.CLOSED.ToString();
+                }
+            }
+            await _context.SaveChangesAsync();
         }
         public async Task<ObjectModelResponse> GetTicketDetails(Guid id)
         {

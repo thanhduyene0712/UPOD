@@ -38,7 +38,7 @@ namespace UPOD.SERVICES.Services
             var data = new MaintenanceScheduleResponse();
             var message = "blank";
             var status = 500;
-            var request = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(tech_id) && a.RequestStatus!.Equals("RESOLVING")).FirstOrDefaultAsync();
+            var request = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(tech_id) && (a.RequestStatus!.Equals("RESOLVING") || a.RequestStatus!.Equals("EDITING"))).FirstOrDefaultAsync();
             var maintain = await _context.MaintenanceSchedules.Where(a => a.TechnicianId.Equals(tech_id) && a.Status!.Equals("MAINTAINING")).FirstOrDefaultAsync();
             if (request != null || maintain != null)
             {
