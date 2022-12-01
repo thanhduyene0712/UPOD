@@ -1131,6 +1131,11 @@ namespace UPOD.SERVICES.Services
             {
                 item.TechnicianId = null;
             }
+            var account = await _context.Accounts.Where(a => a.IsDelete == false && a.Id.Equals(technician.AccountId)).FirstOrDefaultAsync();
+            if(account != null)
+            {
+                account.IsAssign = false;
+            }
             var rs = await _context.SaveChangesAsync();
             if (rs > 0)
             {
