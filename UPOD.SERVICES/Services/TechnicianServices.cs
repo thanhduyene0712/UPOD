@@ -20,11 +20,9 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianUpdateRequest model);
         Task<ObjectModelResponse> DisableTechnician(Guid id);
         Task<ResponseModel<DevicesOfRequestResponse>> CreateTicket(Guid id, ListTicketRequest model);
-        //Task<ResponseModel<DevicesOfRequestResponse>> AddTicket(Guid id, ListTicketRequest model);
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterStatusRequest value);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> ResolvingRequest(Guid id, Guid tech_id);
-        //Task<ObjectModelResponse> ConfirmRequest(Guid id);
         Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, ListTicketRequest model);
         Task<ObjectModelResponse> IsBusyTechnician(Guid id, IsBusyRequest model);
         Task<ObjectModelResponse> DisableDeviceOfTicket(Guid id);

@@ -42,7 +42,7 @@ namespace UPOD.SERVICES.Services
         }
         public async Task SetClosedRequest()
         {
-            var requests = await _context.Requests.Where(a => a.UpdateDate!.Value.AddDays(5).Date <= DateTime.UtcNow.AddHours(7).Date).ToListAsync();
+            var requests = await _context.Requests.Where(a => a.EndTime!.Value.AddDays(5).Date <= DateTime.UtcNow.AddHours(7).Date).ToListAsync();
             foreach (var item in requests)
             {
                 if (item.RequestStatus!.Equals("RESOLVED"))

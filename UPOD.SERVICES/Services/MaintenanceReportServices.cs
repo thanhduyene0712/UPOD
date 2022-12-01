@@ -54,7 +54,7 @@ namespace UPOD.SERVICES.Services
                     {
                         count = count + 1;
                     }
-                    date = item.UpdateDate!.Value.AddDays(2);
+                    date = item.CreateDate!.Value.AddDays(2);
                 }
                 if (report_services.Count == count)
                 {
