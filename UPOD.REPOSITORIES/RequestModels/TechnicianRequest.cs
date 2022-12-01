@@ -15,7 +15,6 @@ namespace UPOD.REPOSITORIES.RequestModels
         public string? email { get; set; }
         public int? gender { get; set; }
         public string? address { get; set; }
-        public double? rating_avg { get; set; }
         public List<Guid?> service_id { get; set; } = null!;
     }
 }
