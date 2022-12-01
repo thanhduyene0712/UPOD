@@ -672,6 +672,11 @@ namespace UPOD.SERVICES.Services
             var customer = await _context.Customers.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             var agencies = await _context.Agencies.Where(x => x.CustomerId.Equals(id)).ToListAsync();
             var contracts = await _context.Contracts.Where(x => x.CustomerId.Equals(id)).ToListAsync();
+            var account_assign = await _context.Accounts.Where(x => x.IsDelete == false && x.Id.Equals(customer.AccountId)).FirstOrDefaultAsync();
+            if (account_assign != null)
+            {
+                account_assign!.IsAssign = false;
+            }
             customer!.IsDelete = true;
             foreach (var item in agencies)
             {
@@ -686,6 +691,7 @@ namespace UPOD.SERVICES.Services
             {
                 item.IsDelete = true;
             }
+
             customer.UpdateDate = DateTime.UtcNow.AddHours(7);
             var data = new CustomerResponse();
             _context.Customers.Update(customer);
