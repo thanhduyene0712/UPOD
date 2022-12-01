@@ -463,6 +463,14 @@ namespace UPOD.SERVICES.Services
             {
                 item.IsDelete = true;
             }
+            var maintenance_schedules = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.AgencyId.Equals(id)).ToListAsync();
+            foreach (var item in maintenance_schedules)
+            {
+                if(item!.Status!.Equals("SCHEDULED") || item!.Status!.Equals("NOTIFIED"))
+                {
+                    item.IsDelete = true;
+                }
+            }
             var data = new AgencyResponse();
             _context.Agencies.Update(agency);
             var rs = await _context.SaveChangesAsync();

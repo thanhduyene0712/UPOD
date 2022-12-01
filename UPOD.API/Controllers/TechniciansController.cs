@@ -57,6 +57,19 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpGet]
+        [Route("get_list_requests_by_id_technician_agency")]
+        public async Task<ActionResult<ResponseModel<RequestResponse>>> GetListRequestsOfTechnicianAgency([FromQuery] PaginationRequest model, Guid tech_id, Guid agency_id, [FromQuery] FilterStatusRequest value)
+        {
+            try
+            {
+                return await _technician_sv.GetListRequestsOfTechnicianAgency(model, tech_id, agency_id, value);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
         [Route("get_ticket_by_request_id")]
         public async Task<ActionResult<ResponseModel<DevicesOfRequestResponse>>> GetDevicesByRequest([FromQuery] PaginationRequest model, [FromQuery] Guid id)
         {
@@ -96,19 +109,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[HttpPost]
-        //[Route("add_device_for_ticket_by_id_request")]
-        //public async Task<ActionResult<ResponseModel<DevicesOfRequestResponse>>> AddTicket(Guid id, ListTicketRequest model)
-        //{
-        //    try
-        //    {
-        //        return await _technician_sv.AddTicket(id, model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+       
         [HttpPost]
         [Route("update_device_of_ticket_by_request_id")]
         public async Task<ActionResult<ObjectModelResponse>> UpdateDeviceTicket(Guid id, ListTicketRequest model)
@@ -135,20 +136,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[HttpPut]
-        //[Route("confirm_request_by_id")]
-        //public async Task<ActionResult<ObjectModelResponse>> ConfirmRequest(Guid id)
-        //{
-        //    try
-        //    {
-        //        return await _technician_sv.ConfirmRequest(id);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
-        
+       
         [HttpPut]
         [Route("resolving_request_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> ResolvingRequest(Guid id, Guid tech_id)

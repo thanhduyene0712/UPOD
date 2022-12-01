@@ -39,7 +39,7 @@ namespace UPOD.SERVICES.Services
             var message = "blank";
             var status = 500;
             var request = await _context.Requests.Where(a => a.CurrentTechnicianId.Equals(tech_id) && (a.RequestStatus!.Equals("RESOLVING") || a.RequestStatus!.Equals("EDITING"))).FirstOrDefaultAsync();
-            var maintain = await _context.MaintenanceSchedules.Where(a => a.TechnicianId.Equals(tech_id) && a.Status!.Equals("MAINTAINING")).FirstOrDefaultAsync();
+            var maintain = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.TechnicianId.Equals(tech_id) && a.Status!.Equals("MAINTAINING")).FirstOrDefaultAsync();
             if (request != null || maintain != null)
             {
                 message = "You have a request or maintenance schedule that needs to solve";
@@ -158,7 +158,7 @@ namespace UPOD.SERVICES.Services
                 item.Status = ScheduleStatus.NOTIFIED.ToString();
                 await _context.SaveChangesAsync();
             }
-            
+
             return todaySchedules;
         }
         public async Task SetMaintenanceSchedulesNotifyMissing()
@@ -515,7 +515,7 @@ namespace UPOD.SERVICES.Services
             var message = "blank";
             var status = 500;
             var data = new MaintenanceScheduleResponse();
-            if(model.maintain_time!.Value.Date < DateTime.UtcNow.AddHours(7) && model.maintain_time!.Value.Date != maintenanceSchedule!.MaintainTime!.Value.Date)
+            if (model.maintain_time!.Value.Date < DateTime.UtcNow.AddHours(7) && model.maintain_time!.Value.Date != maintenanceSchedule!.MaintainTime!.Value.Date)
             {
                 message = "Maintain time must be greater than current day";
                 status = 400;
