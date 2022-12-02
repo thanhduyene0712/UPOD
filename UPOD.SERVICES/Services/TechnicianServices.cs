@@ -463,57 +463,57 @@ namespace UPOD.SERVICES.Services
                 || a.RequestStatus!.Equals("RESOLVING")
                 || a.RequestStatus!.Equals("RESOLVED")
                 || a.RequestStatus!.Equals("CLOSED"))).Select(a => new RequestResponse
-            {
-                id = a.Id,
-                code = a.Code,
-                request_name = a.RequestName,
-                customer = new CustomerViewResponse
                 {
-                    id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
-                    code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
-                    cus_name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
-                    description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
-                    phone = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
-                    address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
-                    mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
-                },
-                agency = new AgencyViewResponse
-                {
-                    id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
-                    code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
-                    phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
-                    agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
-                    address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
-                },
-                service = new ServiceViewResponse
-                {
-                    id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
-                    code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
-                    service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
-                    description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
-                },
-                request_status = a.RequestStatus,
-                description = a.RequestDesciption,
-                admin_id = a.AdminId,
-                contract = new ContractViewResponse
-                {
-                    id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
-                    code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
-                    name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
-                },
-                reject_reason = a.ReasonReject,
-                technicican = new TechnicianViewResponse
-                {
-                    id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
-                    phone = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
-                    email = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Email).FirstOrDefault(),
-                    code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                    tech_name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                },
-                create_date = a.CreateDate,
-                update_date = a.UpdateDate,
+                    id = a.Id,
+                    code = a.Code,
+                    request_name = a.RequestName,
+                    customer = new CustomerViewResponse
+                    {
+                        id = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                        cus_name = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                        description = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                        phone = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                        address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                        mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
+                    },
+                    agency = new AgencyViewResponse
+                    {
+                        id = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Id).FirstOrDefault(),
+                        code = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Code).FirstOrDefault(),
+                        phone = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Telephone).FirstOrDefault(),
+                        agency_name = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.AgencyName).FirstOrDefault(),
+                        address = _context.Agencies.Where(x => x.Id.Equals(a.AgencyId)).Select(x => x.Address).FirstOrDefault(),
+                    },
+                    service = new ServiceViewResponse
+                    {
+                        id = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Code).FirstOrDefault(),
+                        service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
+                        description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
+                    },
+                    request_status = a.RequestStatus,
+                    description = a.RequestDesciption,
+                    admin_id = a.AdminId,
+                    contract = new ContractViewResponse
+                    {
+                        id = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Id).FirstOrDefault(),
+                        code = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.Code).FirstOrDefault(),
+                        name = _context.Contracts.Where(x => x.Id.Equals(a.ContractId)).Select(a => a.ContractName).FirstOrDefault(),
+                    },
+                    reject_reason = a.ReasonReject,
+                    technicican = new TechnicianViewResponse
+                    {
+                        id = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Id).FirstOrDefault(),
+                        phone = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Telephone).FirstOrDefault(),
+                        email = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Email).FirstOrDefault(),
+                        code = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        tech_name = _context.Technicians.Where(x => x.Id.Equals(a.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    },
+                    create_date = a.CreateDate,
+                    update_date = a.UpdateDate,
 
-            }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                }).OrderByDescending(x => x.update_date).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             }
 
             else
@@ -793,33 +793,36 @@ namespace UPOD.SERVICES.Services
                         UpdateDate = DateTime.UtcNow.AddHours(7)
                     };
 
-
-                    foreach (var item1 in item.img!)
+                    if (item.img!.Count > 0)
                     {
-                        var img_id = Guid.NewGuid();
-                        while (true)
+                        foreach (var item1 in item.img!)
                         {
-                            var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
-                            if (img_dup == null)
+                            var img_id = Guid.NewGuid();
+                            while (true)
                             {
-                                break;
+                                var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                                if (img_dup == null)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    img_id = Guid.NewGuid();
+                                }
                             }
-                            else
+                            var imgTicket = new Image
                             {
-                                img_id = Guid.NewGuid();
-                            }
-                        }
-                        var imgTicket = new Image
-                        {
-                            Id = img_id,
-                            Link = item1,
-                            CurrentObject_Id = ticket.Id,
-                            ObjectName = ObjectName.TI.ToString(),
-                        };
-                        await _context.Tickets.AddAsync(ticket);
-                        await _context.Images.AddAsync(imgTicket);
+                                Id = img_id,
+                                Link = item1,
+                                CurrentObject_Id = ticket.Id,
+                                ObjectName = ObjectName.TI.ToString(),
+                            };
+                            await _context.Tickets.AddAsync(ticket);
+                            await _context.Images.AddAsync(imgTicket);
 
+                        }
                     }
+
 
                     await _context.SaveChangesAsync();
                     list.Add(new DevicesOfRequestResponse
@@ -903,30 +906,33 @@ namespace UPOD.SERVICES.Services
                     };
                     await _context.Tickets.AddAsync(ticket);
 
-                    foreach (var item1 in item.img!)
+                    if (item.img!.Count > 0)
                     {
-                        var img_id = Guid.NewGuid();
-                        while (true)
+                        foreach (var item1 in item.img!)
                         {
-                            var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id) && x.ObjectName.Equals(ObjectName.TI.ToString())).FirstOrDefaultAsync();
-                            if (img_dup == null)
+                            var img_id = Guid.NewGuid();
+                            while (true)
                             {
-                                break;
+                                var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id) && x.ObjectName.Equals(ObjectName.TI.ToString())).FirstOrDefaultAsync();
+                                if (img_dup == null)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    img_id = Guid.NewGuid();
+                                }
                             }
-                            else
+                            var imgTicket = new Image
                             {
-                                img_id = Guid.NewGuid();
-                            }
-                        }
-                        var imgTicket = new Image
-                        {
-                            Id = img_id,
-                            Link = item1,
-                            CurrentObject_Id = ticket.Id,
-                            ObjectName = ObjectName.TI.ToString(),
-                        };
-                        await _context.Images.AddAsync(imgTicket);
+                                Id = img_id,
+                                Link = item1,
+                                CurrentObject_Id = ticket.Id,
+                                ObjectName = ObjectName.TI.ToString(),
+                            };
+                            await _context.Images.AddAsync(imgTicket);
 
+                        }
                     }
 
                     await _context.SaveChangesAsync();
@@ -1132,7 +1138,7 @@ namespace UPOD.SERVICES.Services
                 item.TechnicianId = null;
             }
             var account = await _context.Accounts.Where(a => a.IsDelete == false && a.Id.Equals(technician.AccountId)).FirstOrDefaultAsync();
-            if(account != null)
+            if (account != null)
             {
                 account.IsAssign = false;
             }

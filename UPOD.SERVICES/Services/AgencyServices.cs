@@ -269,8 +269,8 @@ namespace UPOD.SERVICES.Services
         {
             var agency = await _context.Agencies.Where(a => a.Id.Equals(id)).FirstOrDefaultAsync();
             var area = await _context.Areas.Where(a => a.Id.Equals(agency!.AreaId)).FirstOrDefaultAsync();
-            var total = await _context.Technicians.Where(a => a.AreaId.Equals(area!.Id)).ToListAsync();
-            var technician = await _context.Technicians.Where(a => a.AreaId.Equals(area!.Id)).Select(a => new TechnicianViewResponse
+            var total = await _context.Technicians.Where(a =>a.IsDelete == false && a.AreaId.Equals(area!.Id)).ToListAsync();
+            var technician = await _context.Technicians.Where(a =>a.IsDelete == false && a.AreaId.Equals(area!.Id)).Select(a => new TechnicianViewResponse
             {
                 id = a.Id,
                 code = a.Code,
