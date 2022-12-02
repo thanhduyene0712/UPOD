@@ -620,29 +620,32 @@ namespace UPOD.SERVICES.Services
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7)
             };
-            foreach (var item in model.img!)
+            if(model.img!.Count > 0)
             {
-                var img_id = Guid.NewGuid();
-                while (true)
+                foreach (var item in model.img!)
                 {
-                    var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
-                    if (img_dup == null)
+                    var img_id = Guid.NewGuid();
+                    while (true)
                     {
-                        break;
+                        var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                        if (img_dup == null)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            img_id = Guid.NewGuid();
+                        }
                     }
-                    else
+                    var imgTicket = new Image
                     {
-                        img_id = Guid.NewGuid();
-                    }
+                        Id = img_id,
+                        Link = item,
+                        CurrentObject_Id = device.Id,
+                        ObjectName = ObjectName.DE.ToString(),
+                    };
+                    await _context.Images.AddAsync(imgTicket);
                 }
-                var imgTicket = new Image
-                {
-                    Id = img_id,
-                    Link = item,
-                    CurrentObject_Id = device.Id,
-                    ObjectName = ObjectName.DE.ToString(),
-                };
-                await _context.Images.AddAsync(imgTicket);
             }
             var data = new DeviceResponse();
             var message = "blank";

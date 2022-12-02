@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System.Data;
+using System.Diagnostics.Contracts;
 using System.Linq.Dynamic.Core;
 using System.Numerics;
 using UPOD.REPOSITORIES.Models;
@@ -23,6 +24,8 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<AgencyOfCustomerResponse>> GetAgenciesByCustomerId(Guid id, PaginationRequest model, SearchRequest value);
         Task<ResponseModel<RequestResponse>> GetListRequestsByCustomerId(PaginationRequest model, FilterStatusRequest value, Guid id);
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
+        Task<ObjectModelResponse> ApproveContract(Guid cus_id, Guid con_id);
+        Task<ObjectModelResponse> RejectContract(Guid cus_id, Guid con_id, ContractRejectRequest model);
     }
 
     public class CustomerServices : ICustomerService
@@ -31,6 +34,152 @@ namespace UPOD.SERVICES.Services
         public CustomerServices(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ObjectModelResponse> RejectContract(Guid cus_id, Guid con_id, ContractRejectRequest model)
+        {
+            var contract = await _context.Contracts.Where(a => a.IsDelete == false
+            && a.Id.Equals(con_id)
+            && a.IsAccepted == false).FirstOrDefaultAsync();
+            var data = new ContractResponse();
+            var status = 500;
+            var message = "blank";
+            if (contract!.CustomerId != cus_id)
+            {
+                message = "The customer does not own the contract";
+                status = 400;
+            }
+            else
+            {
+                message = "Susscessfully";
+                status = 200;
+                contract!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                contract!.RejectReason = model.reject_reason;
+                contract!.IsExpire = true;
+                var schedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(contract.Id)).ToListAsync();
+                if (schedule.Count > 0)
+                {
+                    foreach (var item in schedule)
+                    {
+                        _context.MaintenanceSchedules.Remove(item);
+                    }
+                }
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+
+                    data = new ContractResponse
+                    {
+                        id = contract!.Id,
+                        code = contract.Code,
+                        contract_name = contract.ContractName,
+                        customer = new CustomerViewResponse
+                        {
+                            id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                            code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                            cus_name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                            description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                            phone = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                            address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                            mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
+                        },
+                        reject_reason = contract.RejectReason,
+                        is_accepted = contract.IsAccepted,
+                        start_date = contract.StartDate,
+                        end_date = contract.EndDate,
+                        is_delete = contract.IsDelete,
+                        create_date = contract.CreateDate,
+                        update_date = contract.UpdateDate,
+                        contract_price = contract.ContractPrice,
+                        description = contract.Description,
+                        is_expire = contract.IsExpire,
+                        attachment = contract.Attachment,
+                        terminal_content = contract.TerminalContent,
+                        frequency_maintain_time = contract.FrequencyMaintainTime,
+                        service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
+                        {
+                            id = x.ServiceId,
+                            code = x.Service!.Code,
+                            service_name = x.Service!.ServiceName,
+                            description = x.Service!.Description,
+                        }).ToList(),
+                    };
+                }
+            }
+            return new ObjectModelResponse(data!)
+            {
+                Message = message,
+                Status = status,
+                Type = "Contract",
+            };
+        }
+        public async Task<ObjectModelResponse> ApproveContract(Guid cus_id, Guid con_id)
+        {
+            var contract = await _context.Contracts.Where(a => a.IsDelete == false
+            && a.Id.Equals(con_id)
+            && a.IsAccepted == false).FirstOrDefaultAsync();
+            var data = new ContractResponse();
+            var status = 500;
+            var message = "blank";
+            if (contract!.CustomerId != cus_id)
+            {
+                message = "The customer does not own the contract";
+                status = 400;
+            }
+            else
+            {
+                message = "Susscessfully";
+                status = 200;
+                contract!.IsAccepted = true;
+                contract!.IsExpire = false;
+                contract!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+
+                    data = new ContractResponse
+                    {
+                        id = contract!.Id,
+                        code = contract.Code,
+                        contract_name = contract.ContractName,
+                        customer = new CustomerViewResponse
+                        {
+                            id = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Id).FirstOrDefault(),
+                            code = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Code).FirstOrDefault(),
+                            cus_name = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Name).FirstOrDefault(),
+                            description = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Description).FirstOrDefault(),
+                            phone = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Phone).FirstOrDefault(),
+                            address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
+                            mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
+                        },
+                        reject_reason = contract.RejectReason,
+                        is_accepted = contract.IsAccepted,
+                        start_date = contract.StartDate,
+                        end_date = contract.EndDate,
+                        is_delete = contract.IsDelete,
+                        create_date = contract.CreateDate,
+                        update_date = contract.UpdateDate,
+                        contract_price = contract.ContractPrice,
+                        description = contract.Description,
+                        is_expire = contract.IsExpire,
+                        attachment = contract.Attachment,
+                        terminal_content = contract.TerminalContent,
+                        frequency_maintain_time = contract.FrequencyMaintainTime,
+                        service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse
+                        {
+                            id = x.ServiceId,
+                            code = x.Service!.Code,
+                            service_name = x.Service!.ServiceName,
+                            description = x.Service!.Description,
+                        }).ToList(),
+                    };
+                }
+            }
+            return new ObjectModelResponse(data!)
+            {
+                Status = status,
+                Message = message,
+                Type = "Contract",
+            };
         }
         public async Task<ResponseModel<ContractResponse>> GetAllContractByCustomer(PaginationRequest model, SearchRequest value, Guid id)
         {
@@ -54,10 +203,13 @@ namespace UPOD.SERVICES.Services
                         address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
                         mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
+                    is_accepted = a.IsAccepted,
                     start_date = a.StartDate,
                     end_date = a.EndDate,
                     is_delete = a.IsDelete,
                     is_expire = a.IsExpire,
+                    reject_reason = a.RejectReason,
+                    terminal_content = a.TerminalContent,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
                     contract_price = a.ContractPrice,
@@ -106,6 +258,9 @@ namespace UPOD.SERVICES.Services
                     end_date = a.EndDate,
                     is_delete = a.IsDelete,
                     is_expire = a.IsExpire,
+                    terminal_content = a.TerminalContent,
+                    reject_reason = a.RejectReason,
+                    is_accepted = a.IsAccepted,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
                     contract_price = a.ContractPrice,

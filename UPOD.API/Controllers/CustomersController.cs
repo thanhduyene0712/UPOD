@@ -137,7 +137,32 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpPut]
+        [Route("reject_contract_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> RecjectContract(Guid cus_id, Guid con_id, ContractRejectRequest model)
+        {
+            try
+            {
+                return await _customer_sv.RejectContract(cus_id, con_id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        [Route("approve_contract_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> ApproveContract(Guid cus_id, Guid con_id)
+        {
+            try
+            {
+                return await _customer_sv.ApproveContract(cus_id, con_id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPut]
         [Route("disable_customer_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> DisableCompany(Guid id)

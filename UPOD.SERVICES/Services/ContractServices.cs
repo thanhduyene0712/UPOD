@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 using System.Linq.Dynamic.Core;
 using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
+using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Helpers;
 using Contract = UPOD.REPOSITORIES.Models.Contract;
 
@@ -86,10 +88,12 @@ namespace UPOD.SERVICES.Services
                         address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
                         mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
+                    is_accepted = contract.IsAccepted,
                     start_date = contract.StartDate,
                     end_date = contract.EndDate,
                     is_delete = contract.IsDelete,
                     create_date = contract.CreateDate,
+                    reject_reason = contract.RejectReason,
                     update_date = contract.UpdateDate,
                     contract_price = contract.ContractPrice,
                     description = contract.Description,
@@ -137,11 +141,13 @@ namespace UPOD.SERVICES.Services
                         address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
                         mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
+                    is_accepted = a.IsAccepted,
                     terminal_content = a.TerminalContent,
                     start_date = a.StartDate,
                     end_date = a.EndDate,
                     is_delete = a.IsDelete,
                     is_expire = a.IsExpire,
+                    reject_reason = a.RejectReason,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
                     contract_price = a.ContractPrice,
@@ -185,9 +191,11 @@ namespace UPOD.SERVICES.Services
                         address = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Address).FirstOrDefault(),
                         mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
+                    is_accepted = a.IsAccepted,
                     start_date = a.StartDate,
                     end_date = a.EndDate,
                     is_delete = a.IsDelete,
+                    reject_reason = a.RejectReason,
                     is_expire = a.IsExpire,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
@@ -234,8 +242,10 @@ namespace UPOD.SERVICES.Services
                 terminal_content = a.TerminalContent,
                 start_date = a.StartDate,
                 is_expire = a.IsExpire,
+                is_accepted = a.IsAccepted,
                 end_date = a.EndDate,
                 is_delete = a.IsDelete,
+                reject_reason = a.RejectReason,
                 create_date = a.CreateDate,
                 update_date = a.UpdateDate,
                 contract_price = a.ContractPrice,
@@ -262,11 +272,6 @@ namespace UPOD.SERVICES.Services
             contract!.TerminalContent = model.terminal_content;
             contract!.IsExpire = true;
             contract!.UpdateDate = DateTime.UtcNow.AddHours(7);
-            //var contract_services = await _context.ContractServices.Where(a => a.IsDelete == false && a.ContractId.Equals(id)).ToListAsync();
-            //foreach (var item in contract_services)
-            //{
-            //    item.IsDelete = true;
-            //}
             var schedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(contract.Id)).ToListAsync();
             foreach (var item in schedule)
             {
@@ -295,6 +300,8 @@ namespace UPOD.SERVICES.Services
                         address = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Address).FirstOrDefault(),
                         mail = _context.Customers.Where(x => x.Id.Equals(contract.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                     },
+                    reject_reason = contract.RejectReason,
+                    is_accepted = contract.IsAccepted,
                     start_date = contract.StartDate,
                     end_date = contract.EndDate,
                     is_delete = contract.IsDelete,
@@ -538,6 +545,8 @@ namespace UPOD.SERVICES.Services
                 TerminalTime = null,
                 TerminalContent = null,
                 IsExpire = false,
+                RejectReason = null,
+                IsAccepted = false,
                 FrequencyMaintainTime = model.frequency_maintain_time,
             };
             var data = new ContractResponse();
@@ -580,7 +589,7 @@ namespace UPOD.SERVICES.Services
                     _context.ContractServices.Add(contract_service);
                 }
                 var lastTime = model.end_date - model.start_date;
-                var lastDay = lastTime!.Value.Days - 15;
+                var lastDay = lastTime!.Value.Days - 5;
                 var listAgency = await _context.Agencies.Where(a => a.CustomerId.Equals(model.customer_id) && a.IsDelete == false).ToListAsync();
                 var code_number1 = await GetLastCode1();
                 var maintenanceTime = lastDay / model.frequency_maintain_time;
@@ -637,8 +646,33 @@ namespace UPOD.SERVICES.Services
                         await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
                     }
                 }
-
-
+                if(model.img!.Count > 0)
+                {
+                    foreach (var item in model.img!)
+                    {
+                        var img_id = Guid.NewGuid();
+                        while (true)
+                        {
+                            var img_dup = await _context.Images.Where(x => x.Id.Equals(img_id)).FirstOrDefaultAsync();
+                            if (img_dup == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                img_id = Guid.NewGuid();
+                            }
+                        }
+                        var imgTicket = new Image
+                        {
+                            Id = img_id,
+                            Link = item,
+                            CurrentObject_Id = contract.Id,
+                            ObjectName = ObjectName.CON.ToString(),
+                        };
+                        await _context.Images.AddAsync(imgTicket);
+                    }
+                }
                 var contract_name = await _context.Contracts.Where(x => x.ContractName!.Equals(contract.ContractName) && x.IsDelete == false && x.IsExpire == false).FirstOrDefaultAsync();
                 if (contract_name != null)
                 {
@@ -687,6 +721,8 @@ namespace UPOD.SERVICES.Services
                             description = contract.Description,
                             is_expire = contract.IsExpire,
                             attachment = contract.Attachment,
+                            reject_reason = contract.RejectReason,
+                            is_accepted = contract.IsAccepted,
                             terminal_content = contract.TerminalContent,
                             frequency_maintain_time = contract.FrequencyMaintainTime,
                             service = _context.ContractServices.Where(x => x.ContractId.Equals(contract.Id)).Select(x => new ServiceViewResponse

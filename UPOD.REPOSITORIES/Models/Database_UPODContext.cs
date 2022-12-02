@@ -167,6 +167,8 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Description).HasMaxLength(300);
 
+                entity.Property(e => e.RejectReason).HasMaxLength(300);
+
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.StartDate).HasColumnType("datetime");

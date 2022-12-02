@@ -26,7 +26,9 @@ namespace UPOD.REPOSITORIES.Models
         public string? Description { get; set; }
         public string? Code { get; set; }
         public string? TerminalContent { get; set; }
+        public string? RejectReason { get; set; }
         public bool? IsExpire { get; set; }
+        public bool? IsAccepted { get; set; }
         public int? FrequencyMaintainTime { get; set; }
 
         public virtual Customer? Customer { get; set; }
