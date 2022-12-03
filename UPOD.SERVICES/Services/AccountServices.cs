@@ -247,6 +247,7 @@ namespace UPOD.SERVICES.Services
                 Type = "Account",
             };
         }
+
         public async Task<ResponseModel<AccountResponse>> GetAllAccountIsNotAssign(PaginationRequest model, SearchRequest value)
         {
             var role_name = await _context.Roles.Where(a => a.RoleName!.Equals(value.search)).Select(a => a.Id).FirstOrDefaultAsync();
