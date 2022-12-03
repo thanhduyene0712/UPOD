@@ -1328,6 +1328,7 @@ namespace UPOD.SERVICES.Services
                 {
                     request!.UpdateDate = DateTime.UtcNow.AddHours(7);
                     request!.StartTime = DateTime.UtcNow.AddHours(7);
+                    request!.RequestStatus = ProcessStatus.PREPARING.ToString();
                     request!.CurrentTechnicianId = technicians.FirstOrDefault()!.id;
                 }
                 var rs = await _context.SaveChangesAsync();
