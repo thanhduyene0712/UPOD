@@ -796,7 +796,6 @@ namespace UPOD.SERVICES.Services
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    reject_by_customer_reason = a.RejectByCustomer,
                     create_by = new CreateByViewModel
                     {
                         id = a.CustomerId,
@@ -855,7 +854,6 @@ namespace UPOD.SERVICES.Services
                     duration_time = durationTime,
                     cancel_reason = a.CancelReason,
                     reject_reason = a.ReasonReject,
-                    reject_by_customer_reason = a.RejectByCustomer,
                     description = a.RequestDesciption,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,

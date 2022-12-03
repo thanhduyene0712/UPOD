@@ -14,7 +14,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? request_name { get; set; }
         public string? request_status { get; set; }
         public string? reject_reason { get; set; }
-        public string? reject_by_customer_reason { get; set; }
         public string? cancel_reason { get; set; }
         public string? description { get; set; }
         public DateTime? create_date { get; set; }

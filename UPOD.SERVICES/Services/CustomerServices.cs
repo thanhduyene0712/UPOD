@@ -28,7 +28,6 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> ApproveContract(Guid cus_id, Guid con_id);
         Task<ObjectModelResponse> RejectContract(Guid cus_id, Guid con_id, ContractRejectRequest model);
         Task<ObjectModelResponse> ApproveRequestResolved(Guid id);
-        Task<ObjectModelResponse> RejectRequestResolved(Guid id, RejectRequest model);
     }
 
     public class CustomerServices : ICustomerService
@@ -37,21 +36,6 @@ namespace UPOD.SERVICES.Services
         public CustomerServices(Database_UPODContext context)
         {
             _context = context;
-        }
-        public async Task<ObjectModelResponse> RejectRequestResolved(Guid id, RejectRequest model)
-        {
-            var request = await _context.Requests.Where(a => a.IsDelete == false && a.Id.Equals(id)).FirstOrDefaultAsync();
-            if (request != null)
-            {
-                request!.UpdateDate = DateTime.UtcNow.AddHours(7);
-                request!.RequestStatus = ProcessStatus.EDITING.ToString();
-                request!.RejectByCustomer = model.reason;
-                await _context.SaveChangesAsync();
-            }
-            return new ObjectModelResponse(request!)
-            {
-                Type = "Request"
-            };
         }
         public async Task<ObjectModelResponse> ApproveRequestResolved(Guid id)
         {
