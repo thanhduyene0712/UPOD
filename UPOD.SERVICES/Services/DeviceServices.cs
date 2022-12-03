@@ -584,7 +584,7 @@ namespace UPOD.SERVICES.Services
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7)
             };
-            if(model.img!.Count > 0)
+            if (model.img!.Count > 0)
             {
                 foreach (var item in model.img!)
                 {
