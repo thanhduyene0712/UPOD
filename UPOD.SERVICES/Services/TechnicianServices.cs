@@ -821,7 +821,6 @@ namespace UPOD.SERVICES.Services
                                 ObjectName = ObjectName.TI.ToString(),
                             };
                             await _context.Images.AddAsync(imgTicket);
-
                         }
                     }
                     await _context.Tickets.AddAsync(ticket);
