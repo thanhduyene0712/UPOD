@@ -813,6 +813,7 @@ namespace UPOD.SERVICES.Services
                                     img_id = Guid.NewGuid();
                                 }
                             }
+
                             var imgTicket = new Image
                             {
                                 Id = img_id,
