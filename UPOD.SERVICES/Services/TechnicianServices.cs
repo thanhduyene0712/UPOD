@@ -820,13 +820,11 @@ namespace UPOD.SERVICES.Services
                                 CurrentObject_Id = ticket.Id,
                                 ObjectName = ObjectName.TI.ToString(),
                             };
-                            await _context.Tickets.AddAsync(ticket);
                             await _context.Images.AddAsync(imgTicket);
 
                         }
                     }
-
-
+                    await _context.Tickets.AddAsync(ticket);
                     await _context.SaveChangesAsync();
                     list.Add(new DevicesOfRequestResponse
                     {
