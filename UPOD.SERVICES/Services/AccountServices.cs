@@ -231,6 +231,16 @@ namespace UPOD.SERVICES.Services
                 create_date = account.CreateDate,
                 update_date = account.UpdateDate,
             };
+            if (account.Role.RoleName!.Equals("Customer"))
+            {
+                var customer = await _context.Customers.Where(a => a.IsDelete == false && a.AccountId.Equals(account.Id)).FirstOrDefaultAsync();
+                customer!.AccountId = null;
+            }
+            else if (account.Role.RoleName!.Equals("Technician"))
+            {
+                var technician = await _context.Technicians.Where(a => a.IsDelete == false && a.AccountId.Equals(account.Id)).FirstOrDefaultAsync();
+                technician!.AccountId = null;
+            }
             return new ObjectModelResponse(model)
             {
                 Status = 201,

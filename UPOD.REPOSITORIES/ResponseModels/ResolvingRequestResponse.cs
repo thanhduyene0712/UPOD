@@ -12,6 +12,6 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public string? code { get; set; }
         public string? name { get; set; }
         public string? status { get; set; }
-        public DateTime? start_time { get; set; }
+        public string? technician { get; set; }
     }
 }

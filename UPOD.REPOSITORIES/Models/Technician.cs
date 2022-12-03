@@ -27,6 +27,7 @@ namespace UPOD.REPOSITORIES.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string? Code { get; set; }
+        public int? Breach { get; set; }
 
         public virtual Account? Account { get; set; }
         public virtual Area? Area { get; set; }

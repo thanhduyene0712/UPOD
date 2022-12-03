@@ -138,6 +138,32 @@ namespace UPOD.API.Controllers
             }
         }
         [HttpPut]
+        [Route("approve_request_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> ApproveRequestResolved(Guid id)
+        {
+            try
+            {
+                return await _customer_sv.ApproveRequestResolved(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        [Route("reject_request_resolved_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> RejectRequestResolved(Guid id, RejectRequest model)
+        {
+            try
+            {
+                return await _customer_sv.RejectRequestResolved(id, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
         [Route("reject_contract_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> RecjectContract(Guid cus_id, Guid con_id, ContractRejectRequest model)
         {
@@ -150,6 +176,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+       
         [HttpPut]
         [Route("approve_contract_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> ApproveContract(Guid cus_id, Guid con_id)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
 using ITechnicianService = UPOD.SERVICES.Services.ITechnicianService;
@@ -109,7 +110,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-       
+
         [HttpPost]
         [Route("update_device_of_ticket_by_request_id")]
         public async Task<ActionResult<ObjectModelResponse>> UpdateDeviceTicket(Guid id, ListTicketRequest model)
@@ -136,7 +137,7 @@ namespace UPOD.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-       
+
         [HttpPut]
         [Route("resolving_request_by_id")]
         public async Task<ActionResult<ObjectModelResponse>> ResolvingRequest(Guid id, Guid tech_id)
@@ -144,6 +145,32 @@ namespace UPOD.API.Controllers
             try
             {
                 return await _technician_sv.ResolvingRequest(id, tech_id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        [Route("technician_reject_request_by_id")]
+        public async Task<ActionResult<ObjectModelResponse>> RejectRequest(Guid id, Guid tech_id)
+        {
+            try
+            {
+                return await _technician_sv.RejectRequest(id, tech_id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut]
+        [Route("reset_break_technician")]
+        public async Task<ActionResult<ResponseModel<Technician>>> ResetBreachTechnician()
+        {
+            try
+            {
+                return await _technician_sv.ResetBreachTechnician();
             }
             catch (Exception ex)
             {

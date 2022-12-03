@@ -8,6 +8,7 @@ using UPOD.REPOSITORIES.Models;
 using UPOD.REPOSITORIES.RequestModels;
 using UPOD.REPOSITORIES.ResponseModels;
 using UPOD.REPOSITORIES.ResponseViewModel;
+using UPOD.SERVICES.Enum;
 using UPOD.SERVICES.Helpers;
 
 namespace UPOD.SERVICES.Services
@@ -26,6 +27,8 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<ServiceNotInContractViewResponse>> GetServiceNotInContractCustomerId(Guid id);
         Task<ObjectModelResponse> ApproveContract(Guid cus_id, Guid con_id);
         Task<ObjectModelResponse> RejectContract(Guid cus_id, Guid con_id, ContractRejectRequest model);
+        Task<ObjectModelResponse> ApproveRequestResolved(Guid id);
+        Task<ObjectModelResponse> RejectRequestResolved(Guid id, RejectRequest model);
     }
 
     public class CustomerServices : ICustomerService
@@ -34,6 +37,35 @@ namespace UPOD.SERVICES.Services
         public CustomerServices(Database_UPODContext context)
         {
             _context = context;
+        }
+        public async Task<ObjectModelResponse> RejectRequestResolved(Guid id, RejectRequest model)
+        {
+            var request = await _context.Requests.Where(a => a.IsDelete == false && a.Id.Equals(id)).FirstOrDefaultAsync();
+            if (request != null)
+            {
+                request!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                request!.RequestStatus = ProcessStatus.EDITING.ToString();
+                request!.RejectByCustomer = model.reason;
+                await _context.SaveChangesAsync();
+            }
+            return new ObjectModelResponse(request!)
+            {
+                Type = "Request"
+            };
+        }
+        public async Task<ObjectModelResponse> ApproveRequestResolved(Guid id)
+        {
+            var request = await _context.Requests.Where(a => a.IsDelete == false && a.Id.Equals(id)).FirstOrDefaultAsync();
+            if (request != null)
+            {
+                request!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                request!.RequestStatus = ProcessStatus.COMPLETED.ToString();
+                await _context.SaveChangesAsync();
+            }
+            return new ObjectModelResponse(request!)
+            {
+                Type = "Request"
+            };
         }
         public async Task<ObjectModelResponse> RejectContract(Guid cus_id, Guid con_id, ContractRejectRequest model)
         {
@@ -55,14 +87,6 @@ namespace UPOD.SERVICES.Services
                 contract!.UpdateDate = DateTime.UtcNow.AddHours(7);
                 contract!.RejectReason = model.reject_reason;
                 contract!.IsExpire = true;
-                var schedule = await _context.MaintenanceSchedules.Where(a => a.IsDelete == false && a.ContractId.Equals(contract.Id)).ToListAsync();
-                if (schedule.Count > 0)
-                {
-                    foreach (var item in schedule)
-                    {
-                        _context.MaintenanceSchedules.Remove(item);
-                    }
-                }
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {
@@ -112,6 +136,11 @@ namespace UPOD.SERVICES.Services
                 Type = "Contract",
             };
         }
+        private async Task<int> GetLastCode1()
+        {
+            var maintainSchedules = await _context.MaintenanceSchedules.OrderBy(x => x.Code).LastOrDefaultAsync();
+            return CodeHelper.StringToInt(maintainSchedules!.Code!);
+        }
         public async Task<ObjectModelResponse> ApproveContract(Guid cus_id, Guid con_id)
         {
             var contract = await _context.Contracts.Where(a => a.IsDelete == false
@@ -127,6 +156,68 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                if (contract.FrequencyMaintainTime > 0)
+                {
+                    var lastTime = contract.EndDate - contract.StartDate;
+                    var lastDay = lastTime!.Value.Days - 5;
+                    var listAgency = await _context.Agencies.Where(a => a.CustomerId.Equals(contract.CustomerId) && a.IsDelete == false).ToListAsync();
+                    var code_number1 = await GetLastCode1();
+                    var maintenanceTime = lastDay / contract.FrequencyMaintainTime;
+
+                    foreach (var item in listAgency)
+                    {
+                        var maintenanceDate = contract.StartDate;
+                        for (int i = 1; i <= contract.FrequencyMaintainTime; i++)
+                        {
+                            maintenanceDate = maintenanceDate!.Value.AddDays(maintenanceTime!.Value);
+                            var maintenance_id = Guid.NewGuid();
+                            while (true)
+                            {
+                                var maintenance_dup = await _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenance_id)).FirstOrDefaultAsync();
+                                if (maintenance_dup == null)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    maintenance_id = Guid.NewGuid();
+                                }
+                            }
+                            var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
+                            while (true)
+                            {
+                                var code_dup = await _context.MaintenanceSchedules.Where(x => x.Code.Equals(code1)).FirstOrDefaultAsync();
+                                if (code_dup == null)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    code1 = "MS-" + code_number1++.ToString();
+                                }
+                            }
+                            var maintenanceSchedule = new MaintenanceSchedule
+                            {
+                                Id = maintenance_id,
+                                Code = code1,
+                                AgencyId = item.Id,
+                                CreateDate = DateTime.UtcNow.AddHours(7),
+                                UpdateDate = DateTime.UtcNow.AddHours(7),
+                                IsDelete = false,
+                                Name = "Maintenance Schedule: " + i,
+                                Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
+                                TechnicianId = item.TechnicianId,
+                                MaintainTime = maintenanceDate,
+                                StartDate = null,
+                                EndDate = null,
+                                ContractId = contract.Id
+
+                            };
+                            await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
+                        }
+                    }
+                }
+
                 message = "Susscessfully";
                 status = 200;
                 contract!.IsAccepted = true;
@@ -827,7 +918,7 @@ namespace UPOD.SERVICES.Services
             var customer = await _context.Customers.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync();
             var agencies = await _context.Agencies.Where(x => x.CustomerId.Equals(id)).ToListAsync();
             var contracts = await _context.Contracts.Where(x => x.CustomerId.Equals(id)).ToListAsync();
-            var account_assign = await _context.Accounts.Where(x => x.IsDelete == false && x.Id.Equals(customer.AccountId)).FirstOrDefaultAsync();
+            var account_assign = await _context.Accounts.Where(x => x.IsDelete == false && x.Id.Equals(customer!.AccountId)).FirstOrDefaultAsync();
             if (account_assign != null)
             {
                 account_assign!.IsAssign = false;

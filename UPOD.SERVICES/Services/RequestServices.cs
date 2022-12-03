@@ -30,6 +30,8 @@ namespace UPOD.SERVICES.Services
         Task<ObjectModelResponse> AutoFillRequestAdmin(Guid id);
         Task<ObjectModelResponse> GetTicketDetails(Guid id);
         Task SetClosedRequest();
+        Task WarningRequest();
+        Task CompletedRequest();
         Task<ResponseModel<RequestResponse>> GetListRequestsOfAgency(PaginationRequest model, Guid id, FilterStatusRequest value);
     }
     public class RequestServices : IRequestService
@@ -48,7 +50,7 @@ namespace UPOD.SERVICES.Services
                 if (item.RequestStatus!.Equals("RESOLVED"))
                 {
                     //item.UpdateDate = DateTime.UtcNow.AddHours(7);
-                    item.RequestStatus = ProcessStatus.CLOSED.ToString();
+                    item.RequestStatus = ProcessStatus.COMPLETED.ToString();
                 }
             }
             await _context.SaveChangesAsync();
@@ -599,92 +601,64 @@ namespace UPOD.SERVICES.Services
             var service = await _context.Services.Where(a => a.Id.Equals(request!.ServiceId)).FirstOrDefaultAsync();
             var technicians = new List<TechnicianOfRequestResponse>();
             var technicianList = new List<TechnicianOfRequestResponse>();
-            var total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-            && a.Technician.AreaId.Equals(area!.Id)
-            && a.Technician.IsBusy == false
-            && a.Technician.IsDelete == false
-            && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).ToListAsync();
-            var technicianDefault = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-            && a.Technician.AreaId.Equals(area!.Id)
-            && a.Technician.IsBusy == false
-            && a.Technician.IsDelete == false
-            && a.TechnicianId.Equals(agency!.TechnicianId)).FirstOrDefaultAsync();
             DateTime date = DateTime.UtcNow.AddHours(7);
-            if (technicianDefault != null)
-            {
-                date = date.AddDays((-date.Day) + 1).Date;
-                var requests = await _context.Requests.Where(a => a.IsDelete == false
-                && a.CurrentTechnicianId.Equals(technicianDefault.TechnicianId)
-                && a.RequestStatus != "CANCELED"
-                && a.CreateDate!.Value.Date >= date
-                && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
-                var count = requests.Count;
-                technicians.Add(new TechnicianOfRequestResponse
-                {
-                    id = technicianDefault.TechnicianId,
-                    code = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                    technician_name = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                    number_of_requests = count,
-                });
-                technicianList = technicians;
-            }
-            else
+            var total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                && a.Technician.AreaId.Equals(area!.Id)
+                && a.Technician.IsBusy == false
+                && a.Technician.IsDelete == false).ToListAsync();
+            if (total.Count > 0)
             {
                 total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
                 && a.Technician.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).ToListAsync();
-                if (total.Count > 0)
+                foreach (var item in total)
                 {
-                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician.AreaId.Equals(area!.Id)
-                    && a.Technician.IsBusy == false
-                    && a.Technician.IsDelete == false).ToListAsync();
-                    foreach (var item in total)
+                    date = date.AddDays((-date.Day) + 1).Date;
+                    var requests = await _context.Requests.Where(a => a.IsDelete == false
+                    && a.CurrentTechnicianId.Equals(item.TechnicianId)
+                    && a.RequestStatus.Equals("COMPLETED")
+                    && a.CreateDate!.Value.Date >= date
+                    && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+                    var count = requests.Count;
+                    technicians.Add(new TechnicianOfRequestResponse
                     {
-                        date = date.AddDays((-date.Day) + 1).Date;
-                        var requests = await _context.Requests.Where(a => a.IsDelete == false
-                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
-                        && a.RequestStatus != "CANCELED"
-                        && a.CreateDate!.Value.Date >= date
-                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
-                        var count = requests.Count;
-                        technicians.Add(new TechnicianOfRequestResponse
-                        {
-                            id = item.TechnicianId,
-                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                            number_of_requests = count,
-                        });
-                    }
+                        id = item.TechnicianId,
+                        code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        number_of_requests = count,
+                        area = area!.AreaName,
+                        skills = _context.Skills.Where(a => a.TechnicianId.Equals(item!.TechnicianId)).Select(a => a.Service.ServiceName).ToList()!,
+                    });
                 }
-                else
+            }
+            else
+            {
+                total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                && a.Technician.IsBusy == false
+                && a.Technician.IsDelete == false).ToListAsync();
+                foreach (var item in total)
                 {
-                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician.IsBusy == false
-                    && a.Technician.IsDelete == false).ToListAsync();
-                    foreach (var item in total)
+                    date = date.AddDays((-date.Day) + 1).Date;
+                    var requests = await _context.Requests.Where(a => a.IsDelete == false
+                    && a.CurrentTechnicianId.Equals(item.TechnicianId)
+                    && a.RequestStatus.Equals("COMPLETED")
+                    && a.CreateDate!.Value.Date >= date
+                    && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+                    var count = requests.Count;
+                    technicians.Add(new TechnicianOfRequestResponse
                     {
-                        date = date.AddDays((-date.Day) + 1).Date;
-                        var requests = await _context.Requests.Where(a => a.IsDelete == false
-                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
-                        && a.RequestStatus != "CANCELED"
-                        && a.CreateDate!.Value.Date >= date
-                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
-                        var count = requests.Count;
-                        technicians.Add(new TechnicianOfRequestResponse
-                        {
-                            id = item.TechnicianId,
-                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                            number_of_requests = count,
-                        });
-                    }
-
+                        id = item.TechnicianId,
+                        code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        number_of_requests = count,
+                        area = area!.AreaName,
+                        skills = _context.Skills.Where(a => a.TechnicianId.Equals(item!.TechnicianId)).Select(a => a.Service.ServiceName).ToList()!,
+                    });
                 }
-
 
             }
+
             technicianList = technicians.OrderBy(x => x.number_of_requests).ToList();
             return new ResponseModel<TechnicianOfRequestResponse>(technicianList)
             {
@@ -707,87 +681,63 @@ namespace UPOD.SERVICES.Services
             && a.Technician.IsBusy == false
             && a.Technician.IsDelete == false
             && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).ToListAsync();
-            var technicianDefault = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+            DateTime date = DateTime.UtcNow.AddHours(7);
+
+            total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
             && a.Technician.AreaId.Equals(area!.Id)
             && a.Technician.IsBusy == false
-            && a.Technician.IsDelete == false
-            && a.TechnicianId.Equals(agency!.TechnicianId)).Include(a => a.Technician).FirstOrDefaultAsync();
-            DateTime date = DateTime.UtcNow.AddHours(7);
-            if (technicianDefault != null)
-            {
-                date = date.AddDays((-date.Day) + 1).Date;
-                var requests = await _context.Requests.Where(a => a.IsDelete == false
-                && a.CurrentTechnicianId.Equals(technicianDefault.TechnicianId)
-                && a.RequestStatus != "CANCELED"
-                && a.CreateDate!.Value.Date >= date
-                && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
-                var count = requests.Count;
-                technicians.Add(new TechnicianOfRequestResponse
-                {
-                    id = technicianDefault.TechnicianId,
-                    code = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                    technician_name = _context.Technicians.Where(a => a.Id.Equals(technicianDefault.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                    number_of_requests = count,
-                });
-                technicianList = technicians;
-            }
-            else
+            && a.Technician.IsDelete == false).ToListAsync();
+            if (total.Count > 0)
             {
                 total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
                 && a.Technician.AreaId.Equals(area!.Id)
                 && a.Technician.IsBusy == false
                 && a.Technician.IsDelete == false).ToListAsync();
-                if (total.Count > 0)
+                foreach (var item in total)
                 {
-                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician.AreaId.Equals(area!.Id)
-                    && a.Technician.IsBusy == false
-                    && a.Technician.IsDelete == false).ToListAsync();
-                    foreach (var item in total)
+                    date = date.AddDays((-date.Day) + 1).Date;
+                    var requests = await _context.Requests.Where(a => a.IsDelete == false
+                    && a.CurrentTechnicianId.Equals(item.TechnicianId)
+                    && a.RequestStatus.Equals("COMPLETED")
+                    && a.CreateDate!.Value.Date >= date
+                    && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+                    var count = requests.Count;
+                    technicians.Add(new TechnicianOfRequestResponse
                     {
-                        date = date.AddDays((-date.Day) + 1).Date;
-                        var requests = await _context.Requests.Where(a => a.IsDelete == false
-                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
-                        && a.RequestStatus != "CANCELED"
-                        && a.CreateDate!.Value.Date >= date
-                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
-                        var count = requests.Count;
-                        technicians.Add(new TechnicianOfRequestResponse
-                        {
-                            id = item.TechnicianId,
-                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                            number_of_requests = count,
-                        });
-                    }
+                        id = item.TechnicianId,
+                        code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        number_of_requests = count,
+                    });
                 }
-                else
+            }
+            else
+            {
+                total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                && a.Technician.IsBusy == false
+                && a.Technician.IsDelete == false).ToListAsync();
+                foreach (var item in total)
                 {
-                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
-                    && a.Technician.IsBusy == false
-                    && a.Technician.IsDelete == false).ToListAsync();
-                    foreach (var item in total)
+                    date = date.AddDays((-date.Day) + 1).Date;
+                    var requests = await _context.Requests.Where(a => a.IsDelete == false
+                    && a.CurrentTechnicianId.Equals(item.TechnicianId)
+                    && a.RequestStatus.Equals("COMPLETED")
+                    && a.CreateDate!.Value.Date >= date
+                    && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+                    var count = requests.Count;
+                    technicians.Add(new TechnicianOfRequestResponse
                     {
-                        date = date.AddDays((-date.Day) + 1).Date;
-                        var requests = await _context.Requests.Where(a => a.IsDelete == false
-                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
-                        && a.RequestStatus != "CANCELED"
-                        && a.CreateDate!.Value.Date >= date
-                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
-                        var count = requests.Count;
-                        technicians.Add(new TechnicianOfRequestResponse
-                        {
-                            id = item.TechnicianId,
-                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
-                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
-                            number_of_requests = count,
-                        });
-                    }
-
+                        id = item.TechnicianId,
+                        code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                        technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                        number_of_requests = count,
+                    });
                 }
-
 
             }
+
+
+
             technicianList = technicians.OrderBy(x => x.number_of_requests).ToList();
             return new ResponseModel<TechnicianOfRequestResponse>(technicianList)
             {
@@ -799,6 +749,7 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var request_details = new RequestDetailsResponse();
+            var durationTime = request!.EndTime!.Value.TimeOfDay -  request!.StartTime!.Value.TimeOfDay;
             if (request!.AdminId == null)
             {
                 request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestDetailsResponse
@@ -831,14 +782,14 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    duration_time = durationTime,
                     cancel_reason = a.CancelReason,
                     reject_reason = a.ReasonReject,
                     description = a.RequestDesciption,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
                     update_date = a.UpdateDate,
-                    start_time = a.StartTime,
-                    end_time = a.EndTime,
+                    reject_by_customer_reason = a.RejectByCustomer,
                     create_by = new CreateByViewModel
                     {
                         id = a.CustomerId,
@@ -894,8 +845,10 @@ namespace UPOD.SERVICES.Services
                         service_name = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.ServiceName).FirstOrDefault(),
                         description = _context.Services.Where(x => x.Id.Equals(a.ServiceId)).Select(a => a.Description).FirstOrDefault(),
                     },
+                    duration_time = durationTime,
                     cancel_reason = a.CancelReason,
                     reject_reason = a.ReasonReject,
+                    reject_by_customer_reason = a.RejectByCustomer,
                     description = a.RequestDesciption,
                     request_status = a.RequestStatus,
                     create_date = a.CreateDate,
@@ -943,6 +896,7 @@ namespace UPOD.SERVICES.Services
             }
             var technician = await _context.Technicians.Where(a => a.Id.Equals(technician_id) && a.IsDelete == false).FirstOrDefaultAsync();
             request!.CurrentTechnicianId = technician_id;
+            request!.StartTime = DateTime.UtcNow.AddHours(7);
             request!.UpdateDate = DateTime.UtcNow.AddHours(7);
             request.RequestStatus = ProcessStatus.PREPARING.ToString();
             var data = new MappingTechnicianResponse();
@@ -1272,7 +1226,7 @@ namespace UPOD.SERVICES.Services
                     code = request.Code,
                     name = request.RequestName,
                     status = request.RequestStatus,
-                    start_time = request.StartTime,
+                    technician = request.CurrentTechnician!.TechnicianName,
                 };
             }
 
@@ -1310,7 +1264,7 @@ namespace UPOD.SERVICES.Services
                     code = request.Code,
                     name = request.RequestName,
                     status = request.RequestStatus,
-                    start_time = request.StartTime,
+                    technician = request.CurrentTechnician!.TechnicianName,
                 };
             }
 
@@ -1319,6 +1273,48 @@ namespace UPOD.SERVICES.Services
                 Status = 201,
                 Type = "Request"
             };
+        }
+        public async Task CompletedRequest()
+        {
+            var requests = await _context.Requests.Where(a => a.IsDelete == false
+            && a.RequestStatus!.Equals("RESOLVED")
+            && a.UpdateDate!.Value.AddHours(12) <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+            if (requests.Count > 0)
+            {
+                foreach (var item in requests)
+                {
+                    item!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                    item!.RequestStatus = ProcessStatus.COMPLETED.ToString();
+                }
+                await _context.SaveChangesAsync();
+            }
+            //send notify to admin, customer
+        }
+        public async Task WarningRequest()
+        {
+            var requests = await _context.Requests.Where(a => a.IsDelete == false
+            && a.RequestStatus!.Equals("PREPARING")
+            && a.UpdateDate!.Value.AddMinutes(10) <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+            if (requests.Count > 0)
+            {
+                
+                foreach (var item in requests)
+                {
+                    item!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                    item!.RequestStatus = ProcessStatus.WARNING.ToString();
+                    var technician = await _context.Technicians.Where(a => a.Id.Equals(item.CurrentTechnicianId)).FirstOrDefaultAsync();
+                    if (technician!.Breach >= 3)
+                    {
+                        technician!.Breach = 3;
+                    }
+                    else 
+                    {
+                        technician!.Breach = technician!.Breach + 1;
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+            //send notify to admin
         }
         public async Task<ObjectModelResponse> DisableRequest(Guid id)
         {

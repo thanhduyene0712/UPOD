@@ -64,6 +64,8 @@ namespace UPOD.API.Controllers
                 await _contract_sv.SetContractNotify();
                 await _maintenanceReport_sv.SetMaintenanceReportStatus();
                 await _maintenanceReport_sv.SetMaintenanceReportStatusProcessing();
+                await _request_Sv.WarningRequest();
+                await _request_Sv.CompletedRequest();
                 var timeShedule = DateTime.SpecifyKind(DateTime.UtcNow.AddMinutes(5), DateTimeKind.Utc);
                 BackgroundJob.Schedule(() => Notifications(), timeShedule);
                 return Ok();

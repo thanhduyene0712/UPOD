@@ -23,9 +23,11 @@ namespace UPOD.SERVICES.Services
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterStatusRequest value);
         Task<ResponseModel<DevicesOfRequestResponse>> GetDevicesByRequest(PaginationRequest model, Guid id);
         Task<ObjectModelResponse> ResolvingRequest(Guid id, Guid tech_id);
+        Task<ObjectModelResponse> RejectRequest(Guid id, Guid tech_id);
         Task<ObjectModelResponse> UpdateDeviceTicket(Guid id, ListTicketRequest model);
         Task<ObjectModelResponse> IsBusyTechnician(Guid id, IsBusyRequest model);
         Task<ObjectModelResponse> DisableDeviceOfTicket(Guid id);
+        Task<ResponseModel<Technician>> ResetBreachTechnician();
         Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnicianAgency(PaginationRequest model, Guid tech_id, Guid agency_id, FilterStatusRequest value);
     }
 
@@ -175,7 +177,7 @@ namespace UPOD.SERVICES.Services
                     code = request.Code,
                     name = request.RequestName,
                     status = request.RequestStatus,
-                    start_time = request.StartTime,
+                    technician = request.CurrentTechnician!.TechnicianName,
                 };
             }
 
@@ -749,10 +751,7 @@ namespace UPOD.SERVICES.Services
 
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
-            technician!.IsBusy = false;
-            request!.UpdateDate = DateTime.UtcNow.AddHours(7);
-            request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
-            request.EndTime = DateTime.UtcNow.AddHours(7);
+            
             var list = new List<DevicesOfRequestResponse>();
             var message = "blank";
             var status = 500;
@@ -763,6 +762,10 @@ namespace UPOD.SERVICES.Services
             }
             else
             {
+                technician!.IsBusy = false;
+                request!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                request!.RequestStatus = ProcessStatus.RESOLVED.ToString();
+                request.EndTime = DateTime.UtcNow.AddHours(7);
                 message = "Successfully";
                 status = 200;
                 foreach (var item in model.ticket)
@@ -1000,6 +1003,7 @@ namespace UPOD.SERVICES.Services
                 Gender = model.gender,
                 IsBusy = false,
                 IsDelete = false,
+                Breach = 0,
                 CreateDate = DateTime.UtcNow.AddHours(7),
                 UpdateDate = DateTime.UtcNow.AddHours(7)
             };
@@ -1244,6 +1248,115 @@ namespace UPOD.SERVICES.Services
                 Type = "Device"
             };
         }
+    
+        public async Task<ObjectModelResponse> RejectRequest(Guid id, Guid tech_id)
+        {
+            var request = await _context.Requests.Where(x => x.Id.Equals(id) && x.IsDelete == false).FirstOrDefaultAsync();
+            var technician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).FirstOrDefaultAsync();
+            var message = "blank";
+            var status = 500;
+            var data = new ResolvingRequestResponse();
+            if (request!.CurrentTechnicianId.Equals(tech_id))
+            {
+                message = "Successfully";
+                status = 200;
+                technician!.IsBusy = true;
+                var currentTechnician = await _context.Technicians.Where(x => x.Id.Equals(request!.CurrentTechnicianId)).Select(a => new TechnicianOfRequestResponse
+                {
+                    id = a.Id,
+                    code = a.Code,
+                    technician_name = a.TechnicianName,
+                }).ToListAsync();
+                var agency = await _context.Agencies.Where(a => a.Id.Equals(request!.AgencyId)).FirstOrDefaultAsync();
+                var area = await _context.Areas.Where(a => a.Id.Equals(agency!.AreaId)).FirstOrDefaultAsync();
+                var service = await _context.Services.Where(a => a.Id.Equals(request!.ServiceId)).FirstOrDefaultAsync();
+                var total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                   && a.Technician!.AreaId.Equals(area!.Id)
+                   && a.Technician.IsBusy == false
+                   && a.Technician.IsDelete == false).ToListAsync();
+                var technicians = new List<TechnicianOfRequestResponse>();
+                DateTime date = DateTime.UtcNow.AddHours(7);
+                if (total.Count > 0)
+                {
+                    foreach (var item in total)
+                    {
+                        date = date.AddDays((-date.Day) + 1).Date;
+                        var requests = await _context.Requests.Where(a => a.IsDelete == false
+                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
+                        && a.RequestStatus!.Equals("COMPLETED")
+                        && a.CreateDate!.Value.Date >= date
+                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+                        var count = requests.Count;
+                        technicians.Add(new TechnicianOfRequestResponse
+                        {
+                            id = item.TechnicianId,
+                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                            number_of_requests = count,
+                            area = area!.AreaName,
+                            skills = _context.Skills.Where(a => a.TechnicianId.Equals(item!.TechnicianId)).Select(a => a.Service.ServiceName).ToList()!,
+                        });
+                    }
+                }
+                else
+                {
+                    total = await _context.Skills.Where(a => a.ServiceId.Equals(service!.Id)
+                                    && a.Technician.IsBusy == false
+                                    && a.Technician.IsDelete == false).ToListAsync();
+                    foreach (var item in total)
+                    {
+                        date = date.AddDays((-date.Day) + 1).Date;
+                        var requests = await _context.Requests.Where(a => a.IsDelete == false
+                        && a.CurrentTechnicianId.Equals(item.TechnicianId)
+                        && a.RequestStatus.Equals("COMPLETED")
+                        && a.CreateDate!.Value.Date >= date
+                        && a.CreateDate!.Value.Date <= DateTime.UtcNow.AddHours(7)).ToListAsync();
+                        var count = requests.Count;
+                        technicians.Add(new TechnicianOfRequestResponse
+                        {
+                            id = item.TechnicianId,
+                            code = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.Code).FirstOrDefault(),
+                            technician_name = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(item.TechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                            number_of_requests = count,
+                            area = area!.AreaName,
+                            skills = _context.Skills.Where(a => a.TechnicianId.Equals(item!.TechnicianId)).Select(a => a.Service.ServiceName).ToList()!,
+                        });
+                    }
+                }
+                technicians.OrderBy(a => a.number_of_requests).Except(currentTechnician).ToList();
+                if(technicians.Count > 0)
+                {
+                    request!.UpdateDate = DateTime.UtcNow.AddHours(7);
+                    request!.StartTime = DateTime.UtcNow.AddHours(7);
+                    request!.CurrentTechnicianId = technicians.FirstOrDefault()!.id;
+                }
+                var rs = await _context.SaveChangesAsync();
+                if (rs > 0)
+                {
+                    data = new ResolvingRequestResponse
+                    {
+                        id = id,
+                        code = request.Code,
+                        status = request.RequestStatus,
+                        name = request.RequestName,
+                        technician = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(request.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
+                    };
+                }
+            }
+            else
+            {
+                message = "The technician does not own the request";
+                status = 400;
+            }
+
+
+            return new ObjectModelResponse(data)
+            {
+                Status = status,
+                Message = message,
+                Type = "Request"
+            };
+        }
         public async Task<ObjectModelResponse> ResolvingRequest(Guid id, Guid tech_id)
         {
             var request = await _context.Requests.Where(x => x.Id.Equals(id) && x.IsDelete == false).FirstOrDefaultAsync();
@@ -1265,7 +1378,6 @@ namespace UPOD.SERVICES.Services
                 technician!.IsBusy = true;
                 request!.RequestStatus = ProcessStatus.RESOLVING.ToString();
                 request!.UpdateDate = DateTime.UtcNow.AddHours(7);
-                request.StartTime = DateTime.UtcNow.AddHours(7);
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)
                 {
@@ -1275,7 +1387,7 @@ namespace UPOD.SERVICES.Services
                         code = request.Code,
                         status = request.RequestStatus,
                         name = request.RequestName,
-                        start_time = request.StartTime,
+                        technician = _context.Technicians.Where(a => a.IsDelete == false && a.Id.Equals(request.CurrentTechnicianId)).Select(a => a.TechnicianName).FirstOrDefault(),
                     };
                 }
             }
@@ -1291,6 +1403,20 @@ namespace UPOD.SERVICES.Services
                 Status = status,
                 Message = message,
                 Type = "Request"
+            };
+        }
+        public async Task<ResponseModel<Technician>> ResetBreachTechnician()
+        {
+            var technicians = await _context.Technicians.Where(a=>a.IsDelete == false).ToListAsync();
+            foreach (var item in technicians)
+            {
+                item!.Breach = 0;
+            }
+            await _context.SaveChangesAsync();
+            return new ResponseModel<Technician>(technicians)
+            {
+                Total = technicians.Count,
+                Type = "Technician"
             };
         }
         public async Task<ObjectModelResponse> UpdateTechnician(Guid id, TechnicianUpdateRequest model)
@@ -1338,6 +1464,7 @@ namespace UPOD.SERVICES.Services
                 technician!.AreaId = model.area_id;
                 technician!.Gender = model.gender;
                 technician!.Email = model.email;
+                technician!.Breach = model.breach;
 
                 var rs = await _context.SaveChangesAsync();
                 if (rs > 0)

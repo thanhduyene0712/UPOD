@@ -588,64 +588,7 @@ namespace UPOD.SERVICES.Services
                     };
                     _context.ContractServices.Add(contract_service);
                 }
-                var lastTime = model.end_date - model.start_date;
-                var lastDay = lastTime!.Value.Days - 5;
-                var listAgency = await _context.Agencies.Where(a => a.CustomerId.Equals(model.customer_id) && a.IsDelete == false).ToListAsync();
-                var code_number1 = await GetLastCode1();
-                var maintenanceTime = lastDay / model.frequency_maintain_time;
 
-                foreach (var item in listAgency)
-                {
-                    var maintenanceDate = model.start_date;
-                    for (int i = 1; i <= model.frequency_maintain_time; i++)
-                    {
-                        maintenanceDate = maintenanceDate!.Value.AddDays(maintenanceTime!.Value);
-                        var maintenance_id = Guid.NewGuid();
-                        while (true)
-                        {
-                            var maintenance_dup = await _context.MaintenanceSchedules.Where(x => x.Id.Equals(maintenance_id)).FirstOrDefaultAsync();
-                            if (maintenance_dup == null)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                maintenance_id = Guid.NewGuid();
-                            }
-                        }
-                        var code1 = CodeHelper.GeneratorCode("MS", code_number1++);
-                        while (true)
-                        {
-                            var code_dup = await _context.MaintenanceSchedules.Where(x => x.Code.Equals(code1)).FirstOrDefaultAsync();
-                            if (code_dup == null)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                code1 = "MS-" + code_number1++.ToString();
-                            }
-                        }
-                        var maintenanceSchedule = new MaintenanceSchedule
-                        {
-                            Id = maintenance_id,
-                            Code = code1,
-                            AgencyId = item.Id,
-                            CreateDate = DateTime.UtcNow.AddHours(7),
-                            UpdateDate = DateTime.UtcNow.AddHours(7),
-                            IsDelete = false,
-                            Name = "Maintenance Schedule: " + i,
-                            Status = Enum.ScheduleStatus.SCHEDULED.ToString(),
-                            TechnicianId = item.TechnicianId,
-                            MaintainTime = maintenanceDate,
-                            StartDate = null,
-                            EndDate = null,
-                            ContractId = contract.Id
-
-                        };
-                        await _context.MaintenanceSchedules.AddAsync(maintenanceSchedule);
-                    }
-                }
                 if(model.img!.Count > 0)
                 {
                     foreach (var item in model.img!)
