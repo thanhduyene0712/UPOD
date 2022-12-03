@@ -190,26 +190,26 @@ namespace UPOD.SERVICES.Services
         public async Task<ResponseModel<RequestResponse>> GetListRequestsOfTechnician(PaginationRequest model, Guid id, FilterStatusRequest value)
         {
             var total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
-            && (a.RequestStatus!.Equals("EDITING")
+            && (a.RequestStatus!.Equals("WARINING")
             || a.RequestStatus!.Equals("PREPARING")
             || a.RequestStatus!.Equals("RESOLVING")
             || a.RequestStatus!.Equals("RESOLVED")
-            || a.RequestStatus!.Equals("CLOSED"))).ToListAsync();
+            || a.RequestStatus!.Equals("COMPLETED"))).ToListAsync();
             var requests = new List<RequestResponse>();
             if (value.search == null && value.status == null)
             {
                 total = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
-            && (a.RequestStatus!.Equals("EDITING")
+            && (a.RequestStatus!.Equals("WARINING")
             || a.RequestStatus!.Equals("PREPARING")
             || a.RequestStatus!.Equals("RESOLVING")
             || a.RequestStatus!.Equals("RESOLVED")
-            || a.RequestStatus!.Equals("CLOSED"))).ToListAsync();
+            || a.RequestStatus!.Equals("COMPLETED"))).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false && a.CurrentTechnicianId.Equals(id)
-            && (a.RequestStatus!.Equals("EDITING")
+            && (a.RequestStatus!.Equals("WARINING")
             || a.RequestStatus!.Equals("PREPARING")
             || a.RequestStatus!.Equals("RESOLVING")
             || a.RequestStatus!.Equals("RESOLVED")
-            || a.RequestStatus!.Equals("CLOSED"))).Select(a => new RequestResponse
+            || a.RequestStatus!.Equals("COMPLETED"))).Select(a => new RequestResponse
             {
                 id = a.Id,
                 code = a.Code,
@@ -279,20 +279,20 @@ namespace UPOD.SERVICES.Services
                     && a.CurrentTechnicianId.Equals(id)
                     && (a.RequestStatus!.Contains(value.status!)
                     && a.AdminId != null)
-                    && (a.RequestStatus!.Equals("EDITING")
+                    && (a.RequestStatus!.Equals("WARINING")
                     || a.RequestStatus!.Equals("PREPARING")
                     || a.RequestStatus!.Equals("RESOLVING")
                     || a.RequestStatus!.Equals("RESOLVED")
-                    || a.RequestStatus!.Equals("CLOSED"))).ToListAsync();
+                    || a.RequestStatus!.Equals("COMPLETED"))).ToListAsync();
                     requests = await _context.Requests.Where(a => a.IsDelete == false
                    && a.CurrentTechnicianId.Equals(id)
                     && (a.RequestStatus!.Contains(value.status!)
                     && a.AdminId != null)
-                    && (a.RequestStatus!.Equals("EDITING")
+                    && (a.RequestStatus!.Equals("WARINING")
                     || a.RequestStatus!.Equals("PREPARING")
                     || a.RequestStatus!.Equals("RESOLVING")
                     || a.RequestStatus!.Equals("RESOLVED")
-                    || a.RequestStatus!.Equals("CLOSED"))).Select(a => new RequestResponse
+                    || a.RequestStatus!.Equals("COMPLETED"))).Select(a => new RequestResponse
                     {
                         id = a.Id,
                         code = a.Code,
@@ -359,11 +359,11 @@ namespace UPOD.SERVICES.Services
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
                     || a.ServiceId!.Equals(service_name))
-                    && (a.RequestStatus!.Equals("EDITING")
+                    && (a.RequestStatus!.Equals("WARINING")
                     || a.RequestStatus!.Equals("PREPARING")
                     || a.RequestStatus!.Equals("RESOLVING")
                     || a.RequestStatus!.Equals("RESOLVED")
-                    || a.RequestStatus!.Equals("CLOSED")))).ToListAsync();
+                    || a.RequestStatus!.Equals("COMPLETED")))).ToListAsync();
                     requests = await _context.Requests.Where(a => a.IsDelete == false
                     && a.CurrentTechnicianId.Equals(id)
                     && (a.RequestName!.Contains(value.search!)
@@ -374,11 +374,11 @@ namespace UPOD.SERVICES.Services
                     || a.ContractId!.Equals(contract_name)
                     || a.ServiceId!.Equals(service_name))
                     && (a.RequestStatus!.Contains(value.status!))
-                    && (a.RequestStatus!.Equals("EDITING")
+                    && (a.RequestStatus!.Equals("WARINING")
                     || a.RequestStatus!.Equals("PREPARING")
                     || a.RequestStatus!.Equals("RESOLVING")
                     || a.RequestStatus!.Equals("RESOLVED")
-                    || a.RequestStatus!.Equals("CLOSED"))).Select(a => new RequestResponse
+                    || a.RequestStatus!.Equals("COMPLETED"))).Select(a => new RequestResponse
                     {
                         id = a.Id,
                         code = a.Code,
@@ -441,30 +441,30 @@ namespace UPOD.SERVICES.Services
             var total = await _context.Requests.Where(a => a.IsDelete == false
             && a.CurrentTechnicianId.Equals(tech_id)
             && a.AgencyId.Equals(agency_id)
-            && (a.RequestStatus!.Equals("EDITING")
+            && (a.RequestStatus!.Equals("WARINING")
             || a.RequestStatus!.Equals("PREPARING")
             || a.RequestStatus!.Equals("RESOLVING")
             || a.RequestStatus!.Equals("RESOLVED")
-            || a.RequestStatus!.Equals("CLOSED"))).ToListAsync();
+            || a.RequestStatus!.Equals("COMPLETED"))).ToListAsync();
             var requests = new List<RequestResponse>();
             if (value.search == null && value.status == null)
             {
                 total = await _context.Requests.Where(a => a.IsDelete == false
                 && a.CurrentTechnicianId.Equals(tech_id)
                 && a.AgencyId.Equals(agency_id)
-                && (a.RequestStatus!.Equals("EDITING")
+                && (a.RequestStatus!.Equals("WARINING")
                 || a.RequestStatus!.Equals("PREPARING")
                 || a.RequestStatus!.Equals("RESOLVING")
                 || a.RequestStatus!.Equals("RESOLVED")
-                || a.RequestStatus!.Equals("CLOSED"))).ToListAsync();
+                || a.RequestStatus!.Equals("COMPLETED"))).ToListAsync();
                 requests = await _context.Requests.Where(a => a.IsDelete == false
                 && a.CurrentTechnicianId.Equals(tech_id)
                 && a.AgencyId.Equals(agency_id)
-                && (a.RequestStatus!.Equals("EDITING")
+                && (a.RequestStatus!.Equals("WARINING")
                 || a.RequestStatus!.Equals("PREPARING")
                 || a.RequestStatus!.Equals("RESOLVING")
                 || a.RequestStatus!.Equals("RESOLVED")
-                || a.RequestStatus!.Equals("CLOSED"))).Select(a => new RequestResponse
+                || a.RequestStatus!.Equals("COMPLETED"))).Select(a => new RequestResponse
                 {
                     id = a.Id,
                     code = a.Code,
@@ -535,21 +535,21 @@ namespace UPOD.SERVICES.Services
                     && a.AgencyId.Equals(agency_id)
                     && (a.RequestStatus!.Contains(value.status!)
                     && a.AdminId != null)
-                    && (a.RequestStatus!.Equals("EDITING")
+                    && (a.RequestStatus!.Equals("WARINING")
                     || a.RequestStatus!.Equals("PREPARING")
                     || a.RequestStatus!.Equals("RESOLVING")
                     || a.RequestStatus!.Equals("RESOLVED")
-                    || a.RequestStatus!.Equals("CLOSED"))).ToListAsync();
+                    || a.RequestStatus!.Equals("COMPLETED"))).ToListAsync();
                     requests = await _context.Requests.Where(a => a.IsDelete == false
                     && a.CurrentTechnicianId.Equals(tech_id)
                     && a.AgencyId.Equals(agency_id)
                     && (a.RequestStatus!.Contains(value.status!)
                     && a.AdminId != null)
-                    && (a.RequestStatus!.Equals("EDITING")
+                    && (a.RequestStatus!.Equals("WARINING")
                     || a.RequestStatus!.Equals("PREPARING")
                     || a.RequestStatus!.Equals("RESOLVING")
                     || a.RequestStatus!.Equals("RESOLVED")
-                    || a.RequestStatus!.Equals("CLOSED"))).Select(a => new RequestResponse
+                    || a.RequestStatus!.Equals("COMPLETED"))).Select(a => new RequestResponse
                     {
                         id = a.Id,
                         code = a.Code,
@@ -618,11 +618,11 @@ namespace UPOD.SERVICES.Services
                     || a.CustomerId!.Equals(customer_name)
                     || a.ContractId!.Equals(contract_name)
                     || a.ServiceId!.Equals(service_name))
-                    && (a.RequestStatus!.Equals("EDITING")
+                    && (a.RequestStatus!.Equals("WARINING")
                     || a.RequestStatus!.Equals("PREPARING")
                     || a.RequestStatus!.Equals("RESOLVING")
                     || a.RequestStatus!.Equals("RESOLVED")
-                    || a.RequestStatus!.Equals("CLOSED")))).ToListAsync();
+                    || a.RequestStatus!.Equals("COMPLETED")))).ToListAsync();
                     requests = await _context.Requests.Where(a => a.IsDelete == false
                     && a.CurrentTechnicianId.Equals(tech_id)
                     && a.AgencyId.Equals(agency_id)
@@ -634,11 +634,11 @@ namespace UPOD.SERVICES.Services
                     || a.ContractId!.Equals(contract_name)
                     || a.ServiceId!.Equals(service_name))
                     && (a.RequestStatus!.Contains(value.status!))
-                    && (a.RequestStatus!.Equals("EDITING")
+                    && (a.RequestStatus!.Equals("WARINING")
                     || a.RequestStatus!.Equals("PREPARING")
                     || a.RequestStatus!.Equals("RESOLVING")
                     || a.RequestStatus!.Equals("RESOLVED")
-                    || a.RequestStatus!.Equals("CLOSED"))).Select(a => new RequestResponse
+                    || a.RequestStatus!.Equals("COMPLETED"))).Select(a => new RequestResponse
                     {
                         id = a.Id,
                         code = a.Code,
