@@ -749,7 +749,14 @@ namespace UPOD.SERVICES.Services
         {
             var request = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).FirstOrDefaultAsync();
             var request_details = new RequestDetailsResponse();
-            var durationTime = request!.EndTime!.Value.TimeOfDay -  request!.StartTime!.Value.TimeOfDay;
+            TimeSpan? durationTime;
+            if (request!.EndTime != null && request.StartTime != null)
+            {
+                durationTime = request!.EndTime!.Value.TimeOfDay - request!.StartTime!.Value.TimeOfDay;
+            }else
+            {
+                durationTime = null;
+            }
             if (request!.AdminId == null)
             {
                 request_details = await _context.Requests.Where(a => a.Id.Equals(id) && a.IsDelete == false).Select(a => new RequestDetailsResponse
