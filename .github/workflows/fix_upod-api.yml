@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'upod-api'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F8ABCE9804F34951992F373D54886E14 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0EE9FF525B5C4F8EBD05F4B3433B3A1D }}
           package: .
