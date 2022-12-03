@@ -157,7 +157,7 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Attachment).HasMaxLength(200);
+                entity.Property(e => e.Attachment).HasMaxLength(500);
 
                 entity.Property(e => e.Code).HasMaxLength(255);
 
@@ -240,13 +240,13 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.DeviceName).HasMaxLength(250);
+                entity.Property(e => e.DeviceName).HasMaxLength(300);
 
                 entity.Property(e => e.GuarantyEndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.GuarantyStartDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Other).HasMaxLength(100);
+                entity.Property(e => e.Other).HasMaxLength(300);
 
                 entity.Property(e => e.SettingDate).HasColumnType("datetime");
 
