@@ -240,23 +240,11 @@ namespace UPOD.REPOSITORIES.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.DeviceAccount)
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.DeviceName).HasMaxLength(250);
-
-                entity.Property(e => e.DevicePassword)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.GuarantyEndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.GuarantyStartDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Ip)
-                    .HasMaxLength(200)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.Other).HasMaxLength(100);
 

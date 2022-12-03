@@ -85,10 +85,6 @@ namespace UPOD.SERVICES.Services
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
-                    ip = a.Ip,
-                    port = a.Port,
-                    device_account = a.DeviceAccount,
-                    device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
                     is_delete = a.IsDelete,
@@ -171,10 +167,6 @@ namespace UPOD.SERVICES.Services
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
-                    ip = a.Ip,
-                    port = a.Port,
-                    device_account = a.DeviceAccount,
-                    device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
                     is_delete = a.IsDelete,
@@ -249,10 +241,6 @@ namespace UPOD.SERVICES.Services
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
-                    ip = a.Ip,
-                    port = a.Port,
-                    device_account = a.DeviceAccount,
-                    device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
                     is_delete = a.IsDelete,
@@ -320,10 +308,6 @@ namespace UPOD.SERVICES.Services
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
-                    ip = a.Ip,
-                    port = a.Port,
-                    device_account = a.DeviceAccount,
-                    device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
                     is_delete = a.IsDelete,
@@ -398,10 +382,6 @@ namespace UPOD.SERVICES.Services
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
-                    ip = a.Ip,
-                    port = a.Port,
-                    device_account = a.DeviceAccount,
-                    device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
                     is_delete = a.IsDelete,
@@ -420,14 +400,10 @@ namespace UPOD.SERVICES.Services
                 total = await _context.Devices.Where(a => a.IsDelete == false && a.AgencyId.Equals(id)
                 && (a.Code!.Contains(value.search)
                 || a.DeviceName!.Contains(value.search)
-                || a.Ip!.Contains(value.search)
-                || a.DeviceAccount!.Contains(value.search)
                 || a.Other!.Contains(value.search))).ToListAsync();
                 devices = await _context.Devices.Where(a => a.IsDelete == false && a.AgencyId.Equals(id)
                 && (a.Code!.Contains(value.search)
                 || a.DeviceName!.Contains(value.search)
-                || a.Ip!.Contains(value.search)
-                || a.DeviceAccount!.Contains(value.search)
                 || a.Other!.Contains(value.search))).Select(a => new DeviceResponse
                 {
                     id = a.Id,
@@ -475,10 +451,6 @@ namespace UPOD.SERVICES.Services
                     device_name = a.DeviceName,
                     guaranty_start_date = a.GuarantyStartDate,
                     guaranty_end_date = a.GuarantyEndDate,
-                    ip = a.Ip,
-                    port = a.Port,
-                    device_account = a.DeviceAccount,
-                    device_password = a.DevicePassword,
                     setting_date = a.SettingDate,
                     other = a.Other,
                     is_delete = a.IsDelete,
@@ -548,10 +520,6 @@ namespace UPOD.SERVICES.Services
                 device_name = a.DeviceName,
                 guaranty_start_date = a.GuarantyStartDate,
                 guaranty_end_date = a.GuarantyEndDate,
-                ip = a.Ip,
-                port = a.Port,
-                device_account = a.DeviceAccount,
-                device_password = a.DevicePassword,
                 setting_date = a.SettingDate,
                 other = a.Other,
                 is_delete = a.IsDelete,
@@ -609,11 +577,7 @@ namespace UPOD.SERVICES.Services
                 DeviceName = model.device_name,
                 GuarantyStartDate = model.guaranty_start_date,
                 GuarantyEndDate = model.guaranty_end_date,
-                Ip = model.ip,
-                Port = model.port,
-                DeviceAccount = model.device_account,
-                DevicePassword = model.device_password,
-                SettingDate = model.setting_date,
+                SettingDate = DateTime.UtcNow.AddHours(7),
                 Other = model.other,
                 IsDelete = false,
                 CreateBy = model.create_by,
@@ -661,11 +625,6 @@ namespace UPOD.SERVICES.Services
                 status = 400;
                 message = "Guaranty end date must be longer than Guaranty start end!";
             }
-            else if (model.setting_date!.Value.Date < model.guaranty_start_date!.Value.Date)
-            {
-                status = 400;
-                message = "Setting date must be longer than Guaranty start end!";
-            }
             else
             {
                 message = "Successfully";
@@ -703,10 +662,6 @@ namespace UPOD.SERVICES.Services
                         device_name = device.DeviceName,
                         guaranty_start_date = device.GuarantyStartDate,
                         guaranty_end_date = device.GuarantyEndDate,
-                        ip = device.Ip,
-                        port = device.Port,
-                        device_account = device.DeviceAccount,
-                        device_password = device.DevicePassword,
                         setting_date = device.SettingDate,
                         other = device.Other,
                         is_delete = device.IsDelete,
@@ -761,10 +716,6 @@ namespace UPOD.SERVICES.Services
                     device_name = device.DeviceName,
                     guaranty_start_date = device.GuarantyStartDate,
                     guaranty_end_date = device.GuarantyEndDate,
-                    ip = device.Ip,
-                    port = device.Port,
-                    device_account = device.DeviceAccount,
-                    device_password = device.DevicePassword,
                     setting_date = device.SettingDate,
                     other = device.Other,
                     is_delete = device.IsDelete,
@@ -832,22 +783,12 @@ namespace UPOD.SERVICES.Services
                 status = 400;
                 message = "Guaranty end date must be longer than Guaranty start end!";
             }
-            else if (model.setting_date!.Value.Date < model.guaranty_start_date!.Value.Date)
-            {
-                status = 400;
-                message = "Setting date must be longer than Guaranty start end!";
-            }
             else
             {
                 device!.DeviceTypeId = model.devicetype_id;
                 device!.DeviceName = model.device_name;
                 device!.GuarantyStartDate = model.guaranty_start_date;
                 device!.GuarantyEndDate = model.guaranty_end_date;
-                device!.Ip = model.ip;
-                device!.Port = model.port;
-                device!.DeviceAccount = model.device_account;
-                device!.DevicePassword = model.device_password;
-                device!.SettingDate = model.setting_date;
                 device!.Other = model.other;
                 device!.UpdateDate = DateTime.UtcNow.AddHours(7);
                 var rs = await _context.SaveChangesAsync();
@@ -884,11 +825,6 @@ namespace UPOD.SERVICES.Services
                         device_name = device.DeviceName,
                         guaranty_start_date = device.GuarantyStartDate,
                         guaranty_end_date = device.GuarantyEndDate,
-                        ip = device.Ip,
-                        port = device.Port,
-
-                        device_account = device.DeviceAccount,
-                        device_password = device.DevicePassword,
                         setting_date = device.SettingDate,
                         other = device.Other,
                         is_delete = device.IsDelete,

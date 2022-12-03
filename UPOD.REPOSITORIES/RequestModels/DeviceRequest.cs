@@ -13,13 +13,8 @@ namespace UPOD.REPOSITORIES.RequestModels
         public string? device_name { get; set; }
         public DateTime? guaranty_start_date { get; set; }
         public DateTime? guaranty_end_date { get; set; }
-        public string? ip { get; set; }
-        public int? port { get; set; }
-        public string? device_account { get; set; }
-        public string? device_password { get; set; }
         public List<string>? img { get; set; }
         public Guid? create_by { get; set; }
-        public DateTime? setting_date { get; set; }
         public string? other { get; set; }
     }
 }
