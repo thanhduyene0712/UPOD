@@ -240,7 +240,7 @@ namespace UPOD.SERVICES.Services
                     mail = _context.Customers.Where(x => x.Id.Equals(a.CustomerId)).Select(x => x.Mail).FirstOrDefault(),
                 },
                 terminal_content = a.TerminalContent,
-                img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.DE.ToString())).Select(x => x.Link).ToList()!,
+                img = _context.Images.Where(d => d.CurrentObject_Id.Equals(a.Id) && d.ObjectName!.Equals(ObjectName.CON.ToString())).Select(x => x.Link).ToList()!,
                 start_date = a.StartDate,
                 is_expire = a.IsExpire,
                 is_accepted = a.IsAccepted,
