@@ -19,6 +19,8 @@ namespace UPOD.REPOSITORIES.ResponseModels
         public DateTime? create_date { get; set; }
         public DateTime? update_date { get; set; }
         public TimeSpan? duration_time { get; set; }
+        public DateTime? start_time { get; set; }
+        public DateTime? end_time { get; set; }
         public CreateByViewModel create_by { get; set; } = null!;
         public ContractViewResponse contract { get; set; } = null!;
         public CustomerViewResponse customer { get; set; } = null!;
